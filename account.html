@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A minha conta | Braga Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { background: #f8f9fa; }
+        .page-wrap { max-width: 480px; margin: 40px auto; padding: 0 20px; }
+        .card { background: #fff; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+        .card h1 { color: #2d7a32; margin-bottom: 20px; }
+        .card label { display: block; font-weight: 600; margin-top: 12px; color: #333; }
+        .card input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 4px; box-sizing: border-box; }
+        .card button { background: #2d7a32; color: #fff; border: none; border-radius: 20px; padding: 12px 24px; font-weight: 600; margin-top: 20px; cursor: pointer; width: 100%; }
+        .card .links { margin-top: 20px; text-align: center; }
+        .card .links a { color: #2d7a32; margin: 0 10px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .top-bar .logo { font-size: 1.4rem; font-weight: 800; text-decoration: none; color: #333; }
+        .top-bar .logo span { color: #2d7a32; }
+        .top-bar a { color: #2d7a32; text-decoration: none; font-weight: 600; }
+        #accountMessage { margin-top: 12px; padding: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+        <div class="top-bar">
+            <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
+            <a href="index.html">&larr; Voltar à loja</a>
+        </div>
+        <div class="card">
+            <h1>A minha conta</h1>
+            <form id="accountForm">
+                <label for="fullName">Nome completo</label>
+                <input type="text" id="fullName">
+                <label for="email">Email</label>
+                <input type="email" id="email">
+                <label for="phone">Telemóvel</label>
+                <input type="tel" id="phone">
+                <label for="address">Morada</label>
+                <input type="text" id="address">
+                <label for="postal">Código postal</label>
+                <input type="text" id="postal">
+                <label for="city">Cidade</label>
+                <input type="text" id="city">
+                <label for="location">Freguesia / Localização</label>
+                <input type="text" id="location">
+                <label for="country">País</label>
+                <input type="text" id="country">
+                <button type="submit">Guardar alterações</button>
+            </form>
+            <div id="accountMessage"></div>
+            <div class="links">
+                <a href="orders.html">As minhas encomendas</a>
+                <a href="login.html">Entrar com outra conta</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const raw = localStorage.getItem('bragaBazaarUser');
+            const user = raw ? JSON.parse(raw) : {};
+            const form = document.getElementById('accountForm');
+            const msg = document.getElementById('accountMessage');
+            if (user.fullName) document.getElementById('fullName').value = user.fullName;
+            if (user.email) document.getElementById('email').value = user.email;
+            if (user.phone) document.getElementById('phone').value = user.phone;
+            if (user.address) document.getElementById('address').value = user.address;
+            if (user.postal) document.getElementById('postal').value = user.postal;
+            if (user.city) document.getElementById('city').value = user.city;
+            if (user.location) document.getElementById('location').value = user.location;
+            if (user.country) document.getElementById('country').value = user.country || 'Portugal';
+            form.onsubmit = function (e) {
+                e.preventDefault();
+                const u = {
+                    fullName: document.getElementById('fullName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    postal: document.getElementById('postal').value.trim(),
+                    city: document.getElementById('city').value.trim(),
+                    location: document.getElementById('location').value.trim(),
+                    country: document.getElementById('country').value.trim()
+                };
+                localStorage.setItem('bragaBazaarUser', JSON.stringify(u));
+                msg.style.display = 'block';
+                msg.style.background = '#e8f5e9';
+                msg.style.color = '#2d7a32';
+                msg.textContent = 'Dados guardados.';
+            };
+        })();
+    </script>
+</body>
+</html>

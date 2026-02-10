@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braga Bazaar | Categoria</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar-menu" id="sidebar">
+        <div class="sidebar-header">
+            <button onclick="toggleSidebar()"><i class="fas fa-bars"></i> Fechar menu</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="javascript:void(0)" onclick="switchCategory('fruits', 'Frutas e Vegetais')" class="nav-item" data-category="fruits">
+                <i class="fas fa-apple-alt"></i> <span>Frutas</span>
+            </a>
+            <a href="javascript:void(0)" onclick="switchCategory('bakery', 'Padaria e Pastelaria')" class="nav-item" data-category="bakery">
+                <i class="fas fa-bread-slice"></i> <span>Padaria</span>
+            </a>
+            <a href="javascript:void(0)" onclick="switchCategory('eggs', 'Ovos')" class="nav-item" data-category="eggs">
+                <i class="fas fa-egg"></i> <span>Ovos</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div id="main-content">
+        <header class="category-header" style="display:flex;justify-content:space-between;align-items:center;padding:20px 5%;max-width:1400px;margin:0 auto;">
+            <h1 class="breadcrumb">Produtos / <span id="categoryName">Frutas e Vegetais</span></h1>
+            <a href="index.html" style="text-decoration:none;background:#2d7a32;color:#fff;border-radius:20px;padding:8px 18px;font-size:0.9rem;font-weight:600;">
+                ← Voltar à página inicial
+            </a>
+        </header>
+        <div class="container" style="padding-top:10px;">
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+    </div>
+
+    <script>
+    // Simple shared cart using the same storage key as index.html
+    let cart = [];
+
+    function loadCart() {
+        const savedCart = localStorage.getItem('bragaBazaarCart');
+        if (savedCart) {
+            try {
+                cart = JSON.parse(savedCart);
+            } catch {
+                cart = [];
+            }
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem('bragaBazaarCart', JSON.stringify(cart));
+    }
+
+    function addToCartFromCategory(name, price) {
+        const existing = cart.find(item => item.name === name);
+        if (existing) {
+            existing.qty += 1;
+        } else {
+            cart.push({ name, qty: 1, price });
+        }
+        saveCart();
+        alert('Adicionado ao carrinho: ' + name);
+    }
+
+    function renderProductCard(product) {
+        return `
+            <div class="product-card">
+                <img src="${product.img}" alt="${product.name}">
+                <h3>${product.name}</h3>
+                <p>€${product.price}</p>
+                <button class="add-to-cart-btn" data-name="${product.name}" data-price="${product.price}">Adicionar</button>
+            </div>
+        `;
+    }
+
+    function bindAddToCartButtons() {
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const name = btn.getAttribute('data-name');
+                const price = parseFloat(btn.getAttribute('data-price') || '0');
+                addToCartFromCategory(name, price);
+            });
+        });
+    }
+
+    const productsData = {
+        fruits: [
+            { name: "Morangos", price: "2.49", img: "morangos.jpg" },
+            { name: "Maçã Regional", price: "1.80", img: "maca.jpg" }
+        ],
+        bakery: [
+            { name: "Pão de Mafra", price: "1.20", img: "pao.jpg" },
+            { name: "Croissant", price: "0.90", img: "croissant.jpg" }
+        ],
+        eggs: [
+            { name: "Ovos Caseiros", price: "2.10", img: "ovos.jpg" }
+        ]
+    };
+
+    function switchCategory(type, displayName) {
+        document.getElementById('categoryName').innerText = displayName;
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = "";
+        const items = productsData[type] || [];
+        items.forEach(item => {
+            grid.innerHTML += renderProductCard(item);
+        });
+        highlightActiveNav(type);
+        bindAddToCartButtons();
+    }
+
+    function highlightActiveNav(type) {
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(link => {
+            if (link.getAttribute('data-category') === type) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('collapsed');
+        }
+    }
+
+    window.onload = () => {
+        loadCart();
+        const params = new URLSearchParams(window.location.search);
+        const typeFromUrl = params.get('type') || 'fruits';
+        const labelMap = {
+            fruits: 'Frutas e Vegetais',
+            bakery: 'Padaria e Pastelaria',
+            eggs: 'Ovos'
+        };
+        switchCategory(typeFromUrl, labelMap[typeFromUrl] || 'Frutas e Vegetais');
+    };
+    </script>
+</body>
+</html>

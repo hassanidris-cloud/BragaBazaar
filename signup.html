@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d7a32">
+    <title>Registo | Braga Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fff; font-family: 'Inter', sans-serif; }
+        .signup-container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px; }
+        .signup-container h2 { color: #4a6d1a; margin-bottom: 24px; }
+        .signup-container label { font-weight: bold; color: #333; margin-top: 12px; display: block; }
+        .signup-container input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; margin-top: 6px; margin-bottom: 16px; }
+        .signup-container button { background: #4a6d1a; color: #fff; border: none; border-radius: 20px; padding: 12px 32px; font-weight: bold; width: 100%; margin-top: 12px; }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Criar Conta</h2>
+        <form id="signupForm">
+            <label for="fullName">Nome Completo</label>
+            <input type="text" id="fullName" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+
+            <label for="phone">Telemóvel</label>
+            <input type="tel" id="phone" required>
+
+            <label for="address">Morada</label>
+            <input type="text" id="address" required>
+
+            <label for="postal">Código Postal</label>
+            <input type="text" id="postal" required>
+
+            <label for="city">Cidade</label>
+            <input type="text" id="city" required>
+
+            <label for="location">Freguesia / Localização</label>
+            <input type="text" id="location" required>
+
+            <label for="country">País</label>
+            <input type="text" id="country" value="Portugal" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+
+            <button type="submit" id="signupBtn">Registar</button>
+        </form>
+        <div id="signupMessage" style="margin-top:16px;padding:12px;border-radius:8px;display:none;"></div>
+        <p style="margin-top:20px;font-size:12px;color:#888;text-align:center;">Se nada acontecer ao clicar em Registar, abra o site através de um servidor web (ex: Live Server) e não por ficheiro local.</p>
+    </div>
+    <script type="module">
+        import { supabase } from './supabaseConfig.js';
+
+        const form = document.getElementById('signupForm');
+        const btn = document.getElementById('signupBtn');
+        const msgEl = document.getElementById('signupMessage');
+
+        function showMessage(text, isError) {
+            if (!msgEl) return;
+            msgEl.style.display = 'block';
+            msgEl.style.background = isError ? '#fee' : '#e8f5e9';
+            msgEl.style.color = isError ? '#c00' : '#2d7a32';
+            msgEl.textContent = text;
+        }
+
+        form.onsubmit = async function (e) {
+            e.preventDefault();
+            if (!btn) return;
+            btn.disabled = true;
+            btn.textContent = 'A registar...';
+            if (msgEl) msgEl.style.display = 'none';
+
+            const user = {
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                postal: document.getElementById('postal').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                location: document.getElementById('location').value.trim(),
+                country: document.getElementById('country').value.trim()
+            };
+            const password = document.getElementById('password').value;
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: user.email,
+                    password,
+                    options: {
+                        data: {
+                            fullName: user.fullName,
+                            phone: user.phone,
+                            address: user.address,
+                            postal: user.postal,
+                            city: user.city,
+                            location: user.location,
+                            country: user.country
+                        }
+                    }
+                });
+
+                if (error) {
+                    showMessage('Erro ao registar: ' + error.message, true);
+                    btn.disabled = false;
+                    btn.textContent = 'Registar';
+                    return;
+                }
+
+                // Store profile locally so checkout can prefill
+                localStorage.setItem('bragaBazaarUser', JSON.stringify(user));
+                localStorage.setItem('userIsLoggedIn', 'true');
+
+                // If Supabase requires email confirmation, data.session may be null – still allow checkout
+                if (data?.user && !data?.session) {
+                    showMessage('Conta criada. Se o seu email exigir confirmação, verifique a caixa de entrada. A redirecionar para o checkout...', false);
+                }
+
+                window.location.href = 'checkout.html';
+            } catch (err) {
+                console.error(err);
+                showMessage('Erro inesperado. Verifique a ligação à internet ou tente mais tarde. ' + (err?.message || ''), true);
+                btn.disabled = false;
+                btn.textContent = 'Registar';
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perguntas frequentes | Braga Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { background: #f8f9fa; }
+        .page-wrap { max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        .card { background: #fff; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+        .card h1 { color: #2d7a32; margin-bottom: 24px; }
+        .faq-item { border-bottom: 1px solid #eee; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q { font-weight: 600; color: #333; padding: 14px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-q:hover { color: #2d7a32; }
+        .faq-q i { transition: transform 0.2s; color: #2d7a32; }
+        .faq-item.open .faq-q i { transform: rotate(180deg); }
+        .faq-a { padding: 0 0 14px; color: #555; line-height: 1.6; display: none; }
+        .faq-item.open .faq-a { display: block; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .top-bar .logo { font-size: 1.4rem; font-weight: 800; text-decoration: none; color: #333; }
+        .top-bar .logo span { color: #2d7a32; }
+        .top-bar a { color: #2d7a32; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+        <div class="top-bar">
+            <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
+            <a href="index.html">&larr; Voltar à loja</a>
+        </div>
+        <div class="card">
+            <h1>Perguntas frequentes</h1>
+            <div class="faq-item">
+                <div class="faq-q">Como faço uma encomenda? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">Adicione os produtos ao carrinho, clique no ícone do carrinho e depois em «Proceder ao checkout». Se não tiver conta, terá de se registar ou entrar. Preencha os dados de entrega e confirme o pedido.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Quais as formas de pagamento? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">Aceitamos MB Way, cartão de crédito/débito e pagamento na entrega (dinheiro ou multibanco no momento).</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Posso alterar ou cancelar o pedido? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">Para alterar ou cancelar, contacte-nos o mais rápido possível por telefone ou email. Pedidos já em preparação podem não poder ser cancelados.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">E se um produto vier em mau estado? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">Entre em contacto no mesmo dia da entrega. Garantimos a troca ou reembolso de produtos que não estejam em condições.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">Entregam fora de Braga? <i class="fas fa-chevron-down"></i></div>
+                <div class="faq-a">A nossa zona principal é Braga e arredores. No checkout pode verificar se o seu código postal está coberto. Para outras zonas, contacte-nos.</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.faq-q').forEach(el => {
+            el.addEventListener('click', () => {
+                const item = el.closest('.faq-item');
+                item.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

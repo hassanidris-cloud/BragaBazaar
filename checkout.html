@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d7a32">
+    <title>Checkout | Braga Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fff; font-family: 'Inter', sans-serif; }
+        .checkout-container { display: flex; max-width: 900px; margin: 60px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+        .checkout-form { flex: 1; padding: 32px; }
+        .order-summary { flex: 1; padding: 32px; border-left: 1px solid #eee; }
+        .checkout-form h2, .order-summary h2 { color: #4a6d1a; margin-bottom: 24px; }
+        .checkout-form label { font-weight: bold; color: #333; margin-top: 12px; display: block; }
+        .checkout-form input, .checkout-form textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; margin-top: 6px; margin-bottom: 16px; }
+        .checkout-form textarea { min-height: 60px; }
+        .checkout-form .payment-methods { margin-bottom: 24px; }
+        .checkout-form .payment-methods label { display: inline-block; margin-right: 18px; }
+        .checkout-form button { background: #4a6d1a; color: #fff; border: none; border-radius: 20px; padding: 12px 32px; font-weight: bold; width: 100%; margin-top: 12px; }
+        .breadcrumb { color: #4a6d1a; margin-bottom: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="checkout-form">
+            <div class="breadcrumb">Cart &gt; Account &gt; Checkout</div>
+            <h2>Entrega</h2>
+            <form id="deliveryForm">
+                <label for="fullName">Nome Completo</label>
+                <input type="text" id="fullName" required>
+
+                <label for="phone">Telemóvel</label>
+                <input type="tel" id="phone" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+
+                <label for="address">Morada</label>
+                <input type="text" id="address" required>
+
+                <label for="postal">Código Postal (Braga)</label>
+                <input type="text" id="postal" required>
+
+                <label for="city">Cidade</label>
+                <input type="text" id="city" required>
+
+                <label for="location">Freguesia / Localização</label>
+                <input type="text" id="location" required>
+
+                <label for="country">País</label>
+                <input type="text" id="country" required>
+
+                <label for="instructions">Instruções de Entrega</label>
+                <textarea id="instructions"></textarea>
+
+                <div class="payment-methods">
+                    <label><input type="radio" name="payment" value="mbway" required> MB Way</label>
+                    <label><input type="radio" name="payment" value="card"> Cartão de Crédito</label>
+                    <label><input type="radio" name="payment" value="cash"> Pagamento na Entrega</label>
+                </div>
+                <button type="submit">Confirmar Pedido</button>
+            </form>
+        </div>
+        <div class="order-summary">
+            <h2>Resumo da Encomenda</h2>
+            <ul id="orderItems"></ul>
+            <div id="orderTotal" style="margin-top:20px;font-weight:bold;color:#4a6d1a;"></div>
+        </div>
+    </div>
+    <script type="module">
+        import { supabase } from './supabaseConfig.js';
+
+        // Load cart from localStorage
+        const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
+        const orderItems = document.getElementById('orderItems');
+        let total = 0;
+        cart.forEach(item => {
+            const li = document.createElement('li');
+            li.innerText = `${item.name} x${item.qty} - €${(item.price * item.qty).toFixed(2)}`;
+            orderItems.appendChild(li);
+            total += item.price * item.qty;
+        });
+        document.getElementById('orderTotal').innerText = `Total: €${total.toFixed(2)}`;
+
+        // Prefill customer info from signup data if available
+        const storedUserRaw = localStorage.getItem('bragaBazaarUser');
+        if (storedUserRaw) {
+            try {
+                const user = JSON.parse(storedUserRaw);
+                if (user.fullName) document.getElementById('fullName').value = user.fullName;
+                if (user.phone) document.getElementById('phone').value = user.phone;
+                if (user.email) document.getElementById('email').value = user.email;
+                if (user.address) document.getElementById('address').value = user.address;
+                if (user.postal) document.getElementById('postal').value = user.postal;
+                if (user.city) document.getElementById('city').value = user.city;
+                if (user.location) document.getElementById('location').value = user.location;
+                if (user.country) document.getElementById('country').value = user.country;
+            } catch {}
+        }
+
+        const form = document.getElementById('deliveryForm');
+
+        form.onsubmit = async function (e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const postal = document.getElementById('postal').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const country = document.getElementById('country').value.trim();
+            const instructions = document.getElementById('instructions').value.trim();
+            const paymentInput = document.querySelector('input[name="payment"]:checked');
+            const payment = paymentInput ? paymentInput.value : null;
+
+            const order = {
+                id: Date.now(),
+                createdAt: new Date().toISOString(),
+                customer: { fullName, phone, email, address, postal, city, location, country },
+                payment,
+                instructions,
+                items: cart,
+                total
+            };
+
+            // Always keep a local backup of orders
+            const existingOrdersRaw = localStorage.getItem('bragaBazaarOrders');
+            const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
+            existingOrders.push(order);
+            localStorage.setItem('bragaBazaarOrders', JSON.stringify(existingOrders));
+
+            // Try to persist to Supabase (orders + order_items)
+            try {
+                const { data: createdOrders, error: orderError } = await supabase
+                    .from('orders')
+                    .insert({
+                        client_order_id: order.id,
+                        full_name: fullName,
+                        phone,
+                        email,
+                        address,
+                        postal,
+                        city,
+                        location,
+                        country,
+                        payment,
+                        instructions,
+                        total,
+                        status: 'pending'
+                    })
+                    .select()
+                    .limit(1);
+
+                if (orderError) {
+                    console.error('Erro a guardar encomenda no Supabase:', orderError);
+                } else if (createdOrders && createdOrders.length) {
+                    const supabaseOrderId = createdOrders[0].id;
+                    const itemsPayload = cart.map(item => ({
+                        order_id: supabaseOrderId,
+                        name: item.name,
+                        price: item.price,
+                        qty: item.qty
+                    }));
+                    const { error: itemsError } = await supabase
+                        .from('order_items')
+                        .insert(itemsPayload);
+                    if (itemsError) {
+                        console.error('Erro a guardar artigos da encomenda no Supabase:', itemsError);
+                    }
+
+                    // After items are stored, update product stock levels
+                    for (const item of cart) {
+                        if (!item.productId) continue;
+                        try {
+                            const { data: prod, error: prodErr } = await supabase
+                                .from('products')
+                                .select('stock_level')
+                                .eq('id', item.productId)
+                                .maybeSingle();
+                            if (!prodErr && prod) {
+                                const current = prod.stock_level || 0;
+                                const newStock = Math.max(current - item.qty, 0);
+                                const { error: updateErr } = await supabase
+                                    .from('products')
+                                    .update({ stock_level: newStock })
+                                    .eq('id', item.productId);
+                                if (updateErr) {
+                                    console.error('Erro a atualizar stock no Supabase:', updateErr);
+                                }
+                            }
+                        } catch (stockErr) {
+                            console.error('Erro inesperado ao atualizar stock no Supabase:', stockErr);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Erro inesperado ao comunicar com o Supabase:', err);
+            }
+
+            // Clear cart after successful order (local + remote)
+            localStorage.removeItem('bragaBazaarCart');
+            alert('Pedido confirmado! Obrigado pela sua encomenda.');
+            window.location.href = 'index.html';
+        };
+    </script>
+</body>
+</html>

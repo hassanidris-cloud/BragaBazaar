@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2d7a32">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Braga Bazaar | Fresh Local Grocery</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/icon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+                <!-- User Choice Modal (kept for web, cleaned up) -->
+                <div id="userChoiceModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);z-index:2100;justify-content:center;align-items:center;">
+                    <div style="background:#fff;padding:32px 24px;border-radius:24px;box-shadow:0 2px 16px rgba(0,0,0,0.08);text-align:center;max-width:340px;margin:auto;">
+                        <h2 style="color:#4a6d1a;margin-bottom:18px;" data-en="Are you already a user?" data-pt="Já tem conta?">Já tem conta?</h2>
+                        <p style="margin-bottom:24px;" data-en="Log in if you already have an account, or sign up to continue." data-pt="Entre se já tem conta, ou registe-se para continuar.">Entre se já tem conta, ou registe-se para continuar.</p>
+                        <button id="userChoiceLoginBtn" style="background:#4a6d1a;color:#fff;border:none;border-radius:20px;padding:10px 30px;margin:8px;font-weight:bold;">Log In</button>
+                        <button id="userChoiceSignupBtn" style="background:#e31e24;color:#fff;border:none;border-radius:20px;padding:10px 30px;margin:8px;font-weight:bold;">Sign Up</button>
+                        <button id="userChoiceCancelBtn" style="background:#aaa;color:#fff;border:none;border-radius:20px;padding:8px 24px;margin-top:18px;font-weight:bold;">Cancel</button>
+                    </div>
+                </div>
+            <!-- Empty Cart Overlay -->
+            <div id="emptyCartOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);z-index:2000;justify-content:center;align-items:center;">
+                <div style="text-align:center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/102/102661.png" alt="Empty Cart" style="width:120px;height:120px;opacity:0.7;">
+                    <h2 style="color:#4a6d1a;margin-top:20px;">O seu carrinho está vazio</h2>
+                    <p>Adicione produtos para continuar.</p>
+                    <button onclick="closeEmptyCartOverlay()" style="background:#4a6d1a;color:#fff;border:none;border-radius:20px;padding:10px 30px;margin-top:20px;font-weight:bold;">Fechar</button>
+                </div>
+        </div>
+        <aside class="sidebar-menu" id="sidebar">
+            <div class="sidebar-header">
+                <button onclick="toggleSidebar()" class="close-btn">
+                    <i class="fas fa-bars"></i> <span class="menu-text" data-en="Close menu" data-pt="Fechar menu">Fechar menu</span>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="javascript:void(0)" class="nav-item" data-filter="fruits">
+                            <i class="fas fa-apple-alt icon-box"></i>
+                            <span class="menu-text" data-en="Fruits & Vegetables" data-pt="Frutas e Vegetais">Frutas e Vegetais</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="nav-item" data-filter="bakery">
+                            <i class="fas fa-bread-slice icon-box"></i>
+                            <span class="menu-text" data-en="Bakery & Pastry" data-pt="Padaria e Pastelaria">Padaria e Pastelaria</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="nav-item" data-filter="meat">
+                            <i class="fas fa-drumstick-bite icon-box"></i>
+                            <span class="menu-text" data-en="Butcher" data-pt="Talho">Talho</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="nav-item" data-filter="eggs">
+                            <i class="fas fa-egg icon-box"></i>
+                            <span class="menu-text" data-en="Eggs & Dairy" data-pt="Ovos e Lacticínios">Ovos e Lacticínios</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="nav-item" data-filter="drinks">
+                            <i class="fas fa-wine-bottle icon-box"></i>
+                            <span class="menu-text" data-en="Drinks" data-pt="Bebidas">Bebidas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="nav-item" data-filter="promotions">
+                            <i class="fas fa-percentage icon-box"></i>
+                            <span class="menu-text" data-en="Promotions" data-pt="Promoções">Promoções</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <div id="main-content" style="min-height:100vh;">
+            <div class="language-switcher">
+                <button id="btn-pt" class="lang-btn active">PT</button>
+                <span class="separator">|</span>
+                <button id="btn-en" class="lang-btn">EN</button>
+            </div>
+            <header class="main-header">
+                <div class="top-nav">
+                    <div class="logo">BRAGA<span>BAZAAR</span></div>
+                    <div class="search-bar">
+                        <input type="text" data-en="Search products (milk, fruit, bread...)" data-pt="Pesquisar produtos (leite, fruta, pão...)" placeholder="Search products (milk, fruit, bread...)" style="font-size:1.1em; padding:14px;">
+                        <button style="font-size:1.1em; padding:14px 24px;" data-en="Search" data-pt="Pesquisar">Search</button>
+                    </div>
+                    <div class="nav-actions">
+                        <a href="wishlist.html" class="cart-container" style="text-decoration:none;color:inherit;" title="Lista de desejos"><i class="fas fa-heart"></i></a>
+                        <a href="account.html" class="cart-container" style="text-decoration:none;color:inherit;" title="A minha conta"><i class="fas fa-user"></i></a>
+                        <div class="cart-container" id="cartBtn" style="cursor:pointer;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-total-display">€<span id="headerPrice">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+                <nav class="category-nav">
+                </nav>
+            </header>
+            <section class="hero">
+                <div class="hero-text">
+                    <h1 data-en="Freshness from Braga <br>to your table." data-pt="Frescura de Braga <br>para a sua mesa.">Freshness from Braga <br>to your table.</h1>
+                    <p data-en="Support your local community with every purchase." data-pt="Apoie a sua comunidade local com cada compra.">Support your local community with every purchase.</p>
+                    <button class="shop-now" id="shopNowBtn" data-en="Shop the Deals" data-pt="Ver Promoções">Shop the Deals</button>
+                </div>
+            </section>
+            <section class="container">
+                <h2 class="section-title" data-en="Products/" data-pt="Produtos/">Products/</h2>
+                <div class="product-grid" id="productGrid"></div>
+            </section>
+            <footer class="info-banner">
+                <div class="banner-container">
+                    <div class="banner-column">
+                        <h3 class="logo">BRAGA<span>BAZAAR</span></h3>
+                        <p data-en="Your local fresh market in the heart of Braga." data-pt="O seu mercado de frescos local no coração de Braga.">Your local fresh market in the heart of Braga.</p>
+                        <p style="margin-top:12px;"><strong data-en="Newsletter" data-pt="Newsletter">Newsletter</strong></p>
+                        <div style="display:flex;gap:8px;margin-top:6px;">
+                            <input type="email" id="newsletterEmail" placeholder="seu@email.pt" style="padding:8px 12px;border-radius:8px;border:none;flex:1;max-width:200px;">
+                            <button type="button" id="newsletterBtn" style="background:#2d7a32;color:#fff;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;">OK</button>
+                        </div>
+                        <p id="newsletterMsg" style="font-size:12px;margin-top:6px;display:none;"></p>
+                    </div>
+                    <div class="banner-column">
+                        <h4 data-en="Contact" data-pt="Contacto">Contact</h4>
+                        <p>📞 +351 253 123 456</p>
+                        <p>📍 Praça da República, Braga</p>
+                    </div>
+                    <div class="banner-column">
+                        <h4 data-en="Hours" data-pt="Horário">Hours</h4>
+                        <p data-en="Mon-Sat: 08:00 - 20:00" data-pt="Seg-Sáb: 08:00 - 20:00">Mon-Sat: 08:00 - 20:00</p>
+                        <p data-en="Sun: Closed" data-pt="Dom: Fechado">Sun: Closed</p>
+                    </div>
+                    <div class="banner-column">
+                        <h4 data-en="Links" data-pt="Links">Links</h4>
+                        <p><a href="contact.html" style="color:#ccc;">Contacto</a></p>
+                        <p><a href="delivery.html" style="color:#ccc;">Entrega</a></p>
+                        <p><a href="faq.html" style="color:#ccc;">FAQ</a></p>
+                        <p><a href="orders.html" style="color:#ccc;">As minhas encomendas</a></p>
+                        <p><a href="account.html" style="color:#ccc;">A minha conta</a></p>
+                        <p><a href="wishlist.html" style="color:#ccc;">Lista de desejos</a></p>
+                        <p><a href="privacy.html" style="color:#ccc;">Privacidade</a></p>
+                        <p><a href="terms.html" style="color:#ccc;">Termos</a></p>
+                    </div>
+                </div>
+                <div class="banner-bottom">
+                    <p>&copy; 2026 Braga Bazaar. <span data-en="Freshness Delivered." data-pt="Frescura Entregue.">Freshness Delivered.</span></p>
+                </div>
+            </footer>
+            <button type="button" id="backToTop" style="display:none;position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:#2d7a32;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:999;" title="Voltar ao topo"><i class="fas fa-arrow-up"></i></button>
+        </div>
+
+    <div id="productModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2500;align-items:center;justify-content:center;padding:20px;">
+        <div style="background:#fff;border-radius:16px;max-width:400px;width:100%;padding:24px;position:relative;">
+            <button type="button" id="closeProductModal" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#666;">&times;</button>
+            <img id="modalProductImg" src="" alt="" style="width:100%;height:200px;object-fit:contain;margin-bottom:12px;">
+            <h3 id="modalProductName" style="margin-bottom:8px;"></h3>
+            <p id="modalProductPrice" class="price" style="margin-bottom:16px;"></p>
+            <button type="button" id="modalAddToCart" class="add-to-cart-btn" style="width:100%;">Adicionar ao carrinho</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Cart state ---
+        let cart = [];
+
+        function updateCartTotals() {
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const headerPriceEl = document.getElementById('headerPrice');
+            if (headerPriceEl) {
+                headerPriceEl.innerText = totalPrice.toFixed(2);
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('bragaBazaarCart', JSON.stringify(cart));
+        }
+
+        function rebuildCheckoutList() {
+            const cartItemsList = document.getElementById('cartItems');
+            if (!cartItemsList) return;
+
+            cartItemsList.innerHTML = '';
+            cart.forEach((item, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${item.name}
+                    <input type="number" min="1" value="${item.qty}" style="width:50px;margin:0 8px;" data-idx="${idx}">
+                    <span>€${(item.price * item.qty).toFixed(2)}</span>
+                    <button class="remove-cart-btn" data-idx="${idx}" style="margin-left:10px;background:#e31e24;color:#fff;border:none;border-radius:12px;padding:4px 12px;font-size:0.9em;cursor:pointer;">Remover</button>
+                `;
+                cartItemsList.appendChild(li);
+            });
+
+            cartItemsList.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-idx'), 10);
+                    const newQty = Math.max(1, parseInt(e.target.value || '1', 10));
+                    editCartItemQty(idx, newQty);
+                });
+            });
+
+            cartItemsList.querySelectorAll('.remove-cart-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.getAttribute('data-idx'), 10);
+                    removeCartItem(idx);
+                });
+            });
+        }
+
+        function showCheckout() {
+            const checkoutSection = document.getElementById('checkout');
+            if (!checkoutSection) return;
+            rebuildCheckoutList();
+            checkoutSection.style.display = 'flex';
+        }
+
+        function hideCheckout() {
+            const checkoutSection = document.getElementById('checkout');
+            if (checkoutSection) {
+                checkoutSection.style.display = 'none';
+            }
+        }
+
+        function addToCart(product) {
+            const existing = cart.find(item =>
+                (product.productId && item.productId === product.productId) ||
+                (!product.productId && item.name === product.name)
+            );
+            if (existing) {
+                existing.qty += product.qty;
+            } else {
+                cart.push(product);
+            }
+            saveCart();
+            updateCartTotals();
+        }
+
+        function editCartItemQty(idx, newQty) {
+            if (!cart[idx]) return;
+            cart[idx].qty = newQty;
+            saveCart();
+            updateCartTotals();
+            rebuildCheckoutList();
+        }
+
+        function removeCartItem(idx) {
+            cart.splice(idx, 1);
+            saveCart();
+            updateCartTotals();
+            rebuildCheckoutList();
+        }
+
+        function closeEmptyCartOverlay() {
+            const overlay = document.getElementById('emptyCartOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        // --- Modal for login/signup choice ---
+        function showUserChoiceModal() {
+            const modal = document.getElementById('userChoiceModal');
+            if (!modal) return;
+            modal.style.display = 'flex';
+            setLanguage(localStorage.getItem('preferredLang') || 'en');
+            bindUserChoiceModalButtons();
+        }
+
+        function closeUserChoiceModal() {
+            const modal = document.getElementById('userChoiceModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function bindUserChoiceModalButtons() {
+            const loginBtn = document.getElementById('userChoiceLoginBtn');
+            const signupBtn = document.getElementById('userChoiceSignupBtn');
+            const cancelBtn = document.getElementById('userChoiceCancelBtn');
+            if (loginBtn) loginBtn.onclick = () => { window.location.href = 'login.html'; };
+            if (signupBtn) signupBtn.onclick = () => { window.location.href = 'signup.html'; };
+            if (cancelBtn) cancelBtn.onclick = () => { closeUserChoiceModal(); };
+        }
+
+        // --- Sidebar and language logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const btnText = document.querySelector('.menu-text');
+            if (!sidebar || !mainContent || !btnText) return;
+
+            if (window.innerWidth <= 600) {
+                sidebar.classList.toggle('active');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                if (sidebar.classList.contains('collapsed')) {
+                    mainContent.style.marginLeft = '60px';
+                    btnText.innerText = "";
+                } else {
+                    mainContent.style.marginLeft = '220px';
+                    btnText.innerText = "Fechar menu";
+                }
+            }
+        }
+
+        function setLanguage(lang) {
+            document.querySelectorAll('[data-en]').forEach(el => {
+                if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
+                    el.setAttribute('placeholder', el.getAttribute(`data-${lang}`));
+                } else if (el.tagName === 'BUTTON' && el.hasAttribute('data-en') && el.hasAttribute('data-pt')) {
+                    el.innerText = el.getAttribute(`data-${lang}`);
+                } else {
+                    const value = el.getAttribute(`data-${lang}`);
+                    if (!value) return;
+                    if (value.includes('<') && value.includes('>')) {
+                        el.innerHTML = value;
+                    } else {
+                        el.innerText = value;
+                    }
+                }
+            });
+
+            const btnEn = document.getElementById('btn-en');
+            const btnPt = document.getElementById('btn-pt');
+            if (btnEn && btnPt) {
+                btnEn.classList.remove('active');
+                btnPt.classList.remove('active');
+                if (lang === 'en') {
+                    btnEn.classList.add('active');
+                } else {
+                    btnPt.classList.add('active');
+                }
+            }
+            localStorage.setItem('preferredLang', lang);
+        }
+
+        // --- Search ---
+        function initSearch() {
+            const searchInput = document.querySelector('.search-bar input');
+            const searchButton = document.querySelector('.search-bar button');
+            if (!searchInput || !searchButton) return;
+
+            function applySearch() {
+                const term = searchInput.value.trim().toLowerCase();
+                const cards = document.querySelectorAll('.product-card');
+                cards.forEach(card => {
+                    const titleEl = card.querySelector('h3');
+                    const title = titleEl ? titleEl.innerText.toLowerCase() : '';
+                    card.style.display = !term || title.includes(term) ? '' : 'none';
+                });
+            }
+
+            searchButton.addEventListener('click', applySearch);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') applySearch();
+            });
+        }
+
+        // --- Category filters in sidebar ---
+        function initCategoryFilters() {
+            const sidebarLinks = document.querySelectorAll('#sidebar .nav-item[data-filter]');
+            const sectionTitle = document.querySelector('.section-title');
+
+            function applyFilter(filter, label) {
+                const cards = document.querySelectorAll('.product-card');
+                cards.forEach(card => {
+                    const cat = card.getAttribute('data-category') || '';
+                    if (!filter || filter === 'all') {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = (cat === filter) ? '' : 'none';
+                    }
+                });
+
+                if (sectionTitle && label) {
+                    sectionTitle.innerText = 'Produtos / ' + label;
+                }
+
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const filter = link.getAttribute('data-filter');
+                    const labelEl = link.querySelector('.menu-text') || link.querySelector('span');
+                    const label = labelEl ? labelEl.innerText : '';
+
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    applyFilter(filter, label);
+                });
+            });
+        }
+
+        // --- Quantity and Add-to-cart buttons ---
+        function initQuantitySelectors() {
+            document.querySelectorAll('.product-card').forEach(card => {
+                const minusBtn = card.querySelector('.qty-minus');
+                const plusBtn = card.querySelector('.qty-plus');
+                const qtyInput = card.querySelector('.qty-input');
+                if (!minusBtn || !plusBtn || !qtyInput) return;
+
+                minusBtn.addEventListener('click', () => {
+                    let val = parseInt(qtyInput.value || '1', 10);
+                    if (val > 1) qtyInput.value = val - 1;
+                });
+                plusBtn.addEventListener('click', () => {
+                    let val = parseInt(qtyInput.value || '1', 10);
+                    qtyInput.value = val + 1;
+                });
+            });
+        }
+
+        function initAddToCartButtons() {
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const card = button.closest('.product-card');
+                    if (!card) return;
+                    const nameEl = card.querySelector('h3');
+                    const qtyInput = card.querySelector('.qty-input');
+                    const name = nameEl ? nameEl.innerText : 'Produto';
+                    const qty = qtyInput ? parseInt(qtyInput.value || '1', 10) : 1;
+                    const price = parseFloat(button.getAttribute('data-price') || '0');
+                    const productId = button.getAttribute('data-product-id') || null;
+                    addToCart({ name, qty, price, productId });
+                    // small visual feedback
+                    button.classList.add('pulse');
+                    setTimeout(() => button.classList.remove('pulse'), 200);
+                });
+            });
+        }
+
+        function initCartButton() {
+            const cartBtn = document.getElementById('cartBtn');
+            if (!cartBtn) return;
+            cartBtn.addEventListener('click', () => {
+                if (!cart.length) {
+                    const overlay = document.getElementById('emptyCartOverlay');
+                    if (overlay) overlay.style.display = 'flex';
+                } else {
+                    showCheckout();
+                }
+            });
+        }
+
+        function initCheckoutButtons() {
+            const closeBtn = document.getElementById('closeCheckout');
+            const proceedBtn = document.getElementById('proceedCheckoutBtn');
+            if (closeBtn) closeBtn.addEventListener('click', hideCheckout);
+            if (proceedBtn) {
+                proceedBtn.addEventListener('click', () => {
+                    const loggedIn = localStorage.getItem('userIsLoggedIn') === 'true';
+                    if (loggedIn) {
+                        window.location.href = 'checkout.html';
+                    } else {
+                        showUserChoiceModal();
+                    }
+                });
+            }
+        }
+
+        // Expose for re-init after products load from Supabase
+        window.initAddToCartButtons = initAddToCartButtons;
+        window.initCategoryFilters = initCategoryFilters;
+
+        // --- Initialisation ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const btnPt = document.getElementById('btn-pt');
+            const btnEn = document.getElementById('btn-en');
+            if (btnPt) btnPt.addEventListener('click', () => setLanguage('pt'));
+            if (btnEn) btnEn.addEventListener('click', () => setLanguage('en'));
+
+            bindUserChoiceModalButtons();
+            initSearch();
+            initQuantitySelectors();
+            initAddToCartButtons();
+            initCartButton();
+            initCheckoutButtons();
+            initCategoryFilters();
+
+            const shopNowBtn = document.getElementById('shopNowBtn');
+            if (shopNowBtn) {
+                shopNowBtn.onclick = () => {
+                    const container = document.querySelector('.container');
+                    if (container) container.scrollIntoView({ behavior: 'smooth' });
+                };
+            }
+        });
+
+        window.onload = () => {
+            const savedLang = localStorage.getItem('preferredLang') || 'en';
+            setLanguage(savedLang);
+            const savedCart = localStorage.getItem('bragaBazaarCart');
+            if (savedCart) {
+                try {
+                    cart = JSON.parse(savedCart);
+                } catch {
+                    cart = [];
+                }
+                updateCartTotals();
+            }
+        };
+
+        // Back to top
+        (function () {
+            const btn = document.getElementById('backToTop');
+            if (!btn) return;
+            window.addEventListener('scroll', function () {
+                btn.style.display = window.scrollY > 300 ? 'block' : 'none';
+            });
+            btn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        })();
+
+        // Newsletter (store in localStorage for demo; can be sent to Supabase later)
+        document.getElementById('newsletterBtn') && document.getElementById('newsletterBtn').addEventListener('click', function () {
+            const input = document.getElementById('newsletterEmail');
+            const msg = document.getElementById('newsletterMsg');
+            const email = input && input.value.trim();
+            if (!email) return;
+            try {
+                const list = JSON.parse(localStorage.getItem('bragaBazaarNewsletter') || '[]');
+                if (!list.includes(email)) list.push(email);
+                localStorage.setItem('bragaBazaarNewsletter', JSON.stringify(list));
+            } catch (e) {}
+            if (msg) { msg.style.display = 'block'; msg.style.color = '#ccc'; msg.textContent = 'Obrigado. Receberá as nossas novidades.'; }
+        });
+
+        // Product quick-view modal (called from product cards)
+        window.openProductModal = function (product) {
+            if (!product) return;
+            const modal = document.getElementById('productModal');
+            const img = document.getElementById('modalProductImg');
+            const nameEl = document.getElementById('modalProductName');
+            const priceEl = document.getElementById('modalProductPrice');
+            const addBtn = document.getElementById('modalAddToCart');
+            if (!modal || !addBtn) return;
+            if (img) img.src = product.image_url || 'assets/strawberries.jpg';
+            if (img) img.alt = product.name || '';
+            if (nameEl) nameEl.textContent = product.name || '';
+            if (priceEl) priceEl.textContent = '€' + (product.price != null ? Number(product.price).toFixed(2) : '0.00');
+            addBtn.onclick = function () {
+                addToCart({ name: product.name, qty: 1, price: product.price || 0, productId: product.id });
+                modal.style.display = 'none';
+            };
+            addBtn.disabled = (product.stock_level || 0) <= 0;
+            addBtn.textContent = (product.stock_level || 0) > 0 ? 'Adicionar ao carrinho' : 'Esgotado';
+            modal.style.display = 'flex';
+        };
+        document.getElementById('closeProductModal') && document.getElementById('closeProductModal').addEventListener('click', function () {
+            document.getElementById('productModal').style.display = 'none';
+        });
+        document.getElementById('productModal') && document.getElementById('productModal').addEventListener('click', function (e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+    </script>
+
+    <script type="module">
+        import { supabase } from './supabaseConfig.js';
+
+        function getWishlist() {
+            try {
+                return JSON.parse(localStorage.getItem('bragaBazaarWishlist') || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function setWishlist(list) {
+            localStorage.setItem('bragaBazaarWishlist', JSON.stringify(list));
+        }
+
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-category', product.category || '');
+
+            const inStock = (product.stock_level || 0) > 0;
+
+            if (product.on_sale) {
+                const badge = document.createElement('div');
+                badge.className = 'promo-badge';
+                badge.textContent = 'Promoção';
+                card.appendChild(badge);
+            }
+
+            const wishWrap = document.createElement('button');
+            wishWrap.type = 'button';
+            wishWrap.className = 'wishlist-heart';
+            wishWrap.style.cssText = 'position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,0.9);cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;';
+            const wishlist = getWishlist();
+            const isInWishlist = wishlist.some(x => x.id === product.id);
+            wishWrap.innerHTML = '<i class="fas fa-heart" style="color:' + (isInWishlist ? '#e31e24' : '#999') + ';"></i>';
+            wishWrap.onclick = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                let list = getWishlist();
+                if (list.some(x => x.id === product.id)) {
+                    list = list.filter(x => x.id !== product.id);
+                } else {
+                    list.push({ id: product.id, name: product.name, price: product.price, image_url: product.image_url });
+                }
+                setWishlist(list);
+                wishWrap.querySelector('i').style.color = list.some(x => x.id === product.id) ? '#e31e24' : '#999';
+            };
+            card.appendChild(wishWrap);
+
+            const img = document.createElement('img');
+            img.src = product.image_url || 'assets/strawberries.jpg';
+            img.alt = product.name;
+            img.style.touchAction = 'manipulation';
+            card.appendChild(img);
+
+            const info = document.createElement('div');
+            info.className = 'product-info';
+
+            const title = document.createElement('h3');
+            title.textContent = product.name;
+            info.appendChild(title);
+
+            const priceP = document.createElement('p');
+            priceP.className = 'price';
+            const priceText = `€${Number(product.price || 0).toFixed(2)}`;
+            if (product.on_sale && product.old_price) {
+                priceP.innerHTML = `${priceText} <span>€${Number(product.old_price).toFixed(2)}</span>`;
+            } else {
+                priceP.textContent = priceText;
+            }
+            info.appendChild(priceP);
+
+            const footer = document.createElement('div');
+            footer.className = 'card-footer';
+
+            const btn = document.createElement('button');
+            btn.className = 'add-to-cart add-to-cart-btn';
+            btn.setAttribute('data-price', String(product.price || 0));
+            btn.setAttribute('data-product-id', product.id);
+
+            if (inStock) {
+                btn.textContent = 'Adicionar';
+            } else {
+                btn.textContent = 'Esgotado';
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+                btn.style.cursor = 'default';
+            }
+
+            footer.appendChild(btn);
+            info.appendChild(footer);
+            card.appendChild(info);
+
+            card.addEventListener('click', function (e) {
+                if (e.target.closest('button') || e.target.closest('.wishlist-heart')) return;
+                if (window.openProductModal) window.openProductModal(product);
+            });
+
+            return card;
+        }
+
+        async function loadProducts() {
+            const grid = document.getElementById('productGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('id, name, price, stock_level, category, image_url, on_sale, old_price')
+                    .order('name', { ascending: true });
+
+                if (error) throw error;
+
+                (data || []).forEach(p => {
+                    grid.appendChild(createProductCard(p));
+                });
+
+                // Wire up add-to-cart for newly created buttons
+                if (window.initAddToCartButtons) {
+                    window.initAddToCartButtons();
+                }
+                if (window.initCategoryFilters) {
+                    window.initCategoryFilters();
+                }
+            } catch (err) {
+                console.error('Erro ao carregar produtos do Supabase:', err);
+                const fallback = document.createElement('p');
+                fallback.textContent = 'Não foi possível carregar os produtos neste momento.';
+                grid.appendChild(fallback);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+        });
+    </script>
+
+    <section id="checkout" class="checkout-section" style="display:none;">
+        <div class="checkout-content">
+            <h2>Your Cart</h2>
+            <ul id="cartItems"></ul>
+            <button id="closeCheckout" style="margin-top:20px;">Close</button>
+            <button id="proceedCheckoutBtn" style="background:#4a6d1a;color:#fff;border:none;border-radius:20px;padding:12px 32px;font-weight:bold;margin-top:20px;">Proceed to Checkout</button>
+        </div>
+    </section>
+</body>
+</html>

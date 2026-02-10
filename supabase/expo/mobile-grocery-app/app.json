@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": ".tmp-expo",
-    "slug": ".tmp-expo",
+    "name": "mobile-grocery-app",
+    "slug": "mobile-grocery-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

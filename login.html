@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d7a32">
+    <title>Login | Braga Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #fff; font-family: 'Inter', sans-serif; }
+        .login-container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px; }
+        .login-container h2 { color: #4a6d1a; margin-bottom: 24px; }
+        .login-container label { font-weight: bold; color: #333; margin-top: 12px; display: block; }
+        .login-container input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; margin-top: 6px; margin-bottom: 16px; }
+        .login-container button { background: #4a6d1a; color: #fff; border: none; border-radius: 20px; padding: 12px 32px; font-weight: bold; width: 100%; margin-top: 12px; }
+        .login-container .signup-link { display: block; margin-top: 18px; text-align: center; color: #4a6d1a; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Entrar</h2>
+        <form id="loginForm">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+            <button type="submit" id="loginBtn">Entrar</button>
+        </form>
+        <div id="loginMessage" style="margin-top:16px;padding:12px;border-radius:8px;display:none;"></div>
+        <a href="signup.html" class="signup-link">Ainda não tem conta? Registe-se</a>
+    </div>
+    <script type="module">
+        import { supabase, ADMIN_EMAILS } from './supabaseConfig.js';
+
+        const form = document.getElementById('loginForm');
+        const btn = document.getElementById('loginBtn');
+        const msgEl = document.getElementById('loginMessage');
+
+        function showMessage(text, isError) {
+            if (!msgEl) return;
+            msgEl.style.display = 'block';
+            msgEl.style.background = isError ? '#fee' : '#e8f5e9';
+            msgEl.style.color = isError ? '#c00' : '#2d7a32';
+            msgEl.textContent = text;
+        }
+
+        form.onsubmit = async function (e) {
+            e.preventDefault();
+            if (btn) { btn.disabled = true; btn.textContent = 'A entrar...'; }
+            if (msgEl) msgEl.style.display = 'none';
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                if (error) {
+                    showMessage('Erro ao entrar: ' + error.message, true);
+                    if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+                    return;
+                }
+
+                localStorage.setItem('userIsLoggedIn', 'true');
+                const rawUser = localStorage.getItem('bragaBazaarUser');
+                if (!rawUser) {
+                    localStorage.setItem('bragaBazaarUser', JSON.stringify({ email }));
+                }
+
+                // Admin: either user_metadata.role === 'admin' in Supabase, or email in ADMIN_EMAILS (supabaseConfig.js)
+                const role = data.user?.user_metadata?.role;
+                const emailLower = (data.user?.email || '').toLowerCase();
+                const isAdminByEmail = Array.isArray(ADMIN_EMAILS) && ADMIN_EMAILS.some(e => (e || '').toLowerCase() === emailLower);
+                if (role === 'admin' || isAdminByEmail) {
+                    window.location.href = 'admin.html';
+                    return;
+                }
+
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect');
+                const wantedAdmin = redirect && redirect.startsWith('admin');
+                const next = wantedAdmin ? 'checkout.html' : (redirect || 'checkout.html');
+                window.location.href = next;
+            } catch (err) {
+                console.error(err);
+                showMessage('Erro inesperado. Verifique a ligação. ' + (err?.message || ''), true);
+                if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+            }
+        };
+    </script>
+</body>
+</html>

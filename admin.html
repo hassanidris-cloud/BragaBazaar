@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Braga Bazaar</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-wrapper {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            padding: 24px 28px 32px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .admin-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2d7a32;
+        }
+        .admin-header a {
+            text-decoration: none;
+            font-size: 14px;
+            color: #2d7a32;
+            border: 1px solid #2d7a32;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+        .admin-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .admin-filters select {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .orders-table thead {
+            background: #f1f5f1;
+        }
+        .orders-table th,
+        .orders-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .btn-small {
+            padding: 4px 10px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn-complete {
+            background: #2d7a32;
+            color: #fff;
+        }
+        .btn-complete[disabled] {
+            opacity: 0.5;
+            cursor: default;
+        }
+        .btn-details {
+            background: #f0f0f0;
+            color: #333;
+            margin-left: 6px;
+        }
+        .no-orders {
+            text-align: center;
+            padding: 40px 0 10px;
+            color: #777;
+        }
+        .order-details {
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+        }
+        .order-details h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #2d7a32;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px 30px;
+            margin-bottom: 14px;
+        }
+        .details-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .details-value {
+            color: #222;
+        }
+        .items-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 8px;
+        }
+        .items-list li {
+            padding: 4px 0;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .items-list li:last-child {
+            border-bottom: none;
+        }
+        .admin-products {
+            margin-top: 32px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .admin-products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .admin-products-header h2 {
+            font-size: 18px;
+            color: #2d7a32;
+        }
+        .btn-primary {
+            background: #2d7a32;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .product-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px 20px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+        .product-form label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+        }
+        .product-form input,
+        .product-form select {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+        .product-form .full-width {
+            grid-column: 1 / -1;
+        }
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .products-table th,
+        .products-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .stock-ok {
+            color: #2d7a32;
+            font-weight: 600;
+        }
+        .stock-out {
+            color: #e31e24;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .admin-wrapper {
+                margin: 20px 10px;
+                padding: 16px;
+            }
+            .orders-table th,
+            .orders-table td {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="adminLoading" style="max-width:400px;margin:60px auto;padding:24px;text-align:center;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+        <p style="color:#2d7a32;font-weight:600;">A verificar sessão...</p>
+        <p style="margin-top:12px;font-size:14px;color:#666;">Se não for redirecionado, <a href="login.html">entre aqui</a> ou <a href="index.html">volte à loja</a>.</p>
+        <p style="margin-top:16px;font-size:12px;color:#999;">Abra o site através de um servidor web (não por file://) para a área de admin funcionar.</p>
+    </div>
+    <div class="admin-wrapper" id="adminWrapper" style="display:none;">
+        <div class="admin-header">
+            <h1>Área de Admin - Encomendas</h1>
+            <a href="index.html"><i class="fas fa-arrow-left"></i> Voltar à loja</a>
+        </div>
+
+        <div class="admin-filters">
+            <div>
+                <label for="statusFilter"><strong>Filtrar por estado:</strong></label>
+                <select id="statusFilter">
+                    <option value="all">Todas</option>
+                    <option value="pending">Por preparar</option>
+                    <option value="completed">Concluídas</option>
+                </select>
+            </div>
+            <small style="color:#777;">Os dados são guardados apenas neste navegador (localStorage).</small>
+        </div>
+
+        <div id="ordersContainer">
+            <p class="no-orders" id="noOrdersMsg" style="display:none;">Ainda não existem encomendas.</p>
+            <table class="orders-table" id="ordersTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Pagamento</th>
+                        <th>Estado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTbody"></tbody>
+            </table>
+        </div>
+
+        <div class="order-details" id="orderDetails" style="display:none;">
+            <h2>Detalhes da Encomenda</h2>
+            <div class="details-grid" id="detailsGrid"></div>
+            <div>
+                <strong>Artigos:</strong>
+                <ul class="items-list" id="itemsList"></ul>
+            </div>
+        </div>
+
+        <div class="admin-products" id="adminProducts">
+            <div class="admin-products-header">
+                <h2>Produtos</h2>
+                <button type="button" class="btn-primary" id="resetProductFormBtn">Novo produto</button>
+            </div>
+            <form id="productForm" class="product-form">
+                <input type="hidden" id="productId">
+                <div>
+                    <label for="productName">Nome</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div>
+                    <label for="productCategory">Categoria</label>
+                    <input type="text" id="productCategory" placeholder="ex: fruits, bakery" required>
+                </div>
+                <div>
+                    <label for="productPrice">Preço (€)</label>
+                    <input type="number" step="0.01" min="0" id="productPrice" required>
+                </div>
+                <div>
+                    <label for="productStock">Stock</label>
+                    <input type="number" min="0" id="productStock" required>
+                </div>
+                <div class="full-width">
+                    <label for="productImage">URL da imagem</label>
+                    <input type="text" id="productImage" placeholder="https://...">
+                </div>
+                <div>
+                    <label for="productOnSale">Em promoção?</label>
+                    <select id="productOnSale">
+                        <option value="false">Não</option>
+                        <option value="true">Sim</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="productOldPrice">Preço antigo (€)</label>
+                    <input type="number" step="0.01" min="0" id="productOldPrice">
+                </div>
+                <div class="full-width">
+                    <button type="submit" class="btn-primary" id="productSubmitBtn">Guardar produto</button>
+                </div>
+            </form>
+
+            <table class="products-table" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        <th>Preço</th>
+                        <th>Stock</th>
+                        <th>Promoção</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabaseConfig.js';
+
+        let orders = [];
+        let products = [];
+        let currentFilter = 'all';
+        let selectedOrderId = null;
+        let supabaseAvailable = false;
+
+        async function loadOrders() {
+            // First try to load from Supabase
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select(`
+                        id,
+                        client_order_id,
+                        created_at,
+                        full_name,
+                        email,
+                        phone,
+                        address,
+                        postal,
+                        city,
+                        location,
+                        country,
+                        payment,
+                        instructions,
+                        total,
+                        status
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    throw error;
+                }
+
+                supabaseAvailable = true;
+
+                // Map Supabase rows into the same structure used in the rest of the page
+                orders = (data || []).map(row => ({
+                    id: row.client_order_id || row.id,
+                    supabaseId: row.id,
+                    createdAt: row.created_at,
+                    customer: {
+                        fullName: row.full_name,
+                        email: row.email,
+                        phone: row.phone,
+                        address: row.address,
+                        postal: row.postal,
+                        city: row.city,
+                        location: row.location,
+                        country: row.country
+                    },
+                    payment: row.payment,
+                    instructions: row.instructions,
+                    items: [], // Will be loaded separately if needed
+                    total: row.total,
+                    status: row.status || 'pending'
+                }));
+
+                // Load items for all orders in one go
+                if (orders.length) {
+                    const { data: itemsData, error: itemsError } = await supabase
+                        .from('order_items')
+                        .select('order_id, name, price, qty');
+                    if (!itemsError && itemsData) {
+                        orders.forEach(order => {
+                            order.items = itemsData
+                                .filter(it => it.order_id === order.supabaseId)
+                                .map(it => ({
+                                    name: it.name,
+                                    price: it.price,
+                                    qty: it.qty
+                                }));
+                        });
+                    }
+                }
+                return;
+            } catch (err) {
+                console.warn('Falha ao carregar encomendas do Supabase, a usar localStorage como fallback.', err);
+            }
+
+            // Fallback: use localStorage if Supabase is not available
+            supabaseAvailable = false;
+            const raw = localStorage.getItem('bragaBazaarOrders');
+            if (!raw) {
+                orders = [];
+                return;
+            }
+            try {
+                orders = JSON.parse(raw) || [];
+            } catch {
+                orders = [];
+            }
+            // Ensure each order has a status
+            orders.forEach(o => {
+                if (!o.status) {
+                    o.status = 'pending';
+                }
+            });
+        }
+
+        function saveOrders() {
+            localStorage.setItem('bragaBazaarOrders', JSON.stringify(orders));
+        }
+
+        function formatDate(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            if (Number.isNaN(d.getTime())) return iso;
+            return d.toLocaleString('pt-PT', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatCurrency(value) {
+            return '€' + (Number(value) || 0).toFixed(2);
+        }
+
+        async function loadProducts() {
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('id, name, price, stock_level, category, image_url, on_sale, old_price')
+                    .order('name', { ascending: true });
+                if (error) throw error;
+                products = data || [];
+            } catch (err) {
+                console.error('Erro ao carregar produtos do Supabase:', err);
+                products = [];
+            }
+        }
+
+        function renderProducts() {
+            const tbody = document.getElementById('productsTbody');
+            tbody.innerHTML = '';
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                const inStock = (p.stock_level || 0) > 0;
+                tr.innerHTML = `
+                    <td>${p.name}</td>
+                    <td>${p.category || ''}</td>
+                    <td>${formatCurrency(p.price)}</td>
+                    <td><span class="${inStock ? 'stock-ok' : 'stock-out'}">${p.stock_level || 0}</span></td>
+                    <td>${p.on_sale ? (p.old_price ? 'Sim (' + formatCurrency(p.old_price) + ')' : 'Sim') : 'Não'}</td>
+                    <td>
+                        <button class="btn-small btn-details" data-product-action="edit" data-id="${p.id}">Editar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function resetProductForm() {
+            document.getElementById('productId').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('productCategory').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productStock').value = '';
+            document.getElementById('productImage').value = '';
+            document.getElementById('productOnSale').value = 'false';
+            document.getElementById('productOldPrice').value = '';
+            document.getElementById('productSubmitBtn').innerText = 'Guardar produto';
+        }
+
+        function fillProductForm(productId) {
+            const p = products.find(x => x.id === productId);
+            if (!p) return;
+            document.getElementById('productId').value = p.id;
+            document.getElementById('productName').value = p.name || '';
+            document.getElementById('productCategory').value = p.category || '';
+            document.getElementById('productPrice').value = p.price || '';
+            document.getElementById('productStock').value = p.stock_level || 0;
+            document.getElementById('productImage').value = p.image_url || '';
+            document.getElementById('productOnSale').value = p.on_sale ? 'true' : 'false';
+            document.getElementById('productOldPrice').value = p.old_price || '';
+            document.getElementById('productSubmitBtn').innerText = 'Atualizar produto';
+        }
+
+        function renderOrders() {
+            const tbody = document.getElementById('ordersTbody');
+            const table = document.getElementById('ordersTable');
+            const noOrdersMsg = document.getElementById('noOrdersMsg');
+            tbody.innerHTML = '';
+
+            const filtered = orders.filter(o => {
+                if (currentFilter === 'all') return true;
+                return (o.status || 'pending') === currentFilter;
+            });
+
+            if (!filtered.length) {
+                table.style.display = 'none';
+                noOrdersMsg.style.display = 'block';
+                document.getElementById('orderDetails').style.display = 'none';
+                return;
+            }
+
+            table.style.display = 'table';
+            noOrdersMsg.style.display = 'none';
+
+            filtered
+                .slice()
+                .sort((a, b) => b.id - a.id)
+                .forEach(order => {
+                    const tr = document.createElement('tr');
+                    const status = order.status || 'pending';
+                    tr.innerHTML = `
+                        <td>${order.id}</td>
+                        <td>${formatDate(order.createdAt)}</td>
+                        <td>${order.customer && order.customer.fullName ? order.customer.fullName : ''}</td>
+                        <td>${formatCurrency(order.total)}</td>
+                        <td>${order.payment || '-'}</td>
+                        <td>
+                            <span class="badge ${status === 'completed' ? 'badge-completed' : 'badge-pending'}">
+                                ${status === 'completed' ? 'Concluída' : 'Por preparar'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-small btn-complete" data-action="complete" data-id="${order.id}" ${status === 'completed' ? 'disabled' : ''}>
+                                Marcar como concluída
+                            </button>
+                            <button class="btn-small btn-details" data-action="details" data-id="${order.id}">
+                                Ver detalhes
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+        }
+
+        function renderOrderDetails(orderId) {
+            const order = orders.find(o => String(o.id) === String(orderId));
+            const detailsSection = document.getElementById('orderDetails');
+            const grid = document.getElementById('detailsGrid');
+            const itemsList = document.getElementById('itemsList');
+
+            if (!order) {
+                detailsSection.style.display = 'none';
+                return;
+            }
+
+            selectedOrderId = orderId;
+            detailsSection.style.display = 'block';
+
+            const c = order.customer || {};
+            grid.innerHTML = `
+                <div>
+                    <div class="details-label">Nome</div>
+                    <div class="details-value">${c.fullName || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">Email</div>
+                    <div class="details-value">${c.email || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">Telefone</div>
+                    <div class="details-value">${c.phone || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">Morada</div>
+                    <div class="details-value">${c.address || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">Código Postal</div>
+                    <div class="details-value">${c.postal || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">Cidade</div>
+                    <div class="details-value">${c.city || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">Freguesia / Localização</div>
+                    <div class="details-value">${c.location || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">País</div>
+                    <div class="details-value">${c.country || ''}</div>
+                </div>
+                <div>
+                    <div class="details-label">Pagamento</div>
+                    <div class="details-value">${order.payment || '-'}</div>
+                </div>
+                <div>
+                    <div class="details-label">Notas de Entrega</div>
+                    <div class="details-value">${order.instructions || '-'}</div>
+                </div>
+                <div>
+                    <div class="details-label">Total</div>
+                    <div class="details-value">${formatCurrency(order.total)}</div>
+                </div>
+            `;
+
+            itemsList.innerHTML = '';
+            (order.items || []).forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name} x${item.qty} - ${formatCurrency(item.price * item.qty)}`;
+                itemsList.appendChild(li);
+            });
+        }
+
+        async function handleTableClick(e) {
+            const btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+            const action = btn.getAttribute('data-action');
+            const id = btn.getAttribute('data-id');
+            if (!id) return;
+
+            if (action === 'complete') {
+                const order = orders.find(o => String(o.id) === String(id));
+                if (order) {
+                    order.status = 'completed';
+
+                    // Update Supabase if available
+                    if (supabaseAvailable && order.supabaseId) {
+                        try {
+                            const { error } = await supabase
+                                .from('orders')
+                                .update({ status: 'completed' })
+                                .eq('id', order.supabaseId);
+                            if (error) {
+                                console.error('Erro ao atualizar estado da encomenda no Supabase:', error);
+                            }
+                        } catch (err) {
+                            console.error('Erro inesperado ao atualizar encomenda no Supabase:', err);
+                        }
+                    } else {
+                        // Fallback: persist new status in localStorage
+                        saveOrders();
+                    }
+
+                    renderOrders();
+                    if (selectedOrderId === id) {
+                        renderOrderDetails(id);
+                    }
+                }
+            } else if (action === 'details') {
+                renderOrderDetails(id);
+            }
+        }
+
+        function handleProductsTableClick(e) {
+            const btn = e.target.closest('button[data-product-action]');
+            if (!btn) return;
+            const id = btn.getAttribute('data-id');
+            if (!id) return;
+            fillProductForm(id);
+        }
+
+        async function handleProductFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('productId').value || null;
+            const name = document.getElementById('productName').value.trim();
+            const category = document.getElementById('productCategory').value.trim();
+            const price = parseFloat(document.getElementById('productPrice').value || '0');
+            const stock = parseInt(document.getElementById('productStock').value || '0', 10);
+            const image = document.getElementById('productImage').value.trim() || null;
+            const onSale = document.getElementById('productOnSale').value === 'true';
+            const oldPriceRaw = document.getElementById('productOldPrice').value;
+            const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
+
+            const payload = {
+                name,
+                category,
+                price,
+                stock_level: stock,
+                image_url: image,
+                on_sale: onSale,
+                old_price: oldPrice,
+                nutritional_info: {}
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabase
+                        .from('products')
+                        .update(payload)
+                        .eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('products')
+                        .insert(payload);
+                    if (error) throw error;
+                }
+                await loadProducts();
+                renderProducts();
+                resetProductForm();
+            } catch (err) {
+                console.error('Erro ao guardar produto no Supabase:', err);
+                alert('Não foi possível guardar o produto. Veja a consola para mais detalhes.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Require a Supabase-authenticated user to view admin area
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                const session = data && data.session;
+                if (error || !session) {
+                    // Not logged in: send to login page, then back to admin after login
+                    window.location.href = 'login.html?redirect=admin.html';
+                    return;
+                }
+
+                // If you want to restrict to a specific email/domain, uncomment and adjust:
+                // const email = session.user.email || '';
+                // if (!email.endsWith('@bragabazaar.com')) {
+                //     alert('Sem acesso à área de administração.');
+                //     window.location.href = 'index.html';
+                //     return;
+                // }
+
+                // Show admin UI once authenticated
+                const loadingEl = document.getElementById('adminLoading');
+                const wrapper = document.getElementById('adminWrapper');
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (wrapper) wrapper.style.display = 'block';
+            } catch (err) {
+                console.error('Erro ao verificar sessão do Supabase:', err);
+                const loadingEl = document.getElementById('adminLoading');
+                if (loadingEl) {
+                    loadingEl.innerHTML = '<p style="color:#c00;">Não foi possível verificar o acesso.</p><p style="margin-top:12px;"><a href="login.html">Entrar</a> | <a href="index.html">Voltar à loja</a></p>';
+                } else {
+                    window.location.href = 'login.html';
+                }
+                return;
+            }
+
+            await loadOrders();
+            renderOrders();
+            await loadProducts();
+            renderProducts();
+
+            document.getElementById('ordersTbody').addEventListener('click', handleTableClick);
+            document.getElementById('statusFilter').addEventListener('change', (e) => {
+                currentFilter = e.target.value;
+                renderOrders();
+                if (selectedOrderId) {
+                    renderOrderDetails(selectedOrderId);
+                }
+            });
+
+            document.getElementById('productsTbody').addEventListener('click', handleProductsTableClick);
+            document.getElementById('productForm').addEventListener('submit', handleProductFormSubmit);
+            document.getElementById('resetProductFormBtn').addEventListener('click', resetProductForm);
+        });
+    </script>
+</body>
+</html>
+

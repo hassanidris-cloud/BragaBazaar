@@ -43,6 +43,8 @@ create table if not exists profiles (
   preferences text[] not null default '{}'
 );
 
+-- Products: id must be UUID (admin sends id on insert). Categories: fruits, bakery, meat, eggs, drinks, promotions
+-- unit: 'unit' (per item) or 'kg' (per kg). price_per_kg used for fruits/vegetables.
 create table if not exists products (
   id uuid primary key,
   name text not null,
@@ -50,8 +52,10 @@ create table if not exists products (
   stock_level integer not null default 0,
   category text not null,
   image_url text,
-  nutritional_info jsonb not null,
-  -- Pingo Doce-style sale prices & Loyalty
+  description text,
+  unit text default 'unit',
+  price_per_kg numeric(10, 2),
+  nutritional_info jsonb not null default '{}',
   on_sale boolean default false,
   old_price numeric(10, 2),
   member_points_earned integer default 5

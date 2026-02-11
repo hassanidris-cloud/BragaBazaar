@@ -102,6 +102,14 @@
             color: #333;
             margin-left: 6px;
         }
+        .btn-remove {
+            background: #dc3545;
+            color: #fff;
+            margin-left: 6px;
+        }
+        .btn-remove:hover {
+            background: #c82333;
+        }
         .no-orders {
             text-align: center;
             padding: 40px 0 10px;
@@ -277,7 +285,10 @@
         <div class="admin-products" id="adminProducts">
             <div class="admin-products-header">
                 <h2>Produtos</h2>
-                <button type="button" class="btn-primary" id="resetProductFormBtn">Novo produto</button>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <a href="index.html" target="_blank" style="font-size:13px;color:#2d7a32;font-weight:600;text-decoration:none;">Ver na página inicial</a>
+                    <button type="button" class="btn-primary" id="resetProductFormBtn">Novo produto</button>
+                </div>
             </div>
             <form id="productForm" class="product-form">
                 <input type="hidden" id="productId">
@@ -287,7 +298,14 @@
                 </div>
                 <div>
                     <label for="productCategory">Categoria</label>
-                    <input type="text" id="productCategory" placeholder="ex: fruits, bakery" required>
+                    <select id="productCategory" required>
+                        <option value="fruits">Frutas e Vegetais</option>
+                        <option value="bakery">Padaria e Pastelaria</option>
+                        <option value="meat">Talho</option>
+                        <option value="eggs">Ovos e Lacticínios</option>
+                        <option value="drinks">Bebidas</option>
+                        <option value="promotions">Promoções</option>
+                    </select>
                 </div>
                 <div>
                     <label for="productPrice">Preço (€)</label>
@@ -296,6 +314,23 @@
                 <div>
                     <label for="productStock">Stock</label>
                     <input type="number" min="0" id="productStock" required>
+                </div>
+                <div class="full-width">
+                    <label for="productDescription">Descrição</label>
+                    <textarea id="productDescription" rows="3" placeholder="Descrição do produto" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px;resize:vertical;"></textarea>
+                </div>
+                <div id="productPerKgFields" class="full-width" style="display:none;grid-column:1/-1;">
+                    <div>
+                        <label for="productUnit">Unidade</label>
+                        <select id="productUnit">
+                            <option value="unit">Unidade (por item)</option>
+                            <option value="kg">Kg (por peso)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="productPricePerKg">Preço por kg (€)</label>
+                        <input type="number" step="0.01" min="0" id="productPricePerKg" placeholder="Ex: 2.99">
+                    </div>
                 </div>
                 <div class="full-width">
                     <label for="productImage">URL da imagem</label>
@@ -461,7 +496,7 @@
             try {
                 const { data, error } = await supabase
                     .from('products')
-                    .select('id, name, price, stock_level, category, image_url, on_sale, old_price')
+                    .select('id, name, price, stock_level, category, image_url, on_sale, old_price, description, unit, price_per_kg')
                     .order('name', { ascending: true });
                 if (error) throw error;
                 products = data || [];
@@ -477,14 +512,17 @@
             products.forEach(p => {
                 const tr = document.createElement('tr');
                 const inStock = (p.stock_level || 0) > 0;
+                const isPerKg = p.category === 'fruits' && p.unit === 'kg';
+                const priceDisplay = (isPerKg && (p.price_per_kg != null)) ? formatCurrency(p.price_per_kg) + '/kg' : formatCurrency(p.price);
                 tr.innerHTML = `
                     <td>${p.name}</td>
                     <td>${p.category || ''}</td>
-                    <td>${formatCurrency(p.price)}</td>
+                    <td>${priceDisplay}</td>
                     <td><span class="${inStock ? 'stock-ok' : 'stock-out'}">${p.stock_level || 0}</span></td>
                     <td>${p.on_sale ? (p.old_price ? 'Sim (' + formatCurrency(p.old_price) + ')' : 'Sim') : 'Não'}</td>
                     <td>
-                        <button class="btn-small btn-details" data-product-action="edit" data-id="${p.id}">Editar</button>
+                        <button type="button" class="btn-small btn-details" data-product-action="edit" data-id="${p.id}">Editar</button>
+                        <button type="button" class="btn-small btn-remove" data-product-action="remove" data-id="${p.id}" data-name="${(p.name || '').replace(/"/g, '&quot;')}">Remover</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -494,27 +532,37 @@
         function resetProductForm() {
             document.getElementById('productId').value = '';
             document.getElementById('productName').value = '';
-            document.getElementById('productCategory').value = '';
+            document.getElementById('productCategory').value = 'fruits';
             document.getElementById('productPrice').value = '';
             document.getElementById('productStock').value = '';
+            document.getElementById('productDescription').value = '';
+            document.getElementById('productUnit').value = 'unit';
+            document.getElementById('productPricePerKg').value = '';
             document.getElementById('productImage').value = '';
             document.getElementById('productOnSale').value = 'false';
             document.getElementById('productOldPrice').value = '';
             document.getElementById('productSubmitBtn').innerText = 'Guardar produto';
+            if (typeof togglePerKgFields === 'function') togglePerKgFields();
         }
 
         function fillProductForm(productId) {
-            const p = products.find(x => x.id === productId);
+            const idStr = String(productId).trim();
+            const p = products.find(x => String(x.id).trim() === idStr);
             if (!p) return;
             document.getElementById('productId').value = p.id;
             document.getElementById('productName').value = p.name || '';
             document.getElementById('productCategory').value = p.category || '';
-            document.getElementById('productPrice').value = p.price || '';
-            document.getElementById('productStock').value = p.stock_level || 0;
+            document.getElementById('productPrice').value = p.price ?? '';
+            document.getElementById('productStock').value = p.stock_level ?? '';
+            document.getElementById('productDescription').value = p.description || '';
+            document.getElementById('productUnit').value = p.unit || 'unit';
+            document.getElementById('productPricePerKg').value = p.price_per_kg != null ? p.price_per_kg : '';
             document.getElementById('productImage').value = p.image_url || '';
+            if (typeof togglePerKgFields === 'function') togglePerKgFields();
             document.getElementById('productOnSale').value = p.on_sale ? 'true' : 'false';
-            document.getElementById('productOldPrice').value = p.old_price || '';
+            document.getElementById('productOldPrice').value = p.old_price ?? '';
             document.getElementById('productSubmitBtn').innerText = 'Atualizar produto';
+            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function renderOrders() {
@@ -678,11 +726,27 @@
             }
         }
 
-        function handleProductsTableClick(e) {
+        async function handleProductsTableClick(e) {
             const btn = e.target.closest('button[data-product-action]');
             if (!btn) return;
+            const action = btn.getAttribute('data-product-action');
             const id = btn.getAttribute('data-id');
             if (!id) return;
+            if (action === 'remove') {
+                const name = btn.getAttribute('data-name') || id;
+                if (!confirm('Remover o produto "' + name + '"? Esta ação não pode ser desfeita.')) return;
+                try {
+                    const { error } = await supabase.from('products').delete().eq('id', id);
+                    if (error) throw error;
+                    await loadProducts();
+                    renderProducts();
+                    if (document.getElementById('productId').value === id) resetProductForm();
+                } catch (err) {
+                    console.error('Erro ao remover produto:', err);
+                    alert('Não foi possível remover o produto.\n\n' + (err && err.message ? err.message : String(err)));
+                }
+                return;
+            }
             fillProductForm(id);
         }
 
@@ -693,20 +757,28 @@
             const category = document.getElementById('productCategory').value.trim();
             const price = parseFloat(document.getElementById('productPrice').value || '0');
             const stock = parseInt(document.getElementById('productStock').value || '0', 10);
+            const description = document.getElementById('productDescription').value.trim() || null;
+            const unit = document.getElementById('productUnit').value || 'unit';
+            const pricePerKgRaw = document.getElementById('productPricePerKg').value;
+            const pricePerKg = pricePerKgRaw ? parseFloat(pricePerKgRaw) : null;
             const image = document.getElementById('productImage').value.trim() || null;
             const onSale = document.getElementById('productOnSale').value === 'true';
             const oldPriceRaw = document.getElementById('productOldPrice').value;
             const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
 
+            const isFruits = category === 'fruits';
             const payload = {
                 name,
                 category,
-                price,
+                price: isFruits && unit === 'kg' && pricePerKg != null ? pricePerKg : price,
                 stock_level: stock,
                 image_url: image,
                 on_sale: onSale,
                 old_price: oldPrice,
-                nutritional_info: {}
+                nutritional_info: {},
+                description,
+                unit: isFruits ? unit : 'unit',
+                price_per_kg: isFruits ? pricePerKg : null
             };
 
             try {
@@ -717,6 +789,7 @@
                         .eq('id', id);
                     if (error) throw error;
                 } else {
+                    payload.id = crypto.randomUUID();
                     const { error } = await supabase
                         .from('products')
                         .insert(payload);
@@ -725,9 +798,12 @@
                 await loadProducts();
                 renderProducts();
                 resetProductForm();
+                alert('Produto guardado. Já aparece na página inicial.\n\nClique em OK e abra a página inicial para ver o produto.');
+                window.productJustSaved = true;
             } catch (err) {
                 console.error('Erro ao guardar produto no Supabase:', err);
-                alert('Não foi possível guardar o produto. Veja a consola para mais detalhes.');
+                const msg = (err && err.message) ? err.message : String(err);
+                alert('Não foi possível guardar o produto.\n\n' + msg + '\n\n1. Abra o Supabase Dashboard → SQL Editor.\n2. Execute o ficheiro supabase/products_setup.sql (copia todo o conteúdo e cola no Editor, depois Run).\n3. Confirme que está logged in na área de admin e tente de novo.');
             }
         }
 
@@ -783,6 +859,19 @@
             document.getElementById('productsTbody').addEventListener('click', handleProductsTableClick);
             document.getElementById('productForm').addEventListener('submit', handleProductFormSubmit);
             document.getElementById('resetProductFormBtn').addEventListener('click', resetProductForm);
+
+            // Show Unidade / Preço por kg only for Frutas e Vegetais
+            function togglePerKgFields() {
+                const cat = document.getElementById('productCategory').value;
+                const block = document.getElementById('productPerKgFields');
+                if (block) block.style.display = cat === 'fruits' ? '' : 'none';
+                if (cat !== 'fruits') {
+                    document.getElementById('productUnit').value = 'unit';
+                    document.getElementById('productPricePerKg').value = '';
+                }
+            }
+            document.getElementById('productCategory').addEventListener('change', togglePerKgFields);
+            togglePerKgFields();
         });
     </script>
 </body>

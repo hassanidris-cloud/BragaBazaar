@@ -23,6 +23,20 @@ Your site will be live at `https://your-project.vercel.app`.
 3. Log in if asked, then follow the prompts. Link to an existing project (e.g. with project ID `prj_p8c5OfWaRe5dsHea2ucEP4fCdd5B`) when asked, or create a new one.
 4. To deploy to production: `vercel --prod`
 
+## Update the site on Vercel (redeploy)
+
+After you change the code, push to your Git repo so Vercel picks up the new version:
+
+```bash
+git add .
+git commit -m "Your message"
+git push origin master
+```
+
+If your Vercel project is connected to the same repo, it will **automatically redeploy**. You can also trigger a redeploy from the Vercel dashboard: open your project → **Deployments** → **Redeploy** on the latest deployment.
+
+To deploy from the CLI without Git: run `vercel --prod` in the project folder.
+
 ## After deployment
 
 - Your site will be served over **HTTPS** (required for Supabase auth and a good PWA experience).

@@ -7,32 +7,43 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style type="text/css">.main-header .site-nav a.site-nav-icon-only,.main-header .site-nav a.site-nav-icon-only i,.main-header .site-nav a.site-nav-icon-only .site-nav-cart-total{color:#000!important}.main-header .site-nav a.site-nav-icon-only:link,.main-header .site-nav a.site-nav-icon-only:visited,.main-header .site-nav a.site-nav-icon-only:hover,.main-header .site-nav a.site-nav-icon-only:focus{color:#000!important}.main-header .site-nav a.site-nav-icon-only:hover i,.main-header .site-nav a.site-nav-icon-only:focus i{color:#000!important}</style>
 </head>
 <body>
     <aside class="sidebar-menu" id="sidebar">
         <div class="sidebar-header">
-            <button onclick="toggleSidebar()"><i class="fas fa-bars"></i> Fechar menu</button>
+            <button onclick="toggleSidebar()" type="button" aria-label="Close menu"><i class="fas fa-times"></i> Close</button>
         </div>
-        <nav class="sidebar-nav">
-            <a href="javascript:void(0)" onclick="switchCategory('fruits', 'Frutas e Vegetais')" class="nav-item" data-category="fruits">
-                <i class="fas fa-apple-alt"></i> <span>Frutas</span>
-            </a>
-            <a href="javascript:void(0)" onclick="switchCategory('bakery', 'Padaria e Pastelaria')" class="nav-item" data-category="bakery">
-                <i class="fas fa-bread-slice"></i> <span>Padaria</span>
-            </a>
-            <a href="javascript:void(0)" onclick="switchCategory('eggs', 'Ovos')" class="nav-item" data-category="eggs">
-                <i class="fas fa-egg"></i> <span>Ovos</span>
-            </a>
+        <nav class="sidebar-nav" aria-label="Product categories">
+            <a href="javascript:void(0)" onclick="switchCategory('fruits', 'Frutas e Vegetais')" class="nav-item" data-category="fruits"><i class="fas fa-apple-alt"></i> <span>Fruits &amp; Vegetables</span></a>
+            <a href="javascript:void(0)" onclick="switchCategory('bakery', 'Padaria e Pastelaria')" class="nav-item" data-category="bakery"><i class="fas fa-bread-slice"></i> <span>Bakery &amp; Pastry</span></a>
+            <a href="javascript:void(0)" onclick="switchCategory('meat', 'Talho')" class="nav-item" data-category="meat"><i class="fas fa-drumstick-bite"></i> <span>Butcher</span></a>
+            <a href="javascript:void(0)" onclick="switchCategory('eggs', 'Ovos e Lacticínios')" class="nav-item" data-category="eggs"><i class="fas fa-egg"></i> <span>Eggs &amp; Dairy</span></a>
+            <a href="javascript:void(0)" onclick="switchCategory('drinks', 'Bebidas')" class="nav-item" data-category="drinks"><i class="fas fa-wine-bottle"></i> <span>Drinks</span></a>
+            <a href="javascript:void(0)" onclick="switchCategory('promotions', 'Promoções')" class="nav-item" data-category="promotions"><i class="fas fa-percentage"></i> <span>Promotions</span></a>
         </nav>
     </aside>
 
     <div id="main-content">
-        <header class="category-header" style="display:flex;justify-content:space-between;align-items:center;padding:20px 5%;max-width:1400px;margin:0 auto;">
-            <h1 class="breadcrumb">Produtos / <span id="categoryName">Frutas e Vegetais</span></h1>
-            <a href="index.html" style="text-decoration:none;background:#2d7a32;color:#fff;border-radius:20px;padding:8px 18px;font-size:0.9rem;font-weight:600;">
-                ← Voltar à página inicial
-            </a>
+        <header class="main-header shared-header">
+            <div class="top-nav">
+                <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
+                <form class="search-bar" action="index.html" method="get" role="search">
+                    <input type="search" name="q" placeholder="Search products..." aria-label="Search products">
+                    <button type="submit">Search</button>
+                </form>
+                <nav class="site-nav" aria-label="Main navigation">
+                    <a href="index.html" class="site-nav-icon-only" title="Shop" aria-label="Shop"><i class="fas fa-store"></i></a>
+                    <a href="contact.html" class="site-nav-icon-only" title="Contact" aria-label="Contact"><i class="fas fa-envelope"></i></a>
+                    <a href="account.html" class="site-nav-icon-only" title="My account" aria-label="My account"><i class="fas fa-user"></i></a>
+                    <a href="checkout.html" class="site-nav-icon-only" title="Cart" aria-label="Cart"><i class="fas fa-shopping-cart"></i></a>
+                </nav>
+            </div>
         </header>
+        <div class="category-header" style="display:flex;justify-content:space-between;align-items:center;padding:20px 5%;max-width:1400px;margin:0 auto;">
+            <h1 class="breadcrumb">Products / <span id="categoryName">Fruits &amp; Vegetables</span></h1>
+            <a href="index.html" style="text-decoration:none;background:#2d7a32;color:#fff;border-radius:20px;padding:8px 18px;font-size:0.9rem;font-weight:600;">&larr; Back to shop</a>
+        </div>
         <div class="container" style="padding-top:10px;">
             <div class="product-grid" id="productGrid"></div>
         </div>

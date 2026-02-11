@@ -29,6 +29,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="apple-touch-icon" href="assets/icon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -71,8 +72,8 @@
         </div>
         <aside class="sidebar-menu" id="sidebar">
             <div class="sidebar-header">
-                <button onclick="toggleSidebar()" class="close-btn" type="button" aria-label="Close menu">
-                    <i class="fas fa-arrow-left"></i> <span class="menu-text" data-en="Close menu" data-pt="Fechar menu">Fechar menu</span>
+                <button onclick="toggleSidebar()" class="close-btn sidebar-close-btn" type="button" aria-label="Close menu">
+                    <i class="fas fa-times" aria-hidden="true"></i><span class="menu-text" data-en="Close" data-pt="Fechar">Fechar</span>
                 </button>
             </div>
             <div class="sidebar-search" id="sidebarSearch">
@@ -396,18 +397,24 @@
             const mainContent = document.getElementById('main-content');
             const btnText = document.querySelector('.menu-text');
             const reopenBtn = document.getElementById('menuReopenBtn');
-            if (!sidebar || !mainContent || !btnText) return;
+            if (!sidebar) return;
 
             if (window.innerWidth <= 768) {
                 sidebar.classList.toggle('active');
                 const backdrop = document.getElementById('sidebarBackdrop');
                 if (backdrop) {
                     backdrop.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+                    backdrop.style.pointerEvents = sidebar.classList.contains('active') ? 'auto' : 'none';
                     backdrop.setAttribute('aria-hidden', sidebar.classList.contains('active') ? 'false' : 'true');
                 }
-                if (reopenBtn) reopenBtn.style.display = sidebar.classList.contains('active') ? 'none' : 'flex';
+                if (reopenBtn) {
+                    reopenBtn.style.display = sidebar.classList.contains('active') ? 'none' : 'flex';
+                    reopenBtn.setAttribute('aria-expanded', sidebar.classList.contains('active') ? 'true' : 'false');
+                }
                 document.body.classList.toggle('sidebar-closed', !sidebar.classList.contains('active'));
+                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
             } else {
+                if (!mainContent || !btnText) return;
                 sidebar.classList.toggle('collapsed');
                 if (sidebar.classList.contains('collapsed')) {
                     mainContent.style.marginLeft = '60px';

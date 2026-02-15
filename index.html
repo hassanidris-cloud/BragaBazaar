@@ -48,6 +48,10 @@
     <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"LocalBusiness","name":"Braga Bazaar","description":"Fresh local grocery in Braga. Fruits, bakery, meat, eggs, drinks and promotions. Support your local community.","url":"/","image":"/assets/icon.png","address":{"@type":"PostalAddress","streetAddress":"Praça da República","addressLocality":"Braga","addressCountry":"PT"},"openingHours":"Mo-Sa 08:00-20:00","telephone":"+351253123456"}
     </script>
+    <script>
+    function closeSidebarMobile(){var s=document.getElementById('sidebar'),b=document.getElementById('sidebarBackdrop'),r=document.getElementById('menuReopenBtn');if(!s||!s.classList.contains('active'))return;s.classList.remove('active');if(b){b.style.display='none';b.style.pointerEvents='none';}if(r){r.style.display='flex';}document.body.classList.add('sidebar-closed');document.body.style.overflow='';}
+    window.closeSidebarMobile=closeSidebarMobile;
+    </script>
 </head>
 <body>
     <a href="#main-content" class="skip-link" data-en="Skip to main content" data-pt="Saltar para o conteúdo">Skip to main content</a>
@@ -72,7 +76,7 @@
         </div>
         <aside class="sidebar-menu" id="sidebar">
             <div class="sidebar-header">
-                <button class="close-btn sidebar-close-btn" type="button" aria-label="Close menu" id="sidebarCloseBtn">
+                <button class="close-btn sidebar-close-btn" type="button" aria-label="Close menu" id="sidebarCloseBtn" ontouchend="closeSidebarMobile();" onclick="closeSidebarMobile(); return false;">
                     <i class="fas fa-times" aria-hidden="true"></i><span class="menu-text" data-en="Close" data-pt="Fechar">Fechar</span>
                 </button>
             </div>
@@ -92,7 +96,7 @@
                 </ul>
             </nav>
         </aside>
-        <div class="sidebar-backdrop" id="sidebarBackdrop" role="button" tabindex="0" aria-label="Close menu" aria-hidden="true"></div>
+        <button type="button" class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Close menu" aria-hidden="true" ontouchend="closeSidebarMobile();" onclick="closeSidebarMobile(); return false;"></button>
         <div id="main-content" style="min-height:100vh;">
             <div class="language-switcher">
                 <button id="btn-pt" class="lang-btn active">PT</button>
@@ -696,31 +700,45 @@
             }
         }
 
-        // --- Mobile: touch-friendly close (fixes tap not firing on some phones) ---
+        // --- Mobile: close category menu (close button + backdrop) - multiple events for phone reliability ---
         function bindMobileCloseHandlers() {
-            const closeBtn = document.getElementById('sidebarCloseBtn') || document.querySelector('#sidebar .close-btn');
+            const closeBtn = document.getElementById('sidebarCloseBtn');
+            const reopenBtn = document.getElementById('menuReopenBtn');
             const backdrop = document.getElementById('sidebarBackdrop');
-            const closeSidebar = (e) => {
+            const sidebar = document.getElementById('sidebar');
+            function closeMenu(e) {
+                if (e) { e.preventDefault(); e.stopPropagation(); }
+                closeSidebarMobile();
+            }
+            function closeBackdrop(e) {
                 if (e && e.type === 'touchend') e.preventDefault();
-                if (window.innerWidth <= 768 && document.getElementById('sidebar')?.classList.contains('active')) {
-                    toggleSidebar();
-                }
-            };
+                if (sidebar && sidebar.classList.contains('active')) closeSidebarMobile();
+            }
             if (closeBtn) {
-                closeBtn.addEventListener('touchend', closeSidebar, { passive: false });
-                closeBtn.addEventListener('click', closeSidebar);
+                closeBtn.addEventListener('pointerup', closeMenu, true);
+                closeBtn.addEventListener('touchend', closeMenu, { passive: false, capture: true });
+                closeBtn.addEventListener('click', closeMenu, true);
+            }
+            if (reopenBtn) {
+                reopenBtn.addEventListener('touchend', (e) => { e.preventDefault(); if (window.innerWidth <= 768) toggleSidebar(); }, { passive: false });
             }
             if (backdrop) {
-                backdrop.addEventListener('touchend', closeSidebar, { passive: false });
-                backdrop.addEventListener('click', closeSidebar);
-                backdrop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeSidebar(e); } });
+                backdrop.addEventListener('pointerup', closeBackdrop, true);
+                backdrop.addEventListener('touchend', closeBackdrop, { passive: false, capture: true });
+                backdrop.addEventListener('click', closeBackdrop, true);
+                backdrop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeBackdrop(); } });
             }
         }
 
         // --- Initialisation ---
-        window.addEventListener('DOMContentLoaded', () => {
+        function initMobileMenu() {
             updateMobileLayout();
             bindMobileCloseHandlers();
+        }
+        window.addEventListener('DOMContentLoaded', initMobileMenu);
+        window.addEventListener('load', function() { try { bindMobileCloseHandlers(); } catch (e) {} });
+
+        window.addEventListener('DOMContentLoaded', () => {
 
             window.addEventListener('resize', () => {
                 updateMobileLayout();

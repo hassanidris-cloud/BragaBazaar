@@ -49,7 +49,7 @@
     {"@context":"https://schema.org","@type":"LocalBusiness","name":"Braga Bazaar","description":"Fresh local grocery in Braga. Fruits, bakery, meat, eggs, drinks and promotions. Support your local community.","url":"/","image":"/assets/icon.png","address":{"@type":"PostalAddress","streetAddress":"Praça da República","addressLocality":"Braga","addressCountry":"PT"},"openingHours":"Mo-Sa 08:00-20:00","telephone":"+351253123456"}
     </script>
     <script>
-    function closeSidebarMobile(){var s=document.getElementById('sidebar'),b=document.getElementById('sidebarBackdrop'),r=document.getElementById('menuReopenBtn');if(!s||!s.classList.contains('active'))return;s.classList.remove('active');if(b){b.style.display='none';b.style.pointerEvents='none';}if(r){r.style.display='flex';}document.body.classList.add('sidebar-closed');document.body.style.overflow='';}
+    function closeSidebarMobile(){var s=document.getElementById('sidebar'),b=document.getElementById('sidebarBackdrop'),r=document.getElementById('menuReopenBtn'),f=document.getElementById('sidebarCloseFloat');if(!s||!s.classList.contains('active'))return;s.classList.remove('active');if(b){b.style.display='none';b.style.pointerEvents='none';}if(r){r.style.display='flex';}if(f){f.style.display='none';}document.body.classList.add('sidebar-closed');document.body.style.overflow='';}
     window.closeSidebarMobile=closeSidebarMobile;
     </script>
 </head>
@@ -97,6 +97,7 @@
             </nav>
         </aside>
         <button type="button" class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Close menu" aria-hidden="true" ontouchend="closeSidebarMobile();" onclick="closeSidebarMobile(); return false;"></button>
+        <button type="button" id="sidebarCloseFloat" class="sidebar-close-float" aria-label="Close menu" ontouchstart="closeSidebarMobile();" onclick="closeSidebarMobile(); return false;" style="display:none;">&times;</button>
         <div id="main-content" style="min-height:100vh;">
             <div class="language-switcher">
                 <button id="btn-pt" class="lang-btn active">PT</button>
@@ -406,11 +407,13 @@
             if (window.innerWidth <= 768) {
                 sidebar.classList.toggle('active');
                 const backdrop = document.getElementById('sidebarBackdrop');
+                const floatClose = document.getElementById('sidebarCloseFloat');
                 if (backdrop) {
                     backdrop.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
                     backdrop.style.pointerEvents = sidebar.classList.contains('active') ? 'auto' : 'none';
                     backdrop.setAttribute('aria-hidden', sidebar.classList.contains('active') ? 'false' : 'true');
                 }
+                if (floatClose) floatClose.style.display = sidebar.classList.contains('active') ? 'flex' : 'none';
                 if (reopenBtn) {
                     reopenBtn.style.display = sidebar.classList.contains('active') ? 'none' : 'flex';
                     reopenBtn.setAttribute('aria-expanded', sidebar.classList.contains('active') ? 'true' : 'false');
@@ -687,15 +690,18 @@
             const sidebar = document.getElementById('sidebar');
             const reopenBtn = document.getElementById('menuReopenBtn');
             const backdrop = document.getElementById('sidebarBackdrop');
+            const floatClose = document.getElementById('sidebarCloseFloat');
             if (isMobile) {
                 document.body.classList.add('sidebar-closed');
                 if (reopenBtn) reopenBtn.style.display = 'flex';
                 if (backdrop) backdrop.style.display = 'none';
+                if (floatClose) floatClose.style.display = 'none';
                 if (sidebar) sidebar.classList.remove('active');
             } else {
                 document.body.classList.remove('sidebar-closed');
                 if (reopenBtn) reopenBtn.style.display = 'none';
                 if (backdrop) backdrop.style.display = 'none';
+                if (floatClose) floatClose.style.display = 'none';
                 if (sidebar) sidebar.classList.remove('active');
             }
         }

@@ -1100,6 +1100,28 @@ body {
         display: block !important;
         pointer-events: auto;
     }
+    .sidebar-close-float {
+        display: none;
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        width: 56px;
+        height: 56px;
+        z-index: 1200;
+        background: #fff;
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+        font-size: 28px;
+        font-weight: 300;
+        color: #333;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        pointer-events: auto;
+    }
     .sidebar-header {
         flex-shrink: 0;
         padding: 16px;

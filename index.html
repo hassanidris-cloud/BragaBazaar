@@ -96,7 +96,7 @@
     }
     #cartAddedToast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    /* Cart drawer – slide from left */
+    /* Cart drawer – slide from right */
     #checkout.cart-drawer {
       position: fixed;
       inset: 0;
@@ -120,7 +120,7 @@
     }
     .cart-drawer-panel {
       position: absolute;
-      left: 0;
+      right: 0;
       top: 0;
       bottom: 0;
       width: 100%;
@@ -129,7 +129,7 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
-      transform: translateX(-100%);
+      transform: translateX(100%);
       transition: transform 0.3s ease;
       z-index: 1;
     }
@@ -661,7 +661,7 @@
     </div>
   </div>
 
-  <!-- Cart slide-out from left -->
+  <!-- Cart slide-out from right -->
   <section id="checkout" class="checkout-section cart-drawer" style="display:none;" aria-label="Cart">
     <div class="cart-drawer-backdrop" id="cartDrawerBackdrop" aria-hidden="true"></div>
     <div class="cart-drawer-panel">

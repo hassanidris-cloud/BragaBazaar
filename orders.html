@@ -1,61 +1,779 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>As minhas encomendas | Braga Bazaar</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body { background: #f8f9fa; }
-        .page-wrap { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .card { background: #fff; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
-        .card h1 { color: #2d7a32; margin-bottom: 20px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .top-bar .logo { font-size: 1.4rem; font-weight: 800; text-decoration: none; color: #333; }
-        .top-bar .logo span { color: #2d7a32; }
-        .top-bar a { color: #2d7a32; text-decoration: none; font-weight: 600; }
-        .order-block { border: 1px solid #eee; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-        .order-block h3 { font-size: 1rem; margin: 0 0 8px; color: #333; }
-        .order-block p { margin: 4px 0; color: #555; font-size: 0.95rem; }
-        .order-block ul { margin: 8px 0 0; padding-left: 20px; color: #666; font-size: 0.9rem; }
-        .empty-orders { text-align: center; padding: 40px 20px; color: #666; }
-        .empty-orders a { color: #2d7a32; font-weight: 600; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="View your Braga Bazaar order history. Live and delivered orders with delivery slot and payment details." />
+  <title>As minhas encomendas | Braga Bazaar</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    :root{
+      --bg:#f8f9fa;
+      --card:#ffffff;
+      --text:#1e293b;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --soft:#f1f5f9;
+      --green:#2d7a32;
+      --shadow:0 10px 30px rgba(0,0,0,0.05);
+      --radius:20px;
+      --radius-sm:12px;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin:0; background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text); }
+    a { color: inherit; }
+
+    .page-wrap { max-width: 760px; margin: 40px auto; padding: 0 20px; }
+    .card { background: var(--card); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+
+    /* Top nav */
+    .top-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+    .brand { font-weight:800; text-decoration:none; color:#333; letter-spacing:0.2px; }
+    .brand span { color: var(--green); }
+    .nav-links { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+    .nav-links a, .nav-links span { color: var(--muted); text-decoration:none; font-weight:600; font-size:0.9rem; }
+    .nav-links span.active { color: var(--green); font-weight:800; }
+    .nav-icon { display:inline-flex; width:38px; height:38px; align-items:center; justify-content:center; border-radius:10px; border:1px solid var(--border); background: #fff; color:#475569; }
+    .nav-icon:hover { background: var(--soft); }
+
+    /* Page title */
+    .page-title { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-bottom:18px; }
+    .page-title h1 { margin:0; font-weight:800; font-size:1.35rem; }
+    .hint { margin-top:6px; color: var(--muted); font-size:0.9rem; font-weight:600; }
+
+    /* Small buttons */
+    .btn-sm {
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      background: #fff;
+      color: #475569;
+      transition: transform .08s ease, background .15s ease;
+      user-select:none;
+    }
+    .btn-sm:active { transform: translateY(1px); }
+    .btn-sm:hover { background: var(--soft); }
+
+    .btn-whatsapp { background:#25D366; color:white; border-color:#25D366; }
+    .btn-whatsapp:hover { filter: brightness(0.98); background:#25D366; }
+    .btn-review { background:#ffb800; color:#1e293b; border-color:#ffb800; }
+    .btn-receipt { background:#1e293b; color:white; border-color:#1e293b; }
+    .btn-receipt:hover { filter: brightness(1.05); background:#1e293b; }
+
+    /* Sections */
+    .orders-section-title {
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: #475569;
+      margin: 10px 0 12px 0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      text-transform: none;
+    }
+    .orders-section-title.live { color: #b45309; }
+    .orders-section-title.delivered { color: #166534; }
+
+    /* Order card */
+    .order-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: #fff;
+    }
+
+    .order-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .order-id {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: .03em;
+    }
+    .order-total { font-weight:900; font-size:1.15rem; color: var(--green); margin-top:6px; }
+    .total-disclaimer { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    .order-subline { font-size:0.9rem; color:#475569; margin-top:8px; font-weight:700; }
+    .order-meta-row { font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
+    .payment-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: var(--soft);
+      color: #475569;
+      font-weight: 800;
+      margin-left: 6px;
+    }
+
+    /* Status badges */
+    .badge { padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing:.04em; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-substitution_pending { background: #e0e7ff; color: #3730a3; }
+    .status-substitution_rejected { background: #fee2e2; color: #991b1b; }
+    .status-shipped { background: #dbeafe; color: #1e40af; }
+    .status-delivered { background: #dcfce7; color: #166534; }
+
+    /* Fulfillment note */
+    .fulfillment-note {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 10px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+    }
+
+    /* Tracker */
+    .tracker { display: flex; justify-content: space-between; margin: 18px 0 14px; position: relative; }
+    .tracker::before { content: ''; position: absolute; top: 15px; left: 0; width: 100%; height: 2px; background: var(--border); z-index: 1; }
+    .step {
+      position: relative; z-index: 2; background: #fff;
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: #cbd5e1;
+    }
+    .step.completed { background: var(--green); border-color: var(--green); color: white; }
+    .step.active { border-color: var(--green); color: var(--green); font-weight: 900; }
+
+    /* Details */
+    .action-bar { display:flex; gap:10px; margin-top: 12px; flex-wrap:wrap; }
+    .details-content {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      animation: fadeIn .18s ease;
+    }
+    .details-content.show { display: block; }
+    @keyframes fadeIn { from { opacity:.2; transform: translateY(-2px); } to { opacity:1; transform:none; } }
+
+    .item-line { display:flex; justify-content:space-between; font-size: 0.9rem; color: #4a5568; margin-bottom: 6px; gap:10px; }
+    .item-line span:last-child { font-weight:800; color:#334155; }
+
+    /* Substitution box */
+    .substitution-box { margin-top: 12px; padding: 14px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; }
+    .substitution-box h4 { margin: 0 0 10px 0; font-size: 0.95rem; color: #3730a3; }
+    .substitution-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .btn-approve, .btn-reject {
+      border:none; padding: 10px 14px; border-radius: 10px; font-weight: 900; cursor:pointer;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn-approve { background: var(--green); color:white; }
+    .btn-reject { background: #dc2626; color:white; }
+    .btn-approve:active, .btn-reject:active { transform: translateY(1px); }
+
+    /* Post actions */
+    .post-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .link-muted { color: var(--muted); text-decoration: none; font-size: 0.86rem; font-weight:700; }
+    .link-muted:hover { text-decoration: underline; color: var(--green); }
+
+    /* Click-to-copy */
+    .order-id-button{
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+    }
+    .order-id-button:hover{
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-decoration-color: rgba(45,122,50,0.5);
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+    .toast.show{ opacity: 1; }
+
+    /* Loading */
+    .loading { text-align:center; padding: 26px 0; color: var(--muted); }
+    .loading i { color: var(--green); }
+
+    /* Print */
+    @media print {
+      body * { visibility: hidden; }
+      #print-section, #print-section * { visibility: visible; }
+      #print-section { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; }
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 20px; }
+      .order-top { align-items:center; }
+      .order-total { font-size: 1.05rem; }
+      .btn-sm { width: 100%; justify-content:center; }
+      .nav-icon { width: 42px; height: 42px; }
+    }
+  </style>
 </head>
+
 <body>
-    <div class="page-wrap">
-        <div class="top-bar">
-            <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
-            <a href="index.html">&larr; Voltar à loja</a>
+  <div class="page-wrap">
+    <nav class="top-bar" aria-label="Main navigation">
+      <a class="brand" href="index.html">BRAGA<span>BAZAAR</span></a>
+      <div class="nav-links">
+        <a href="index.html">Loja</a>
+        <span class="active">As minhas encomendas</span>
+        <a href="account.html">O meu perfil</a>
+        <a class="nav-icon" href="checkout.html" aria-label="Carrinho">
+          <i class="fas fa-shopping-cart"></i>
+        </a>
+      </div>
+    </nav>
+
+    <div class="card">
+      <div class="page-title">
+        <div>
+          <h1>As minhas compras</h1>
+          <div class="hint">Encomendas em curso e entregues</div>
         </div>
-        <div class="card">
-            <h1>As minhas encomendas</h1>
-            <div id="ordersList"></div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button id="refreshBtn" class="btn-sm" type="button" title="Atualizar encomendas">
+            <i class="fas fa-rotate"></i> Atualizar
+          </button>
+          <div style="color:var(--muted); font-size:0.82rem; font-weight:900;">
+            Dica: toque no ID para copiar
+          </div>
         </div>
+      </div>
+
+      <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+      </div>
+
+      <div id="ordersList"></div>
     </div>
-    <script>
-        (function () {
-            const raw = localStorage.getItem('bragaBazaarOrders');
-            const orders = raw ? JSON.parse(raw) : [];
-            const el = document.getElementById('ordersList');
-            if (!orders.length) {
-                el.innerHTML = '<div class="empty-orders"><p>Ainda não tem encomendas.</p><p><a href="index.html">Comece a comprar</a></p></div>';
-                return;
-            }
-            const sorted = orders.slice().sort((a, b) => (b.id || b.createdAt || 0) - (a.id || a.createdAt || 0));
-            sorted.forEach(o => {
-                const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('pt-PT') : '-';
-                const total = o.total != null ? '€' + Number(o.total).toFixed(2) : '-';
-                const items = (o.items || []).map(i => `${i.name} x${i.qty}`).join(', ');
-                const div = document.createElement('div');
-                div.className = 'order-block';
-                div.innerHTML = '<h3>Encomenda #' + (o.id || o.client_order_id || '-') + ' – ' + date + '</h3><p><strong>Total: ' + total + '</strong></p><p>Estado: ' + (o.status === 'completed' ? 'Concluída' : 'Por preparar') + '</p><ul>' + (items ? '<li>' + items + '</li>' : '') + '</ul>';
-                el.appendChild(div);
-            });
-        })();
-    </script>
+  </div>
+
+  <div id="print-section" style="display:none;"></div>
+  <div id="toast" class="toast">Copiado!</div>
+
+  <script type="module">
+    import { supabase } from "./supabaseConfig.js";
+
+    const SUPPORT_WHATSAPP = "351912345678";
+
+    const statusLabelsPT = {
+      pending: "Em preparação",
+      shipped: "A caminho",
+      delivered: "Entregue",
+      substitution_pending: "Substituições a confirmar",
+      substitution_rejected: "Substituições rejeitadas"
+    };
+
+    function normalizeStatus(s) {
+      return (s || "pending").toLowerCase().trim().replace(/\s+/g, "_");
+    }
+
+    function statusLabelPT(s) {
+      const k = normalizeStatus(s);
+      return statusLabelsPT[k] || k.replace(/_/g, " ");
+    }
+
+    function paymentLabel(p) {
+      if (!p) return "—";
+      const v = String(p).toLowerCase().trim();
+      if (v === "mb_way" || v === "mb way") return "MB Way";
+      if (v === "card" || v === "cartão") return "Cartão";
+      if (v === "cash" || v === "dinheiro") return "Dinheiro";
+      return p;
+    }
+
+    function escHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function shortId(order) {
+      const raw = (order?.id != null ? String(order.id) : String(order?.client_order_id || ""));
+      return raw.slice(0, 8).toUpperCase();
+    }
+
+    function toast(msg = "Copiado!") {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 900);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    }
+
+    function closeOtherDetails(currentId) {
+      document.querySelectorAll(".details-content.show").forEach(el => {
+        if (el.id !== `details-${currentId}`) el.classList.remove("show");
+      });
+    }
+
+    function buildReceiptHtml(order) {
+      const date = order.created_at ? new Date(order.created_at).toLocaleDateString("pt-PT") : "—";
+      const idDisplay = shortId(order);
+      const fullName = order.fullName || order.full_name || "Cliente Braga Bazaar";
+      const total = Number(order.total || order.total_price || 0).toFixed(2);
+
+      const fulfillment = (order.fulfillment || "delivery");
+      const deliveryLabel = fulfillment === "pickup" ? "Levantamento na loja" : "Entrega ao domicílio";
+
+      const slot = [order.delivery_date, order.time_slot].filter(Boolean).join(" ") || "—";
+      const pay = paymentLabel(order.payment || order.payment_method);
+
+      const shipping = [order.address, order.city, order.postal].filter(Boolean).join(", ") || "—";
+
+      const items = (order.items || []).map(i => ({
+        name: i.name,
+        qty: Number(i.qty || i.quantity || 1),
+        price: Number(i.price || 0)
+      }));
+
+      const itemsHtml = items.length
+        ? items.map(i => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+              <span>${i.qty}x ${escHtml(i.name)}</span>
+              <span>€${(i.price * i.qty).toFixed(2)}</span>
+            </div>
+          `).join("")
+        : `<div style="color:#64748b;">Sem detalhes de itens.</div>`;
+
+      return `
+        <div style="font-family:Inter,system-ui,-apple-system,sans-serif; color:#111827;">
+          <div style="text-align:center; border-bottom:2px solid #eee; padding-bottom:18px; margin-bottom:18px;">
+            <h1 style="margin:0; color:#2d7a32; letter-spacing:0.5px;">BRAGA BAZAAR</h1>
+            <div style="margin-top:6px; color:#6b7280; font-weight:700;">Produtos Locais & Frescos</div>
+          </div>
+
+          <h2 style="margin:0 0 10px 0;">Recibo de Encomenda #${escHtml(idDisplay)}</h2>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.95rem;">
+            <div><strong>Data:</strong> ${escHtml(date)}</div>
+            <div><strong>Pagamento:</strong> ${escHtml(pay)}</div>
+            <div><strong>Cliente:</strong> ${escHtml(fullName)}</div>
+            <div><strong>Tipo:</strong> ${escHtml(deliveryLabel)}</div>
+            <div><strong>Slot:</strong> ${escHtml(slot)}</div>
+            <div><strong>Morada:</strong> ${escHtml(shipping)}</div>
+          </div>
+
+          <hr style="border:0; border-top:1px solid #e5e7eb; margin:18px 0;">
+
+          <div style="margin:16px 0;">
+            ${itemsHtml}
+          </div>
+
+          <hr style="border:0; border-top:1px solid #e5e7eb; margin:18px 0;">
+
+          <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900;">
+            <span>TOTAL</span>
+            <span>€${escHtml(total)}</span>
+          </div>
+
+          <div style="margin-top:28px; text-align:center; font-size:0.85rem; color:#6b7280;">
+            Obrigado por apoiar os produtores locais de Braga!
+          </div>
+        </div>
+      `;
+    }
+
+    function render(listEl, orders) {
+      const isDelivered = (o) => normalizeStatus(o.status) === "delivered";
+      const liveOrders = orders.filter(o => !isDelivered(o)).sort((a,b) => new Date(b.created_at||0)-new Date(a.created_at||0));
+      const deliveredOrders = orders.filter(o => isDelivered(o)).sort((a,b) => new Date(b.created_at||0)-new Date(a.created_at||0));
+
+      if (!orders.length) {
+        listEl.innerHTML = `<p style="text-align:center; color: var(--muted); font-weight:700;">
+          Ainda não tem encomendas.
+          <a href="index.html" style="color: var(--green); font-weight:900; text-decoration:none;">Fazer compras</a>
+        </p>`;
+        return;
+      }
+
+      // Pre-map items per order (supabase order_items or local items)
+      const orderItemsByOrder = {};
+      orders.forEach(o => {
+        const items = (o.order_items || []).map(i => ({
+          name: i.name,
+          price: parseFloat(i.price),
+          qty: i.qty || i.quantity
+        }));
+        orderItemsByOrder[o.id] = items.length ? items : (o.items || []);
+      });
+
+      function renderOrderCard(o, options) {
+        const statusNorm = normalizeStatus(o.status);
+        const statusText = statusLabelPT(o.status);
+        const idShort = shortId(o);
+
+        const isShipped = statusNorm === "shipped" || statusNorm === "delivered";
+        const delivered = statusNorm === "delivered";
+        const substitutionPending = statusNorm === "substitution_pending";
+
+        const fulfillment = (o.fulfillment || "delivery");
+        const deliveryLabel = fulfillment === "pickup" ? "Levantamento na loja" : "Entrega ao domicílio";
+        const slotText = [o.delivery_date, o.time_slot].filter(Boolean).join(" ") || "—";
+
+        const items = orderItemsByOrder[o.id] || o.items || [];
+        const payment = o.payment || o.payment_method;
+
+        const liveNote = (options && options.isLive)
+          ? `<div class="order-meta-row"><i class="fas fa-clock"></i> Ainda não foi entregue — em preparação ou a caminho.</div>`
+          : "";
+
+        const deliveredNote = (options && options.isDelivered)
+          ? `<div class="order-meta-row">
+                <i class="fas fa-check-circle"></i> Entregue${slotText !== "—" ? " · " + escHtml(slotText) : ""}
+                <span class="payment-badge">Pagamento: ${escHtml(paymentLabel(payment))}</span>
+              </div>`
+          : "";
+
+        const total = Number(o.total || o.total_price || 0).toFixed(2);
+
+        return `
+          <div class="order-card">
+            <div class="order-top">
+              <div>
+                <button class="order-id-button order-id"
+                  type="button"
+                  data-action="copy-id"
+                  data-copy-text="Encomenda #${escHtml(idShort)}">
+                  Encomenda #${escHtml(idShort)}
+                </button>
+
+                <div class="order-total">€${escHtml(total)}</div>
+                <div class="total-disclaimer">O total final pode variar consoante o peso e substituições.</div>
+              </div>
+
+              <span class="badge status-${escHtml(statusNorm)}">${escHtml(statusText)}</span>
+            </div>
+
+            <div class="order-subline">
+              ${escHtml(deliveryLabel)}${slotText !== "—" ? " · " + escHtml(slotText) : ""}
+            </div>
+
+            ${liveNote}
+            ${deliveredNote}
+
+            <div class="fulfillment-note">
+              ${fulfillment === "pickup"
+                ? "Dirija-se ao lugar de estacionamento sinalizado; a equipa leva os produtos ao carro."
+                : "Os frescos são embalados em separado. Na entrega pode ser solicitada assinatura ou foto como comprovativo."}
+            </div>
+
+            ${substitutionPending ? `
+              <div class="substitution-box">
+                <h4><i class="fas fa-exchange-alt"></i> Substituições propostas</h4>
+                <p style="margin:0; font-size:0.9rem; color:#3730a3; font-weight:700;">
+                  A nossa equipa propôs substituições para alguns artigos. Confirme ou rejeite.
+                </p>
+                <div class="substitution-actions">
+                  <button class="btn-approve" data-action="approve-sub" data-order-id="${escHtml(o.id)}">
+                    <i class="fas fa-check"></i> Aceitar
+                  </button>
+                  <button class="btn-reject" data-action="reject-sub" data-order-id="${escHtml(o.id)}">
+                    <i class="fas fa-times"></i> Rejeitar
+                  </button>
+                </div>
+              </div>
+            ` : ""}
+
+            <div class="tracker">
+              <div class="step completed"><i class="fas fa-check"></i></div>
+              <div class="step ${isShipped ? (statusNorm === "shipped" ? "active" : "completed") : ""}">
+                <i class="fas fa-truck"></i>
+              </div>
+              <div class="step ${delivered ? "completed" : ""}">
+                <i class="fas fa-home"></i>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn-sm" data-action="toggle-details" data-order-id="${escHtml(o.id)}">
+                <i class="fas fa-list"></i> Detalhes
+              </button>
+
+              <button class="btn-sm btn-receipt" data-action="print-receipt" data-order-id="${escHtml(o.id)}">
+                <i class="fas fa-file-invoice"></i> Recibo
+              </button>
+
+              <a href="https://wa.me/${SUPPORT_WHATSAPP}?text=Ajuda com%20%23${encodeURIComponent(idShort)}" target="_blank" class="btn-sm btn-whatsapp" rel="noopener">
+                <i class="fab fa-whatsapp"></i> Ajuda
+              </a>
+
+              ${delivered ? `
+                <a href="https://wa.me/${SUPPORT_WHATSAPP}?text=Avaliar%20encomenda%20%23${encodeURIComponent(idShort)}%3A%20" target="_blank" class="btn-sm btn-review" rel="noopener">
+                  <i class="fas fa-star"></i> Avaliar
+                </a>
+              ` : ""}
+            </div>
+
+            <div class="post-actions">
+              <a href="https://wa.me/${SUPPORT_WHATSAPP}?text=Reportar%20item%20em%20falta%20-%20Encomenda%20%23${encodeURIComponent(idShort)}%3A%20" target="_blank" class="link-muted" rel="noopener">
+                <i class="fas fa-exclamation-circle"></i> Reportar item em falta
+              </a>
+              <a href="https://wa.me/${SUPPORT_WHATSAPP}?text=Pedir%20reembolso%20-%20Encomenda%20%23${encodeURIComponent(idShort)}%3A%20" target="_blank" class="link-muted" rel="noopener">
+                <i class="fas fa-undo"></i> Pedir reembolso
+              </a>
+            </div>
+
+            <div id="details-${escHtml(o.id)}" class="details-content">
+              ${
+                items.length
+                ? items.map(item => {
+                    const q = Number(item.qty || item.quantity || 1);
+                    const p = Number(item.price || 0);
+                    return `
+                      <div class="item-line">
+                        <span>${escHtml(q)}x ${escHtml(item.name || "")}</span>
+                        <span>€${escHtml((p * q).toFixed(2))}</span>
+                      </div>
+                    `;
+                  }).join("")
+                : `<p style="margin:0; color:var(--muted); font-weight:700;">${escHtml(o.items_summary || "—")}</p>`
+              }
+            </div>
+          </div>
+        `;
+      }
+
+      const liveHtml = liveOrders.length
+        ? `<div class="orders-section-title live"><i class="fas fa-box-open"></i> Em curso — ainda não entregues</div>
+           ${liveOrders.map(o => renderOrderCard(o, { isLive: true })).join("")}`
+        : "";
+
+      const deliveredHtml = deliveredOrders.length
+        ? `<div class="orders-section-title delivered"><i class="fas fa-home"></i> Entregues</div>
+           ${deliveredOrders.map(o => renderOrderCard(o, { isDelivered: true })).join("")}`
+        : "";
+
+      listEl.innerHTML = liveHtml + deliveredHtml;
+    }
+
+    async function loadOrders() {
+      const listEl = document.getElementById("ordersList");
+      const loadingEl = document.getElementById("loading");
+      const userData = JSON.parse(localStorage.getItem("bragaBazaarUser")) || {};
+
+      loadingEl.style.display = "block";
+      listEl.innerHTML = "";
+
+      if (!userData.phone && !userData.email) {
+        loadingEl.style.display = "none";
+        listEl.innerHTML = `<p style="text-align:center; color:var(--muted); font-weight:800;">
+          Inicie sessão e configure o seu perfil (telefone ou email) para ver as encomendas.
+        </p>`;
+        return;
+      }
+
+      // Supabase orders (with order_items)
+      let query = supabase
+        .from("orders")
+        .select("*, order_items(*)")
+        .order("created_at", { ascending: false });
+
+      if (userData.phone) query = query.eq("phone", userData.phone);
+      else query = query.eq("email", userData.email);
+
+      const { data: supabaseOrders, error } = await query;
+
+      // Merge local orders (if you keep offline/local cache)
+      const seenClientIds = new Set((supabaseOrders || []).map(o => o.client_order_id).filter(Boolean));
+      const localRaw = localStorage.getItem("bragaBazaarOrders");
+      const localOrders = localRaw ? JSON.parse(localRaw) : [];
+
+      const matchesUser = (order) => {
+        const c = order.customer || {};
+        return (userData.phone && (c.phone || "").trim() === (userData.phone || "").trim()) ||
+               (userData.email && (c.email || "").trim().toLowerCase() === (userData.email || "").trim().toLowerCase());
+      };
+
+      const localMerged = localOrders
+        .filter(o => matchesUser(o) && !seenClientIds.has(o.id))
+        .map(o => ({
+          id: "local-" + o.id,
+          client_order_id: o.id,
+          created_at: o.createdAt,
+          total: o.total,
+          payment: o.payment || null,
+          full_name: (o.customer && o.customer.fullName) || "",
+          fullName: (o.customer && o.customer.fullName) || "",
+          status: "pending",
+          fulfillment: o.fulfillment || "delivery",
+          delivery_date: o.deliveryDate || null,
+          time_slot: o.timeSlot || null,
+          order_items: null,
+          items: (o.items || []).map(i => ({ name: i.name, price: i.price, qty: i.qty, quantity: i.qty }))
+        }));
+
+      loadingEl.style.display = "none";
+
+      if (error) {
+        console.error(error);
+        listEl.innerHTML = `<p style="text-align:center; color:var(--muted); font-weight:900;">
+          Erro ao carregar encomendas. Tente novamente.
+        </p>`;
+        return;
+      }
+
+      const allOrders = [...(supabaseOrders || []), ...localMerged];
+      render(listEl, allOrders);
+    }
+
+    // Event delegation (details, print, approve/reject, copy id)
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+
+      const action = btn.getAttribute("data-action");
+
+      if (action === "copy-id") {
+        const text = btn.getAttribute("data-copy-text") || "";
+        await copyText(text);
+        toast("Copiado!");
+        return;
+      }
+
+      if (action === "toggle-details") {
+        const id = btn.getAttribute("data-order-id");
+        const panel = document.getElementById(`details-${id}`);
+        if (!panel) return;
+        const willShow = !panel.classList.contains("show");
+        closeOtherDetails(id);
+        panel.classList.toggle("show", willShow);
+        return;
+      }
+
+      if (action === "print-receipt") {
+        const id = btn.getAttribute("data-order-id");
+        // Find the order card row data from DOM: easiest is to reload orders and store in memory,
+        // but to keep this file self-contained, we re-fetch single order quickly.
+        // If it's a local order id, we will build from localStorage.
+        const userData = JSON.parse(localStorage.getItem("bragaBazaarUser")) || {};
+        let order = null;
+
+        if (String(id).startsWith("local-")) {
+          const localId = Number(String(id).replace("local-", ""));
+          const localRaw = localStorage.getItem("bragaBazaarOrders");
+          const localOrders = localRaw ? JSON.parse(localRaw) : [];
+          const found = localOrders.find(o => o.id === localId);
+          if (found) {
+            order = {
+              id: "local-" + found.id,
+              client_order_id: found.id,
+              created_at: found.createdAt,
+              total: found.total,
+              payment: found.payment || null,
+              full_name: (found.customer && found.customer.fullName) || "",
+              fullName: (found.customer && found.customer.fullName) || "",
+              status: "pending",
+              fulfillment: found.fulfillment || "delivery",
+              delivery_date: found.deliveryDate || null,
+              time_slot: found.timeSlot || null,
+              address: found.customer?.address || null,
+              city: found.customer?.city || null,
+              postal: found.customer?.postal || null,
+              items: (found.items || []).map(i => ({ name: i.name, price: i.price, qty: i.qty }))
+            };
+          }
+        } else {
+          const { data, error } = await supabase
+            .from("orders")
+            .select("*, order_items(*)")
+            .eq("id", id)
+            .single();
+
+          if (!error && data) {
+            order = {
+              ...data,
+              items: (data.order_items || []).map(i => ({ name: i.name, price: Number(i.price), qty: i.qty || i.quantity }))
+            };
+          }
+        }
+
+        if (!order) {
+          alert("Não foi possível gerar o recibo.");
+          return;
+        }
+
+        // Print
+        const printEl = document.getElementById("print-section");
+        printEl.style.display = "block";
+        printEl.innerHTML = buildReceiptHtml(order);
+        window.print();
+        printEl.style.display = "none";
+        printEl.innerHTML = "";
+        return;
+      }
+
+      if (action === "approve-sub" || action === "reject-sub") {
+        const orderId = btn.getAttribute("data-order-id");
+        try {
+          const newStatus = action === "approve-sub" ? "pending" : "substitution_rejected";
+          const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
+          if (error) throw error;
+
+          alert(action === "approve-sub"
+            ? "Substituições aceites. A encomenda segue em preparação."
+            : "Substituições rejeitadas. A equipa entrará em contacto."
+          );
+          loadOrders();
+        } catch (err) {
+          console.error(err);
+          alert("Não foi possível atualizar. Contacte apoio.");
+        }
+        return;
+      }
+    });
+
+    // Refresh
+    document.getElementById("refreshBtn")?.addEventListener("click", () => loadOrders());
+
+    // Init
+    loadOrders();
+  </script>
 </body>
 </html>

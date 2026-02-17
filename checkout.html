@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2d7a32">
+    <meta name="description" content="Complete your Braga Bazaar order. Delivery or pickup in Braga. Secure payment.">
     <title>Checkout | Braga Bazaar</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style type="text/css">.main-header .site-nav a.site-nav-icon-only,.main-header .site-nav a.site-nav-icon-only i,.main-header .site-nav a.site-nav-icon-only .site-nav-cart-total{color:#000!important}.main-header .site-nav a.site-nav-icon-only:link,.main-header .site-nav a.site-nav-icon-only:visited,.main-header .site-nav a.site-nav-icon-only:hover,.main-header .site-nav a.site-nav-icon-only:focus{color:#000!important}.main-header .site-nav a.site-nav-icon-only:hover i,.main-header .site-nav a.site-nav-icon-only:focus i{color:#000!important}</style>
     <style>
         body { background: #fff; font-family: 'Inter', sans-serif; }
@@ -16,12 +18,13 @@
         .order-summary { flex: 1; padding: 32px; border-left: 1px solid #eee; }
         .checkout-form h2, .order-summary h2 { color: #4a6d1a; margin-bottom: 24px; }
         .checkout-form label { font-weight: bold; color: #333; margin-top: 12px; display: block; }
-        .checkout-form input, .checkout-form textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; margin-top: 6px; margin-bottom: 16px; }
+        .checkout-form input, .checkout-form textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; margin-top: 6px; margin-bottom: 16px; box-sizing: border-box; }
         .checkout-form textarea { min-height: 60px; }
         .checkout-form .payment-methods { margin-bottom: 24px; }
         .checkout-form .payment-methods label { display: inline-block; margin-right: 18px; }
         .checkout-form .cta-primary { border-radius: 20px; padding: 12px 32px; width: 100%; margin-top: 12px; }
         .breadcrumb { color: #4a6d1a; margin-bottom: 18px; font-weight: bold; }
+        @media (max-width: 768px) { .checkout-container { flex-direction: column; } .order-summary { border-left: none; border-top: 1px solid #eee; } }
     </style>
 </head>
 <body>
@@ -29,11 +32,12 @@
         <div class="top-nav">
             <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
             <form class="search-bar" action="index.html" method="get" role="search">
-                <input type="search" name="q" placeholder="Search products..." aria-label="Search products">
-                <button type="submit">Search</button>
+                <input type="search" name="q" placeholder="O que procura?" aria-label="Search products">
+                <button type="submit">Pesquisar</button>
             </form>
             <nav class="site-nav" aria-label="Main navigation">
                 <a href="index.html" class="site-nav-icon-only" title="Shop" aria-label="Shop"><i class="fas fa-store"></i></a>
+                <a href="orders.html" class="site-nav-icon-only" title="My orders" aria-label="My orders"><i class="fas fa-clipboard-list"></i><span class="site-nav-label">As minhas encomendas</span></a>
                 <a href="contact.html" class="site-nav-icon-only" title="Contact" aria-label="Contact"><i class="fas fa-envelope"></i></a>
                 <a href="account.html" class="site-nav-icon-only" title="My account" aria-label="My account"><i class="fas fa-user"></i></a>
                 <a href="checkout.html" class="site-nav-icon-only site-nav-current" title="Cart" aria-label="Cart"><i class="fas fa-shopping-cart"></i></a>
@@ -42,33 +46,41 @@
     </header>
     <div class="checkout-container">
         <div class="checkout-form">
-            <div class="breadcrumb">Cart &gt; Account &gt; Checkout</div>
+            <div class="breadcrumb">Carrinho &gt; Conta &gt; Checkout</div>
             <p id="checkoutSavedNotice" style="display:none; background:#e8f5e9; color:#2d7a32; padding:12px; border-radius:8px; margin-bottom:16px; font-weight:600;"></p>
             <h2>Entrega</h2>
             <form id="deliveryForm">
                 <label for="fullName">Nome Completo</label>
-                <input type="text" id="fullName" required>
+                <input type="text" id="fullName" required aria-describedby="err-fullName">
+                <span class="field-error" id="err-fullName" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
                 <label for="phone">Telemóvel</label>
-                <input type="tel" id="phone" required>
+                <input type="tel" id="phone" required aria-describedby="err-phone">
+                <span class="field-error" id="err-phone" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
                 <label for="email">Email</label>
-                <input type="email" id="email" required>
+                <input type="email" id="email" required aria-describedby="err-email">
+                <span class="field-error" id="err-email" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
+                <p id="pickupNote" style="display:none;background:#f0fdf4;color:#166534;padding:10px 12px;border-radius:8px;font-size:0.9rem;margin-bottom:12px;">Para levantamento na loja, morada não é obrigatória.</p>
                 <label for="address">Morada</label>
                 <input type="text" id="address" required>
+                <span class="field-error" id="err-address" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
                 <label for="postal">Código Postal (Braga)</label>
                 <input type="text" id="postal" required>
+                <span class="field-error" id="err-postal" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
                 <label for="city">Cidade</label>
                 <input type="text" id="city" required>
+                <span class="field-error" id="err-city" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
                 <label for="location">Freguesia / Localização</label>
                 <input type="text" id="location" required>
+                <span class="field-error" id="err-location" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
                 <label for="country">País</label>
-                <select id="country" required>
+                <select id="country" required aria-describedby="err-country">
                     <option value="Portugal">Portugal</option>
                     <option value="Spain">Spain / Espanha</option>
                     <option value="France">France / França</option>
@@ -76,16 +88,49 @@
                     <option value="Germany">Germany / Alemanha</option>
                     <option value="Other">Other / Outro</option>
                 </select>
+                <span class="field-error" id="err-country" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
                 <label for="instructions">Instruções de Entrega</label>
-                <textarea id="instructions"></textarea>
+                <textarea id="instructions" placeholder="Ex: Porta do prédio, código do prédio..."></textarea>
 
+                <label style="margin-top:16px;display:block;">Tipo de receção</label>
                 <div class="payment-methods">
+                    <label><input type="radio" name="fulfillment" value="delivery" checked> Entrega ao domicílio</label>
+                    <label><input type="radio" name="fulfillment" value="pickup"> Levantamento na loja</label>
+                </div>
+                <script>
+                (function () {
+                    function setPickupFields() {
+                        var isPickup = document.querySelector('input[name="fulfillment"]:checked').value === 'pickup';
+                        var note = document.getElementById('pickupNote');
+                        if (note) note.style.display = isPickup ? 'block' : 'none';
+                        ['address','postal','city','location'].forEach(function (id) {
+                            var el = document.getElementById(id);
+                            if (el) el.required = !isPickup;
+                        });
+                    }
+                    document.querySelectorAll('input[name="fulfillment"]').forEach(function (r) {
+                        r.addEventListener('change', setPickupFields);
+                    });
+                    setPickupFields();
+                })();
+                </script>
+                <label for="deliveryDate">Data desejada</label>
+                <input type="date" id="deliveryDate" name="deliveryDate" required style="margin-bottom:12px;">
+                <label for="timeSlot">Slot horário</label>
+                <select id="timeSlot" name="timeSlot" required>
+                    <option value="09-12">09:00 – 12:00</option>
+                    <option value="12-15">12:00 – 15:00</option>
+                    <option value="15-18">15:00 – 18:00</option>
+                    <option value="18-21">18:00 – 21:00</option>
+                </select>
+
+                <div class="payment-methods" style="margin-top:20px;">
                     <label><input type="radio" name="payment" value="mbway" required> MB Way</label>
                     <label><input type="radio" name="payment" value="card"> Cartão de Crédito</label>
                     <label><input type="radio" name="payment" value="cash"> Pagamento na Entrega</label>
                 </div>
-                <button type="submit" class="cta-primary" style="border:none;cursor:pointer;width:100%;">Place order</button>
+                <button type="submit" class="cta-primary" style="border:none;cursor:pointer;width:100%;background:#2d7a32;color:#fff;font-weight:600;">Place order</button>
             </form>
         </div>
         <div class="order-summary">
@@ -94,8 +139,26 @@
             <div id="orderTotal" style="margin-top:20px;font-weight:bold;color:#4a6d1a;"></div>
         </div>
     </div>
+
+    <div id="orderConfirmation" style="display:none;max-width:560px;margin:60px auto;padding:32px;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);text-align:center;">
+        <h2 style="color:#2d7a32;margin-bottom:16px;">Encomenda confirmada</h2>
+        <p id="confirmationMessage" style="color:#475569;margin-bottom:24px;"></p>
+        <p style="font-size:0.9rem;color:#64748b;">Enviámos um email de confirmação com o resumo e slot escolhido.</p>
+        <p style="margin-top:16px;"><a href="orders.html" style="color:#2d7a32;font-weight:600;">Ver as minhas encomendas</a></p>
+        <a href="index.html" class="cta-primary" style="display:inline-block;margin-top:24px;padding:12px 24px;border-radius:12px;text-decoration:none;color:#fff;font-weight:600;">Continuar a comprar</a>
+    </div>
+
     <script type="module">
         import { supabase } from './supabaseConfig.js';
+
+        // Set minimum delivery date to today
+        (function () {
+            const dateEl = document.getElementById('deliveryDate');
+            if (dateEl) {
+                const today = new Date().toISOString().slice(0, 10);
+                dateEl.setAttribute('min', today);
+            }
+        })();
 
         // Load cart from localStorage
         const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
@@ -103,7 +166,7 @@
         let total = 0;
         cart.forEach(item => {
             const li = document.createElement('li');
-            li.innerText = `${item.name} x${item.qty} - €${(item.price * item.qty).toFixed(2)}`;
+            li.innerText = `${item.name} x${item.qty} – €${(item.price * item.qty).toFixed(2)}${(item.substitution === 'no') ? ' (não substituir)' : ''}`;
             orderItems.appendChild(li);
             total += item.price * item.qty;
         });
@@ -136,6 +199,25 @@
 
         form.onsubmit = async function (e) {
             e.preventDefault();
+            document.querySelectorAll('.field-error').forEach(function (el) { el.style.display = 'none'; el.textContent = ''; });
+            var isPickup = document.querySelector('input[name="fulfillment"]:checked').value === 'pickup';
+            var requiredIds = ['fullName','phone','email','country'];
+            if (!isPickup) requiredIds = requiredIds.concat(['address','postal','city','location']);
+            var valid = true;
+            requiredIds.forEach(function (id) {
+                var el = document.getElementById(id);
+                var err = document.getElementById('err-' + id);
+                if (!el) return;
+                var v = (el.value || '').trim();
+                if (el.type === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+                    valid = false;
+                    if (err) { err.textContent = 'Email inválido'; err.style.display = 'block'; }
+                } else if (!v) {
+                    valid = false;
+                    if (err) { err.textContent = 'Obrigatório'; err.style.display = 'block'; }
+                }
+            });
+            if (!valid) return;
 
             const fullName = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phone').value.trim();
@@ -148,6 +230,10 @@
             const instructions = document.getElementById('instructions').value.trim();
             const paymentInput = document.querySelector('input[name="payment"]:checked');
             const payment = paymentInput ? paymentInput.value : null;
+            const fulfillmentInput = document.querySelector('input[name="fulfillment"]:checked');
+            const fulfillment = fulfillmentInput ? fulfillmentInput.value : 'delivery';
+            const deliveryDate = document.getElementById('deliveryDate') && document.getElementById('deliveryDate').value;
+            const timeSlot = document.getElementById('timeSlot') && document.getElementById('timeSlot').value;
 
             const order = {
                 id: Date.now(),
@@ -155,6 +241,9 @@
                 customer: { fullName, phone, email, address, postal, city, location, country },
                 payment,
                 instructions,
+                fulfillment,
+                deliveryDate,
+                timeSlot,
                 items: cart,
                 total
             };
@@ -180,31 +269,38 @@
                         location,
                         country,
                         payment,
+                        payment_method: payment,
                         instructions,
-                        total,
-                        status: 'pending'
+                        total: total,
+                        total_price: total,
+                        status: 'pending',
+                        fulfillment: fulfillment,
+                        delivery_date: deliveryDate || null,
+                        time_slot: timeSlot || null
                     })
                     .select()
                     .limit(1);
 
                 if (orderError) {
-                    console.error('Erro a guardar encomenda no Supabase:', orderError);
+                    console.error('Supabase orders error:', orderError);
+                    const msg = (orderError.message || String(orderError)) + (orderError.details ? ' | ' + orderError.details : '') + (orderError.hint ? ' | ' + orderError.hint : '');
+                    alert('Encomenda guardada no dispositivo, mas não foi possível guardar no servidor.\n\nErro: ' + msg + '\n\nVerifique a consola (F12) para mais detalhes. Pode ver a encomenda em "As minhas encomendas".');
                 } else if (createdOrders && createdOrders.length) {
                     const supabaseOrderId = createdOrders[0].id;
                     const itemsPayload = cart.map(item => ({
                         order_id: supabaseOrderId,
                         name: item.name,
                         price: item.price,
-                        qty: item.qty
+                        qty: item.qty,
+                        quantity: item.qty
                     }));
                     const { error: itemsError } = await supabase
                         .from('order_items')
                         .insert(itemsPayload);
                     if (itemsError) {
-                        console.error('Erro a guardar artigos da encomenda no Supabase:', itemsError);
+                        console.error('Supabase order_items error:', itemsError);
+                        console.error('Items payload was:', itemsPayload);
                     }
-
-                    // After items are stored, update product stock levels
                     for (const item of cart) {
                         if (!item.productId) continue;
                         try {
@@ -216,27 +312,25 @@
                             if (!prodErr && prod) {
                                 const current = prod.stock_level || 0;
                                 const newStock = Math.max(current - item.qty, 0);
-                                const { error: updateErr } = await supabase
-                                    .from('products')
-                                    .update({ stock_level: newStock })
-                                    .eq('id', item.productId);
-                                if (updateErr) {
-                                    console.error('Erro a atualizar stock no Supabase:', updateErr);
-                                }
+                                await supabase.from('products').update({ stock_level: newStock }).eq('id', item.productId);
                             }
-                        } catch (stockErr) {
-                            console.error('Erro inesperado ao atualizar stock no Supabase:', stockErr);
-                        }
+                        } catch (stockErr) { console.error(stockErr); }
                     }
                 }
             } catch (err) {
                 console.error('Erro inesperado ao comunicar com o Supabase:', err);
             }
 
-            // Clear cart after successful order (local + remote)
-            localStorage.removeItem('bragaBazaarCart');
-            alert('Pedido confirmado! Obrigado pela sua encomenda.');
-            window.location.href = 'index.html';
+            // Clear cart and show confirmation (no redirect so user sees confirmation screen)
+            localStorage.setItem('bragaBazaarCart', '[]');
+            document.querySelector('.checkout-container').style.display = 'none';
+            const confEl = document.getElementById('orderConfirmation');
+            const msgEl = document.getElementById('confirmationMessage');
+            if (confEl) confEl.style.display = 'block';
+            if (msgEl) {
+                const slotText = (order.deliveryDate || '') + ' ' + (order.timeSlot || '').replace('-', ' – ');
+                msgEl.innerHTML = 'Encomenda <strong>#' + order.id + '</strong>. ' + (order.fulfillment === 'pickup' ? 'Levantamento na loja' : 'Entrega') + ': ' + slotText + '. Total <strong>€' + total.toFixed(2) + '</strong>. Um email de confirmação foi enviado para ' + (order.customer && order.customer.email ? order.customer.email : 'o seu email') + '.';
+            }
         };
     </script>
 </body>

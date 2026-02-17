@@ -1,49 +1,190 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrega | Braga Bazaar</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+    <title>Track Order | Braga Bazaar</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
     <style>
-        body { background: #f8f9fa; }
-        .page-wrap { max-width: 700px; margin: 40px auto; padding: 0 20px; }
-        .card { background: #fff; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
-        .card h1 { color: #2d7a32; margin-bottom: 20px; }
-        .card h2 { font-size: 1.1rem; color: #333; margin: 20px 0 8px; }
-        .card p, .card ul { color: #555; line-height: 1.7; margin: 0 0 12px; }
-        .card ul { padding-left: 20px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .top-bar .logo { font-size: 1.4rem; font-weight: 800; text-decoration: none; color: #333; }
-        .top-bar .logo span { color: #2d7a32; }
-        .top-bar a { color: #2d7a32; text-decoration: none; font-weight: 600; }
+        body { background: #fdfdfd; font-family: 'Inter', sans-serif; }
+        .track-container { max-width: 600px; margin: 50px auto; padding: 20px; text-align: center; }
+        
+        /* Progress Bar Styling */
+        .progress-track { display: flex; justify-content: space-between; margin: 40px 0; position: relative; }
+        .track-line, .track-fill {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            border-radius: 99px;
+        }
+        .track-line { background: #eee; z-index: 1; }
+        .track-fill { background: #2d7a32; z-index: 1; width: 0%; transition: width 0.4s ease; }
+        .step { position: relative; z-index: 2; background: white; width: 35px; height: 35px; border-radius: 50%; border: 4px solid #eee; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .step.active { border-color: #2d7a32; color: #2d7a32; }
+        .step.completed { background: #2d7a32; border-color: #2d7a32; color: white; }
+        .step-label {
+            position: absolute;
+            top: 45px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            width: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #999;
+        }
+        .step.active .step-label { color: #2d7a32; }
+
+        .order-info-box { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 60px; text-align: left; }
+        .pulse { animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(45, 122, 50, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(45, 122, 50, 0); } 100% { box-shadow: 0 0 0 0 rgba(45, 122, 50, 0); } }
     </style>
 </head>
 <body>
-    <div class="page-wrap">
-        <div class="top-bar">
-            <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
-            <a href="index.html">&larr; Voltar à loja</a>
+
+    <header class="main-header" style="background: #fff; padding: 15px 20px; border-bottom: 1px solid #eee;">
+        <div class="top-nav" style="max-width: 600px; margin: auto; display: flex; justify-content: space-between; align-items: center;">
+            <a href="index.html" class="logo" style="text-decoration:none; color:#333; font-weight:800; font-size:1.4rem;">
+                BRAGA<span style="color:#2d7a32">BAZAAR</span>
+            </a>
+            <a href="account.html" style="text-decoration:none; color:#2d7a32; font-weight:600;">My Orders</a>
         </div>
-        <div class="card">
-            <h1>Informações de entrega</h1>
-            <h2>Zona de entrega</h2>
-            <p>Entregamos em Braga e arredores. No checkout pode indicar o seu código postal para confirmar disponibilidade.</p>
-            <h2>Valor mínimo</h2>
-            <p>Encomenda mínima de 15€ para entrega ao domicílio.</p>
-            <h2>Prazos</h2>
-            <p>Encomendas feitas até às 12:00 podem ser entregues no mesmo dia (conforme disponibilidade). Caso contrário, entrega no dia útil seguinte.</p>
-            <h2>Custos de entrega</h2>
-            <ul>
-                <li>Encomendas &gt; 40€: entrega grátis</li>
-                <li>Encomendas entre 15€ e 40€: 3,50€</li>
-            </ul>
-            <h2>Levantamento na loja</h2>
-            <p>Pode optar por levantar a encomenda na nossa loja em Braga, sem custos de entrega. O horário de levantamento será combinado após confirmação do pedido.</p>
+    </header>
+
+    <main class="track-container">
+        <h2 id="statusHeading" aria-live="polite">Finding your order...</h2>
+        <p id="orderIdLabel" style="color:#888;"></p>
+        <p id="lastUpdated" style="color:#aaa; font-size:.85rem;"></p>
+
+        <div class="progress-track">
+            <div class="track-line"></div>
+            <div class="track-fill" id="trackFill"></div>
+            <div class="step" id="step-pending">
+                <i class="fas fa-receipt"></i>
+                <div class="step-label">Received</div>
+            </div>
+            <div class="step" id="step-preparing">
+                <i class="fas fa-box"></i>
+                <div class="step-label">Packing</div>
+            </div>
+            <div class="step" id="step-shipped">
+                <i class="fas fa-bicycle"></i>
+                <div class="step-label">On the Way</div>
+            </div>
+            <div class="step" id="step-delivered">
+                <i class="fas fa-check"></i>
+                <div class="step-label">Delivered</div>
+            </div>
         </div>
-    </div>
+
+        
+
+        <div id="orderContent" class="order-info-box" style="display:none;">
+            <h4 style="margin:0 0 10px 0;">Delivery Details</h4>
+            <p id="deliveryAddress" style="margin:0; font-size:0.9rem; color:#666;"></p>
+            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span id="itemCount" style="font-weight:600;"></span>
+                <span id="totalPrice" style="color:#2d7a32; font-weight:800; font-size:1.2rem;"></span>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './supabaseConfig.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get('id');
+        let pollHandle = null;
+
+        if (!orderId) {
+            document.getElementById('statusHeading').innerText = "Order ID missing.";
+            document.getElementById('orderIdLabel').innerText = "";
+            document.getElementById('orderContent').style.display = "none";
+        } else {
+            fetchTrackingData();
+            pollHandle = setInterval(fetchTrackingData, 30000);
+        }
+
+        async function fetchTrackingData() {
+            try {
+                const { data: order, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('id', orderId)
+                    .single();
+
+                if (error || !order) throw new Error("Order not found");
+                updateUI(order);
+            } catch (err) {
+                document.getElementById('statusHeading').innerText = "Order not found.";
+                document.getElementById('orderIdLabel').innerText = "";
+                document.getElementById('orderContent').style.display = "none";
+                if (pollHandle) {
+                    clearInterval(pollHandle);
+                    pollHandle = null;
+                }
+            }
+        }
+
+        function updateUI(order) {
+            const status = (order.status || 'pending').toLowerCase();
+            const steps = ['pending', 'preparing', 'shipped', 'delivered'];
+            const currentIndex = Math.max(0, steps.indexOf(status));
+            const pct = currentIndex <= 0 ? 0 : (currentIndex / (steps.length - 1)) * 100;
+
+            document.getElementById('statusHeading').innerText = getStatusMessage(status);
+            document.getElementById('orderIdLabel').innerText = orderId ? `Tracking ID: ${order.client_order_id || String(order.id || '').slice(0, 8)}` : '';
+            document.getElementById('trackFill').style.width = `${pct}%`;
+
+            steps.forEach((s, idx) => {
+                const el = document.getElementById(`step-${s}`);
+                if (!el) return;
+                el.className = 'step';
+                if (idx < currentIndex) el.classList.add('completed');
+                else if (idx === currentIndex) {
+                    el.classList.add(status === 'delivered' ? 'completed' : 'active', 'pulse');
+                }
+            });
+            if (status === 'delivered') {
+                const deliveredEl = document.getElementById('step-delivered');
+                if (deliveredEl) deliveredEl.classList.remove('pulse');
+            }
+
+            const updatedAt = order.updated_at || order.created_at;
+            document.getElementById('lastUpdated').innerText = updatedAt
+                ? `Last updated: ${new Date(updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                : '';
+
+            document.getElementById('orderContent').style.display = 'block';
+            document.getElementById('deliveryAddress').innerText = [order.address, order.city, order.postal, order.location].filter(Boolean).join(', ') || '—';
+            document.getElementById('totalPrice').innerText = `€${parseFloat(order.total_price || order.total || 0).toFixed(2)}`;
+
+            const count = order.item_count ?? (Array.isArray(order.items) ? order.items.reduce((a, i) => a + (i.qty || 1), 0) : null);
+            document.getElementById('itemCount').innerText = count != null ? `${count} item${count === 1 ? '' : 's'}` : 'Order items';
+
+            if (status === 'delivered' && pollHandle) {
+                clearInterval(pollHandle);
+                pollHandle = null;
+            }
+        }
+
+        function getStatusMessage(status) {
+            const msgs = {
+                'pending': "We've received your order!",
+                'preparing': "Our team is picking your groceries...",
+                'shipped': "The courier is on the way to you!",
+                'delivered': "Order delivered! Enjoy your fresh groceries."
+            };
+            return msgs[status] || "Updating status...";
+        }
+    </script>
 </body>
 </html>

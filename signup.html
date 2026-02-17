@@ -1,216 +1,379 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2d7a32">
-    <title>Registo | Braga Bazaar</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style type="text/css">.main-header .site-nav a.site-nav-icon-only,.main-header .site-nav a.site-nav-icon-only i,.main-header .site-nav a.site-nav-icon-only .site-nav-cart-total{color:#000!important}.main-header .site-nav a.site-nav-icon-only:link,.main-header .site-nav a.site-nav-icon-only:visited,.main-header .site-nav a.site-nav-icon-only:hover,.main-header .site-nav a.site-nav-icon-only:focus{color:#000!important}.main-header .site-nav a.site-nav-icon-only:hover i,.main-header .site-nav a.site-nav-icon-only:focus i{color:#000!important}</style>
-    <style>
-        body { background: #fff; font-family: 'Inter', sans-serif; }
-        .lang-bar { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; }
-        .lang-bar button { background: none; border: 1px solid #4a6d1a; color: #4a6d1a; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: 600; }
-        .lang-bar button.active { background: #4a6d1a; color: #fff; }
-        .signup-container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px; }
-        .signup-container h2 { color: #4a6d1a; margin-bottom: 24px; }
-        .signup-container label { font-weight: bold; color: #333; margin-top: 12px; display: block; }
-        .signup-container input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; margin-top: 6px; margin-bottom: 16px; }
-        .signup-container .cta-primary { border-radius: 20px; padding: 12px 32px; width: 100%; margin-top: 12px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2d7a32" />
+  <title>Registo | Braga Bazaar</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+        integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style type="text/css">
+    .main-header .site-nav a.site-nav-icon-only,
+    .main-header .site-nav a.site-nav-icon-only i,
+    .main-header .site-nav a.site-nav-icon-only .site-nav-cart-total { color:#000!important }
+    .main-header .site-nav a.site-nav-icon-only:link,
+    .main-header .site-nav a.site-nav-icon-only:visited,
+    .main-header .site-nav a.site-nav-icon-only:hover,
+    .main-header .site-nav a.site-nav-icon-only:focus { color:#000!important }
+    .main-header .site-nav a.site-nav-icon-only:hover i,
+    .main-header .site-nav a.site-nav-icon-only:focus i { color:#000!important }
+  </style>
+
+  <style>
+    body { background:#fff; font-family:'Inter', sans-serif; }
+
+    .lang-bar {
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      padding:12px 16px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .lang-btn {
+      background:none;
+      border:1px solid #4a6d1a;
+      color:#4a6d1a;
+      padding:6px 14px;
+      border-radius:20px;
+      cursor:pointer;
+      font-weight:700;
+      font-size: 0.9rem;
+      min-height: 40px;
+    }
+    .lang-btn.active { background:#4a6d1a; color:#fff; }
+
+    .signup-container {
+      max-width: 420px;
+      margin: 26px auto 60px;
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 4px 24px rgba(0,0,0,0.08);
+      padding:32px;
+    }
+    .signup-container h2 { color:#4a6d1a; margin:0 0 18px; font-weight: 900; }
+
+    .signup-container label {
+      font-weight:800;
+      color:#333;
+      margin-top:12px;
+      display:block;
+      font-size: 0.9rem;
+    }
+
+    .signup-container input,
+    .signup-container select {
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #e5e7eb;
+      margin-top:6px;
+      margin-bottom:14px;
+      font-size: 1rem;
+      outline: none;
+      background: #fff;
+    }
+    .signup-container input:focus,
+    .signup-container select:focus {
+      border-color: #2d7a32;
+      box-shadow: 0 0 0 3px rgba(45,122,50,0.15);
+    }
+
+    .row-2 {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 420px) {
+      .row-2 { grid-template-columns: 1fr; }
+    }
+
+    .password-wrap { position: relative; }
+    .toggle-pass {
+      position:absolute;
+      right:10px;
+      top: 44px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor:pointer;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .signup-container .cta-primary {
+      border-radius:999px;
+      padding:12px 18px;
+      width:100%;
+      margin-top:10px;
+      border:none;
+      cursor:pointer;
+      font-weight: 900;
+      min-height: 44px;
+    }
+
+    #signupMessage {
+      margin-top:16px;
+      padding:12px;
+      border-radius:10px;
+      display:none;
+      min-height:24px;
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+
+    .helper {
+      margin-top:12px;
+      font-size: 11px;
+      color:#94a3b8;
+      text-align:center;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="lang-bar">
-        <button type="button" id="btn-pt" class="lang-btn active">PT</button>
-        <button type="button" id="btn-en" class="lang-btn">EN</button>
-    </div>
-    <div class="signup-container">
-        <h2 data-en="Create Account" data-pt="Criar Conta">Criar Conta</h2>
-        <form id="signupForm" action="javascript:void(0)" method="post">
-            <label for="fullName" data-en="Full Name" data-pt="Nome Completo">Nome Completo</label>
-            <input type="text" id="fullName" required>
+  <div class="lang-bar">
+    <button type="button" id="btn-pt" class="lang-btn active">PT</button>
+    <button type="button" id="btn-en" class="lang-btn">EN</button>
+  </div>
 
-            <label for="email" data-en="Email" data-pt="Email">Email</label>
-            <input type="email" id="email" required>
+  <main class="signup-container">
+    <h2 data-en="Create Account" data-pt="Criar Conta">Criar Conta</h2>
 
-            <label for="phone" data-en="Phone" data-pt="Telemóvel">Telemóvel</label>
-            <input type="tel" id="phone" required>
+    <form id="signupForm" novalidate>
+      <label for="fullName" data-en="Full Name" data-pt="Nome Completo">Nome Completo</label>
+      <input type="text" id="fullName" required autocomplete="name" />
 
-            <label for="address" data-en="Address" data-pt="Morada">Morada</label>
-            <input type="text" id="address" required>
+      <label for="email" data-en="Email" data-pt="Email">Email</label>
+      <input type="email" id="email" required autocomplete="email" />
 
-            <label for="postal" data-en="Postal Code" data-pt="Código Postal">Código Postal</label>
-            <input type="text" id="postal" required>
+      <label for="phone" data-en="Phone" data-pt="Telemóvel">Telemóvel</label>
+      <input type="tel" id="phone" required autocomplete="tel" placeholder="9xxxxxxxx" />
 
-            <label for="city" data-en="City" data-pt="Cidade">Cidade</label>
-            <input type="text" id="city" required>
+      <label for="address" data-en="Address" data-pt="Morada">Morada</label>
+      <input type="text" id="address" required autocomplete="street-address" />
 
-            <label for="location" data-en="District / Location" data-pt="Freguesia / Localização">Freguesia / Localização</label>
-            <input type="text" id="location" required>
+      <div class="row-2">
+        <div>
+          <label for="postal" data-en="Postal Code" data-pt="Código Postal">Código Postal</label>
+          <input type="text" id="postal" required inputmode="numeric" placeholder="4700-000" pattern="^\d{4}-\d{3}$" autocomplete="postal-code" />
+        </div>
+        <div>
+          <label for="city" data-en="City" data-pt="Cidade">Cidade</label>
+          <input type="text" id="city" required autocomplete="address-level2" />
+        </div>
+      </div>
 
-            <label for="country" data-en="Country" data-pt="País">País</label>
-            <select id="country" required>
-                <option value="Portugal">Portugal</option>
-                <option value="Spain">Spain / Espanha</option>
-                <option value="France">France / França</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Germany">Germany / Alemanha</option>
-                <option value="Other">Other / Outro</option>
-            </select>
+      <label for="location" data-en="District / Location" data-pt="Freguesia / Localização">Freguesia / Localização</label>
+      <input type="text" id="location" required autocomplete="address-level3" />
 
-            <label for="password" data-en="Password" data-pt="Password">Password</label>
-            <input type="password" id="password" required>
+      <label for="country" data-en="Country" data-pt="País">País</label>
+      <select id="country" required autocomplete="country-name">
+        <option value="Portugal">Portugal</option>
+        <option value="Spain">Spain / Espanha</option>
+        <option value="France">France / França</option>
+        <option value="United Kingdom">United Kingdom</option>
+        <option value="Germany">Germany / Alemanha</option>
+        <option value="Other">Other / Outro</option>
+      </select>
 
-            <button type="submit" id="signupBtn" class="cta-primary" data-en="Create account" data-pt="Criar conta" style="border:none;cursor:pointer;">Create account</button>
-        </form>
-        <div id="signupMessage" style="margin-top:16px;padding:12px;border-radius:8px;display:none;min-height:24px;"></div>
-        <p style="margin-top:12px;font-size:11px;color:#888;text-align:center;">If nothing happens: refresh the page (Ctrl+F5) and try again. Open the site via a web server or your deployed URL, not as a file.</p>
-    </div>
-    <script>
-        var signupT = {
-            en: { signingUp: 'Signing up...', createAccount: 'Create account', signUp: 'Create account', errorRegister: 'Error signing up: ', accountCreated: 'Account created! Taking you to checkout...', accountCreatedConfirm: "We've sent you a verification email. Check your inbox and click the link to verify. Then log in—your details will be saved for checkout.", goToLogin: 'Go to Log in', errorUnexpected: 'Unexpected error. Check your connection or try again later. ' },
-            pt: { signingUp: 'A registar...', createAccount: 'Criar conta', signUp: 'Criar conta', errorRegister: 'Erro ao registar: ', accountCreated: 'Conta criada! A levá-lo ao checkout...', accountCreatedConfirm: "Enviámos um email de verificação. Verifique a caixa de entrada e clique no link. Depois entre na sua conta—os seus dados ficarão guardados para o checkout.", goToLogin: 'Ir para Entrar', errorUnexpected: 'Erro inesperado. Verifique a ligação à internet ou tente mais tarde. ' }
-        };
-        function signupLang() { return localStorage.getItem('preferredLang') || 'pt'; }
-        window.signupText = function(key) { var t = signupT[signupLang()]; return (t && t[key]) || signupT.pt[key] || key; };
-        function setSignupLanguage(lang) {
-            localStorage.setItem('preferredLang', lang);
-            var nodes = document.querySelectorAll('[data-en][data-pt]');
-            for (var i = 0; i < nodes.length; i++) {
-                var el = nodes[i];
-                var val = el.getAttribute('data-' + lang);
-                if (val) el.textContent = val;
-            }
-            var bPt = document.getElementById('btn-pt');
-            var bEn = document.getElementById('btn-en');
-            if (bPt) { bPt.classList.toggle('active', lang === 'pt'); }
-            if (bEn) { bEn.classList.toggle('active', lang === 'en'); }
-            document.title = lang === 'en' ? 'Sign Up | Braga Bazaar' : 'Registo | Braga Bazaar';
-        }
-        (function initLang() {
-            var lang = signupLang();
-            setSignupLanguage(lang);
-            document.getElementById('btn-pt').onclick = function() { setSignupLanguage('pt'); };
-            document.getElementById('btn-en').onclick = function() { setSignupLanguage('en'); };
-        })();
-    </script>
-    <script type="module">
-        let supabase;
-        try {
-            const m = await import('./supabaseConfig.js');
-            supabase = m.supabase;
-        } catch (err) {
-            console.error('Supabase load failed:', err);
-            var msg = document.getElementById('signupMessage');
-            if (msg) {
-                msg.style.display = 'block';
-                msg.style.background = '#fee';
-                msg.style.color = '#c00';
-                msg.textContent = 'Could not load signup. Use the live site URL (not a local file) and refresh.';
-            }
-            throw err;
-        }
+      <div class="password-wrap">
+        <label for="password" data-en="Password" data-pt="Password">Password</label>
+        <input type="password" id="password" required minlength="8" autocomplete="new-password" />
+        <button class="toggle-pass" type="button" id="togglePass" aria-label="Show password">Show</button>
+      </div>
 
-        const form = document.getElementById('signupForm');
-        const btn = document.getElementById('signupBtn');
-        const msgEl = document.getElementById('signupMessage');
-        if (!form || !btn || !msgEl) {
-            if (msgEl) { msgEl.style.display = 'block'; msgEl.style.background = '#fee'; msgEl.textContent = 'Page error. Refresh and try again.'; }
-        } else {
+      <button type="submit" id="signupBtn" class="cta-primary" data-en="Create account" data-pt="Criar conta">
+        Criar conta
+      </button>
+    </form>
 
-        function showMessage(text, isError) {
+    <div id="signupMessage"></div>
+
+    <p class="helper">
+      If nothing happens: refresh (Ctrl+F5) and try again. Open the site via a web server or your deployed URL, not as a file.
+    </p>
+  </main>
+
+  <script>
+    var signupT = {
+      en: {
+        signingUp: 'Signing up...',
+        createAccount: 'Create account',
+        errorRegister: 'Error signing up: ',
+        accountCreated: 'Account created! Taking you to checkout...',
+        accountCreatedConfirm: "We've sent you a verification email. Check your inbox and click the link to verify. Then log in—your details will be saved for checkout.",
+        goToLogin: 'Go to Log in',
+        errorUnexpected: 'Unexpected error. Check your connection or try again later. ',
+        alreadyRegistered: 'You already have an account with this email. Please log in instead.',
+        alreadyRegisteredLink: 'Go to Log in'
+      },
+      pt: {
+        signingUp: 'A registar...',
+        createAccount: 'Criar conta',
+        errorRegister: 'Erro ao registar: ',
+        accountCreated: 'Conta criada! A levá-lo ao checkout...',
+        accountCreatedConfirm: "Enviámos um email de verificação. Verifique a caixa de entrada e clique no link. Depois entre na sua conta—os seus dados ficarão guardados para o checkout.",
+        goToLogin: 'Ir para Entrar',
+        errorUnexpected: 'Erro inesperado. Verifique a ligação à internet ou tente mais tarde. ',
+        alreadyRegistered: 'Já tem uma conta com este email. Entre na sua conta em vez disso.',
+        alreadyRegisteredLink: 'Ir para Entrar'
+      }
+    };
+
+    function signupLang() { return localStorage.getItem('preferredLang') || 'pt'; }
+    window.signupText = function(key) {
+      var t = signupT[signupLang()];
+      return (t && t[key]) || signupT.pt[key] || key;
+    };
+
+    function setSignupLanguage(lang) {
+      localStorage.setItem('preferredLang', lang);
+      document.querySelectorAll('[data-en][data-pt]').forEach(function(el){
+        var val = el.getAttribute('data-' + lang);
+        if (val) el.textContent = val;
+      });
+      document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.title = lang === 'en' ? 'Sign Up | Braga Bazaar' : 'Registo | Braga Bazaar';
+    }
+
+    (function initLang() {
+      setSignupLanguage(signupLang());
+      document.getElementById('btn-pt').onclick = function(){ setSignupLanguage('pt'); };
+      document.getElementById('btn-en').onclick = function(){ setSignupLanguage('en'); };
+    })();
+
+    // Show/Hide password
+    (function(){
+      var btn = document.getElementById('togglePass');
+      var input = document.getElementById('password');
+      if (!btn || !input) return;
+      btn.onclick = function(){
+        var isPw = input.type === 'password';
+        input.type = isPw ? 'text' : 'password';
+        btn.textContent = isPw ? 'Hide' : 'Show';
+        btn.setAttribute('aria-label', isPw ? 'Hide password' : 'Show password');
+      };
+    })();
+  </script>
+
+  <script type="module">
+    let supabase;
+    try {
+      const m = await import('./supabaseConfig.js');
+      supabase = m.supabase;
+    } catch (err) {
+      console.error('Supabase load failed:', err);
+      const msg = document.getElementById('signupMessage');
+      if (msg) {
+        msg.style.display = 'block';
+        msg.style.background = '#fee';
+        msg.style.color = '#c00';
+        msg.textContent = 'Could not load signup. Use the live site URL (not a local file) and refresh.';
+      }
+      throw err;
+    }
+
+    const form = document.getElementById('signupForm');
+    const btn = document.getElementById('signupBtn');
+    const msgEl = document.getElementById('signupMessage');
+
+    function showMessage(text, isError) {
+      msgEl.style.display = 'block';
+      msgEl.style.background = isError ? '#fee' : '#e8f5e9';
+      msgEl.style.color = isError ? '#c00' : '#2d7a32';
+      msgEl.textContent = text;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Simple client-side postal validation when pattern is set
+      const postalEl = document.getElementById('postal');
+      if (postalEl && postalEl.value && !postalEl.checkValidity()) {
+        const lang = localStorage.getItem('preferredLang') || 'pt';
+        showMessage(lang === 'en' ? 'Postal code format should be 0000-000.' : 'Formato do código postal: 0000-000.', true);
+        postalEl.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = window.signupText('signingUp');
+      showMessage(window.signupText('signingUp'), false);
+
+      const user = {
+        fullName: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        postal: document.getElementById('postal').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        country: document.getElementById('country').value.trim()
+      };
+      const password = document.getElementById('password').value;
+
+      try {
+        const redirectUrl = window.location.origin + '/login.html';
+
+        const { data, error } = await supabase.auth.signUp({
+          email: user.email,
+          password,
+          options: {
+            data: { ...user },
+            emailRedirectTo: redirectUrl
+          }
+        });
+
+        if (error) {
+          const msg = String(error.message || '').toLowerCase();
+          const isAlreadyRegistered = msg.includes('already registered') || msg.includes('already exists') || msg.includes('user already') || msg.includes('already been registered');
+          if (isAlreadyRegistered) {
             msgEl.style.display = 'block';
-            msgEl.style.background = isError ? '#fee' : '#e8f5e9';
-            msgEl.style.color = isError ? '#c00' : '#2d7a32';
-            msgEl.textContent = text;
+            msgEl.style.background = '#fff3cd';
+            msgEl.style.color = '#856404';
+            msgEl.innerHTML = window.signupText('alreadyRegistered') + ' <a href="login.html" style="display:block;margin-top:10px;color:#2d7a32;font-weight:700;">' + window.signupText('alreadyRegisteredLink') + '</a>';
+          } else {
+            showMessage(window.signupText('errorRegister') + error.message, true);
+          }
+          btn.disabled = false;
+          btn.textContent = window.signupText('createAccount');
+          return;
         }
 
-        form.onsubmit = async function (e) {
-            e.preventDefault();
-            if (!btn || !msgEl) return;
-            btn.disabled = true;
-            var signingUpMsg = window.signupText ? window.signupText('signingUp') : 'A registar...';
-            btn.textContent = signingUpMsg;
-            msgEl.style.display = 'block';
-            msgEl.style.background = '#f0f0f0';
-            msgEl.style.color = '#333';
-            msgEl.textContent = signingUpMsg;
+        localStorage.setItem('bragaBazaarUser', JSON.stringify(user));
 
-            const user = {
-                fullName: document.getElementById('fullName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                address: document.getElementById('address').value.trim(),
-                postal: document.getElementById('postal').value.trim(),
-                city: document.getElementById('city').value.trim(),
-                location: document.getElementById('location').value.trim(),
-                country: document.getElementById('country').value.trim()
-            };
-            const password = document.getElementById('password').value;
-
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email: user.email,
-                    password,
-                    options: {
-                        data: {
-                            fullName: user.fullName,
-                            phone: user.phone,
-                            address: user.address,
-                            postal: user.postal,
-                            city: user.city,
-                            location: user.location,
-                            country: user.country
-                        }
-                    }
-                });
-
-                if (error) {
-                    showMessage((window.signupText ? window.signupText('errorRegister') : 'Erro ao registar: ') + error.message, true);
-                    btn.disabled = false;
-                    btn.textContent = window.signupText ? window.signupText('createAccount') : 'Criar conta';
-                    btn.type = 'submit';
-                    return;
-                }
-
-                localStorage.setItem('bragaBazaarUser', JSON.stringify(user));
-
-                if (data?.user && !data?.session) {
-                    // Email confirmation required: tell them to check email and log in
-                    var msg = window.signupText ? window.signupText('accountCreatedConfirm') : "Enviámos um email de verificação. Verifique a caixa de entrada e clique no link. Depois entre na sua conta.";
-                    showMessage(msg, false);
-                    btn.textContent = window.signupText ? window.signupText('goToLogin') : 'Ir para Entrar';
-                    btn.disabled = false;
-                    btn.type = 'button';
-                    btn.onclick = function() { window.location.href = 'login.html'; };
-                    return;
-                }
-
-                localStorage.setItem('userIsLoggedIn', 'true');
-                var successMsg = window.signupText ? window.signupText('accountCreated') : 'Conta criada! A levá-lo ao checkout...';
-                showMessage(successMsg, false);
-                btn.textContent = window.signupText ? window.signupText('createAccount') : 'Criar conta';
-                btn.disabled = false;
-                setTimeout(function() {
-                    window.location.href = 'checkout.html';
-                }, 1500);
-            } catch (err) {
-                console.error(err);
-                showMessage((window.signupText ? window.signupText('errorUnexpected') : 'Erro inesperado. Verifique a ligação à internet ou tente mais tarde. ') + (err?.message || ''), true);
-                btn.disabled = false;
-                btn.textContent = window.signupText ? window.signupText('createAccount') : 'Criar conta';
-                btn.type = 'submit';
-            }
-        };
+        // If email confirmation is required, Supabase returns user but no session
+        if (data?.user && !data?.session) {
+          showMessage(window.signupText('accountCreatedConfirm'), false);
+          btn.textContent = window.signupText('goToLogin');
+          btn.disabled = false;
+          btn.type = 'button';
+          btn.onclick = () => window.location.href = 'login.html';
+          return;
         }
-    </script>
-    <script>
-        (function() {
-            var f = document.getElementById('signupForm');
-            if (f) f.addEventListener('submit', function(e) { e.preventDefault(); }, true);
-        })();
-    </script>
+
+        localStorage.setItem('userIsLoggedIn', 'true');
+        showMessage(window.signupText('accountCreated'), false);
+        btn.disabled = false;
+        btn.textContent = window.signupText('createAccount');
+
+        const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
+        const nextUrl = (cart && cart.length > 0) ? 'checkout.html' : 'index.html';
+        setTimeout(() => { window.location.href = nextUrl; }, 1200);
+      } catch (err) {
+        console.error(err);
+        showMessage(window.signupText('errorUnexpected') + (err?.message || ''), true);
+        btn.disabled = false;
+        btn.textContent = window.signupText('createAccount');
+      }
+    });
+  </script>
 </body>
 </html>

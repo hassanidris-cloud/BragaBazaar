@@ -9,8 +9,12 @@ export const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mZWJncmVjemx4b3FraWFic2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTIyMjYsImV4cCI6MjA4NjEyODIyNn0.DZLqfz1S6KxYR7bCqxL14KL8Lso8uwTxxqvwOYqiodU'
 );
 
-// Admin by email: users listed here are treated as admins and redirected to admin after login.
-// Add your email (lowercase) so you can access admin without setting metadata in Supabase.
+// Admin PIN: required to open the admin panel (unless you log in with admin email below).
+// Change this to your own 4–8 digit PIN. Used only in the browser; keep it private.
+export const ADMIN_PIN = '1234';
+
+// Admin email login: users with these emails can also access the admin panel by logging in
+// at login.html?redirect=admin.html (same Supabase password as the main site). Create the user in Supabase if needed.
 export const ADMIN_EMAILS = [
   'bragabazaar@gmail.com'
 ];

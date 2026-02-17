@@ -1,880 +1,1950 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Braga Bazaar</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background: #f5f5f5;
-            font-family: 'Inter', sans-serif;
-        }
-        .admin-wrapper {
-            max-width: 1100px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            padding: 24px 28px 32px;
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .admin-header h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #2d7a32;
-        }
-        .admin-header a {
-            text-decoration: none;
-            font-size: 14px;
-            color: #2d7a32;
-            border: 1px solid #2d7a32;
-            padding: 6px 14px;
-            border-radius: 20px;
-        }
-        .admin-filters {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .admin-filters select {
-            padding: 6px 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        .orders-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        .orders-table thead {
-            background: #f1f5f1;
-        }
-        .orders-table th,
-        .orders-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-        }
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .badge-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .badge-completed {
-            background: #d4edda;
-            color: #155724;
-        }
-        .btn-small {
-            padding: 4px 10px;
-            border-radius: 14px;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .btn-complete {
-            background: #2d7a32;
-            color: #fff;
-        }
-        .btn-complete[disabled] {
-            opacity: 0.5;
-            cursor: default;
-        }
-        .btn-details {
-            background: #f0f0f0;
-            color: #333;
-            margin-left: 6px;
-        }
-        .btn-remove {
-            background: #dc3545;
-            color: #fff;
-            margin-left: 6px;
-        }
-        .btn-remove:hover {
-            background: #c82333;
-        }
-        .no-orders {
-            text-align: center;
-            padding: 40px 0 10px;
-            color: #777;
-        }
-        .order-details {
-            margin-top: 22px;
-            padding-top: 16px;
-            border-top: 1px solid #eee;
-            font-size: 14px;
-        }
-        .order-details h2 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #2d7a32;
-        }
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px 30px;
-            margin-bottom: 14px;
-        }
-        .details-label {
-            font-weight: 600;
-            color: #555;
-        }
-        .details-value {
-            color: #222;
-        }
-        .items-list {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 8px;
-        }
-        .items-list li {
-            padding: 4px 0;
-            border-bottom: 1px solid #f2f2f2;
-        }
-        .items-list li:last-child {
-            border-bottom: none;
-        }
-        .admin-products {
-            margin-top: 32px;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-        .admin-products-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .admin-products-header h2 {
-            font-size: 18px;
-            color: #2d7a32;
-        }
-        .btn-primary {
-            background: #2d7a32;
-            color: #fff;
-            border: none;
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .product-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px 20px;
-            margin-bottom: 16px;
-            font-size: 13px;
-        }
-        .product-form label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #555;
-        }
-        .product-form input,
-        .product-form select {
-            width: 100%;
-            padding: 6px 8px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 13px;
-        }
-        .product-form .full-width {
-            grid-column: 1 / -1;
-        }
-        .products-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .products-table th,
-        .products-table td {
-            padding: 8px 6px;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-        }
-        .stock-ok {
-            color: #2d7a32;
-            font-weight: 600;
-        }
-        .stock-out {
-            color: #e31e24;
-            font-weight: 600;
-        }
-        @media (max-width: 600px) {
-            .admin-wrapper {
-                margin: 20px 10px;
-                padding: 16px;
-            }
-            .orders-table th,
-            .orders-table td {
-                font-size: 12px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Suite | Braga Bazaar</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    :root{
+      --green:#2d7a32;
+      --green2:#1e5222;
+      --slate:#1e293b;
+      --muted:#64748b;
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --border:#e2e8f0;
+      --shadow:0 4px 18px rgba(15,23,42,0.08);
+      --radius:16px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{ margin:0; background:var(--bg); color:var(--slate); font-family:'Inter',system-ui,-apple-system,sans-serif; }
+    a{ color:inherit; }
+
+    .admin-wrapper{ max-width:1200px; margin:18px auto; padding:0 16px; }
+
+    /* Top bar */
+    .top-bar{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      margin-bottom:14px;
+    }
+    .brand h1{ margin:0; font-weight:800; color:var(--green); letter-spacing:0.3px; }
+    .brand p{ margin:6px 0 0; color:var(--muted); font-size:0.9rem; }
+
+    .top-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px; font-weight:700; font-size:0.82rem;
+      border:1px solid var(--border); background:#fff;
+    }
+    .chip .dot{ width:8px; height:8px; border-radius:50%; background:#94a3b8; }
+    .chip.online .dot{ background:#22c55e; }
+    .chip.offline .dot{ background:#ef4444; }
+    .chip small{ color:var(--muted); font-weight:700; }
+
+    /* Tabs */
+    .tab-nav{
+      display:flex; gap:10px; flex-wrap:wrap;
+      padding:10px; background:#fff; border:1px solid var(--border);
+      border-radius:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom:18px;
+    }
+    .tab-btn{
+      appearance:none; border:1px solid transparent; background:transparent;
+      padding:10px 14px; border-radius:12px;
+      font-weight:800; color:var(--muted); cursor:pointer;
+      display:inline-flex; align-items:center; gap:10px;
+      transition:0.15s ease;
+    }
+    .tab-btn:hover{ background:#f1f5f9; color:var(--slate); }
+    .tab-btn.active{
+      background:#f1f5f9; color:var(--green);
+      border-color:#dbeafe;
+    }
+
+    /* Cards */
+    .content-section{ display:none; }
+    .content-section.active{ display:block; }
+    .card{
+      background:var(--card); border:1px solid var(--border);
+      border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:18px; margin-bottom:16px;
+    }
+    .card-header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .card-header h2{ margin:0; font-size:1.15rem; }
+    .subtle{ color:var(--muted); font-size:0.9rem; margin:6px 0 0; }
+
+    /* Controls */
+    .control-row{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .input, .select{
+      padding:11px 12px; border:1px solid var(--border);
+      border-radius:12px; background:#fff; color:var(--slate);
+      outline:none;
+    }
+    .input:focus, .select:focus{ border-color:#94a3b8; box-shadow:0 0 0 4px rgba(148,163,184,0.18); }
+    .input{ min-width:220px; flex:1; }
+    .select{ min-width:170px; font-weight:700; }
+
+    /* Buttons */
+    .btn{
+      border:none; border-radius:12px; padding:10px 14px;
+      font-weight:800; cursor:pointer;
+      display:inline-flex; align-items:center; gap:10px;
+      transition:0.15s ease;
+      white-space:nowrap;
+    }
+    .btn:active{ transform:translateY(1px); }
+    .btn-dark{ background:var(--slate); color:#fff; }
+    .btn-green{ background:var(--green); color:#fff; }
+    .btn-green:hover{ background:var(--green2); }
+    .btn-red{ background:#ef4444; color:#fff; }
+    .btn-red:hover{ background:#dc2626; }
+    .btn-gray{ background:#f1f5f9; color:#334155; border:1px solid var(--border); }
+    .btn-icon{
+      padding:9px 10px; border-radius:12px;
+      background:#f1f5f9; border:1px solid var(--border); color:#334155;
+    }
+    .btn-icon:hover{ background:#e2e8f0; }
+
+    /* Table */
+    .table-wrap{ width:100%; overflow:auto; border-radius:14px; border:1px solid var(--border); }
+    table{ width:100%; border-collapse:collapse; min-width:860px; background:#fff; }
+    th{
+      text-align:left; padding:12px 12px; background:#f8fafc;
+      color:var(--muted); font-size:0.75rem;
+      text-transform:uppercase; letter-spacing:0.07em;
+      border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:1;
+    }
+    td{ padding:14px 12px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
+    tr:hover td{ background:#fbfdff; }
+
+    code.tag{
+      background:#f1f5f9; padding:4px 8px; border-radius:999px;
+      border:1px solid #e2e8f0; font-weight:800; font-size:0.82rem;
+    }
+
+    /* Badges */
+    .badge{
+      padding:6px 10px; border-radius:999px;
+      font-size:0.72rem; font-weight:900; text-transform:uppercase;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .status-pending{ background:#fef3c7; color:#92400e; }
+    .status-shipped{ background:#e0f2fe; color:#075985; }
+    .status-delivered{ background:#dcfce7; color:#166534; }
+    .badge-new{ background:var(--green); color:#fff; }
+
+    /* Inventory inputs */
+    .mini-input{
+      width:92px; padding:9px 10px; text-align:center; font-weight:900;
+      border-radius:12px; border:1px solid var(--border);
+      outline:none;
+    }
+    .mini-input:focus{ border-color:#94a3b8; box-shadow:0 0 0 4px rgba(148,163,184,0.18); }
+    .stock-low{ color:#ef4444; }
+
+    /* Role-based UI helper */
+    .hidden{ display:none !important; }
+
+    /* Modal */
+    .modal{
+      display:none; position:fixed; inset:0; z-index:9999;
+      background:rgba(2,6,23,0.55);
+      align-items:center; justify-content:center; padding:18px;
+    }
+    .modal.show{ display:flex; }
+    .modal-card{
+      width:100%; max-width:720px;
+      background:#fff; border-radius:18px;
+      border:1px solid var(--border); box-shadow:0 18px 60px rgba(0,0,0,0.28);
+      max-height:90vh; overflow:auto;
+    }
+    .modal-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      padding:16px 16px 10px; border-bottom:1px solid var(--border);
+    }
+    .modal-head h3{ margin:0; font-size:1.1rem; }
+    .modal-body{ padding:16px; }
+    .kvs{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .kv{
+      border:1px solid var(--border); border-radius:14px;
+      padding:12px; background:#fbfdff;
+    }
+    .kv small{ display:block; color:var(--muted); font-weight:800; margin-bottom:4px; }
+    .kv div{ font-weight:800; }
+    .items{
+      margin-top:14px; border:1px solid var(--border); border-radius:14px; overflow:hidden;
+    }
+    .items header{
+      padding:10px 12px; background:#f8fafc; color:var(--muted);
+      font-weight:900; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em;
+      border-bottom:1px solid var(--border);
+    }
+    .items .row{
+      display:flex; justify-content:space-between; gap:12px;
+      padding:12px; border-bottom:1px solid #f1f5f9;
+      font-weight:800;
+    }
+    .items .row:last-child{ border-bottom:none; }
+    .items .row span{ color:var(--muted); font-weight:900; }
+    .modal-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .muted-note{ color:var(--muted); font-size:0.88rem; margin-top:10px; }
+
+    /* PIN gate */
+    #adminPinScreen{ display:none; min-height:100vh; align-items:center; justify-content:center; padding:20px; }
+    .pin-card{
+      background:#fff; border-radius:18px; border:1px solid var(--border);
+      box-shadow:var(--shadow); width:100%; max-width:380px;
+      padding:28px;
+    }
+    .pin-card h1{ margin:0 0 6px 0; font-weight:900; color:var(--green); }
+    .pin-card p{ margin:0 0 18px 0; color:var(--muted); font-size:0.92rem; }
+    .pin-card label{ display:block; font-weight:900; margin-bottom:8px; color:#334155; }
+    .pin-card input{
+      width:100%; padding:14px 16px; border-radius:14px;
+      border:1px solid var(--border); font-size:1.2rem;
+      letter-spacing:0.28em; text-align:center; outline:none;
+    }
+    .pin-card input:focus{ border-color:#94a3b8; box-shadow:0 0 0 4px rgba(148,163,184,0.18); }
+    .pin-error{ display:none; color:#dc2626; font-weight:800; font-size:0.86rem; margin-top:10px; }
+
+    /* Responsive */
+    @media (max-width: 860px){
+      .kvs{ grid-template-columns:1fr; }
+      .input{ min-width:160px; }
+      .select{ min-width:160px; }
+      .top-bar{ align-items:flex-start; }
+    }
+  </style>
 </head>
+
 <body>
-    <div id="adminLoading" style="max-width:400px;margin:60px auto;padding:24px;text-align:center;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-        <p style="color:#2d7a32;font-weight:600;">A verificar sessão...</p>
-        <p style="margin-top:12px;font-size:14px;color:#666;">Se não for redirecionado, <a href="login.html">entre aqui</a> ou <a href="index.html">volte à loja</a>.</p>
-        <p style="margin-top:16px;font-size:12px;color:#999;">Abra o site através de um servidor web (não por file://) para a área de admin funcionar.</p>
+
+  <!-- PIN gate -->
+  <div id="adminPinScreen">
+    <div class="pin-card">
+      <h1>BRAGA BAZAAR</h1>
+      <p>Admin access</p>
+
+      <form id="adminPinForm">
+        <label for="adminPinInput">Enter PIN</label>
+        <input type="password" id="adminPinInput" inputmode="numeric" pattern="[0-9]*"
+               autocomplete="off" placeholder="••••" maxlength="8" required />
+        <div id="adminPinError" class="pin-error"></div>
+
+        <button type="submit" class="btn btn-green" style="width:100%; margin-top:14px; justify-content:center;">
+          <i class="fas fa-lock-open"></i> Continue
+        </button>
+      </form>
+
+      <p style="margin:18px 0 0; text-align:center;">
+        <a href="login.html?redirect=admin.html" style="color:var(--green); font-weight:900; text-decoration:none;">
+          Or log in with email
+        </a>
+      </p>
+
+      <p class="muted-note" style="text-align:center;">
+        Tip: for real security, enable Supabase RLS (PIN is only UI).
+      </p>
     </div>
-    <div class="admin-wrapper" id="adminWrapper" style="display:none;">
-        <div class="admin-header">
-            <h1>Área de Admin - Encomendas</h1>
-            <a href="index.html"><i class="fas fa-arrow-left"></i> Voltar à loja</a>
+  </div>
+
+  <!-- Main panel -->
+  <div class="admin-wrapper" id="adminPanelContent" style="display:none;">
+    <div class="top-bar">
+      <div class="brand">
+        <h1>BRAGA BAZAAR</h1>
+        <p>Admin Management Suite</p>
+      </div>
+
+      <div class="top-actions">
+        <div id="netChip" class="chip">
+          <span class="dot"></span>
+          <small id="netText">Checking…</small>
+        </div>
+        <div class="chip">
+          <i class="fas fa-user-shield"></i>
+          <small id="roleText">Role: …</small>
+        </div>
+        <button id="logoutBtn" class="btn btn-red"><i class="fas fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </div>
+
+    <nav class="tab-nav" aria-label="Admin tabs">
+      <button class="tab-btn active" data-tab="orders" type="button"><i class="fas fa-shopping-cart"></i> Orders</button>
+      <button class="tab-btn" data-tab="inventory" type="button"><i class="fas fa-boxes"></i> Inventory</button>
+      <button class="tab-btn" data-tab="reports" type="button"><i class="fas fa-chart-line"></i> Reports</button>
+    </nav>
+
+    <!-- ORDERS -->
+    <section id="ordersSection" class="content-section active">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fas fa-receipt"></i> Orders</h2>
+            <p class="subtle">Search, filter, view details, and update status.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-gray" id="refreshOrdersBtn" title="Reload orders">
+              <i class="fas fa-rotate"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-dark" id="exportOrdersBtn" title="Download orders CSV">
+              <i class="fas fa-file-csv"></i> Export CSV
+            </button>
+          </div>
         </div>
 
-        <div class="admin-filters">
-            <div>
-                <label for="statusFilter"><strong>Filtrar por estado:</strong></label>
-                <select id="statusFilter">
-                    <option value="all">Todas</option>
-                    <option value="pending">Por preparar</option>
-                    <option value="completed">Concluídas</option>
+        <div class="control-row">
+          <input class="input" type="text" id="orderSearch" placeholder="Search by name, phone, email, or ID…" />
+          <select class="select" id="orderStatusFilter">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+          </select>
+          <input class="select" type="date" id="orderDateFrom" title="From date" />
+          <input class="select" type="date" id="orderDateTo" title="To date" />
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Shipping</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th style="min-width:220px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section id="inventorySection" class="content-section">
+      <!-- Add product (admin only) -->
+      <div class="card" id="addProductCard">
+        <div class="card-header">
+          <div>
+            <h2><i class="fas fa-circle-plus"></i> Add new product</h2>
+            <p class="subtle">Admins can add products. Staff can update stock & price.</p>
+          </div>
+        </div>
+
+        <form id="addProductForm" class="pure-form pure-form-stacked"
+              style="display:grid; grid-template-columns:1fr 1fr; gap:14px; max-width:900px;">
+          <label style="font-weight:800;">Name
+            <input class="input" style="width:100%;" type="text" id="newName" required placeholder="e.g. Organic Apples" />
+          </label>
+
+          <label style="font-weight:800;">Category
+            <select class="select" style="width:100%;" id="newCategory" required>
+              <option value="fruits">Fruits & Vegetables</option>
+              <option value="bakery">Bakery & Pastry</option>
+              <option value="meat">Butcher / Meat</option>
+              <option value="eggs">Eggs & Dairy</option>
+              <option value="drinks">Drinks</option>
+              <option value="promotions">Promotions</option>
+              <option value="cans_jars">Cans and jars</option>
+              <option value="pasta_rice_cereals">Pasta, rice & cereals</option>
+              <option value="sauces_condiments">Sauces and condiments</option>
+              <option value="herbs_spices">Herbs and spices</option>
+              <option value="frozen_foods">Frozen foods</option>
+              <option value="snacks">Snacks</option>
+              <option value="household_cleaning">Household and cleaning</option>
+              <option value="personal_care">Personal care</option>
+            </select>
+          </label>
+
+          <label style="font-weight:800;">Price (€)
+            <input class="input" style="width:100%;" type="number" id="newPrice" required min="0" step="0.01" placeholder="2.99" />
+          </label>
+
+          <label style="font-weight:800;">Stock level
+            <input class="input" style="width:100%;" type="number" id="newStock" min="0" value="0" />
+          </label>
+
+          <div id="unitPricePerKgWrap" style="display:none; grid-column:1/-1; grid-template-columns:1fr 1fr; gap:14px;">
+            <label style="font-weight:800;">Unit
+              <select class="select" style="width:100%;" id="newUnit">
+                <option value="unit">Per item</option>
+                <option value="kg">Per kg</option>
+              </select>
+            </label>
+            <label style="font-weight:800;">Price per kg (€)
+              <input class="input" style="width:100%;" type="number" id="newPricePerKg" min="0" step="0.01" placeholder="0" />
+            </label>
+          </div>
+
+          <label style="font-weight:800;">SKU
+            <input class="input" style="width:100%;" type="text" id="newSku" placeholder="e.g. FRUIT-001" />
+          </label>
+
+          <label style="font-weight:800;">Low stock alert
+            <input class="input" style="width:100%;" type="number" id="newLowStock" min="0" placeholder="5" title="Alert when stock falls below this" />
+          </label>
+
+          <label style="grid-column:1/-1; font-weight:800;">Variants (optional)
+            <input class="input" style="width:100%;" type="text" id="newVariants" placeholder='e.g. Size: S, M, L or Flavor: Natural, Honey' />
+          </label>
+
+          <label style="grid-column:1/-1; font-weight:800;">Image URL
+            <input class="input" style="width:100%;" type="url" id="newImageUrl" placeholder="https://..." />
+          </label>
+
+          <label style="grid-column:1/-1; font-weight:800;">Description
+            <input class="input" style="width:100%;" type="text" id="newDescription" placeholder="Short description" />
+          </label>
+
+          <div style="grid-column:1/-1; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <button type="submit" class="btn btn-green"><i class="fas fa-plus"></i> Add product</button>
+            <button type="button" class="btn btn-gray" id="addProductResetBtn"><i class="fas fa-eraser"></i> Reset</button>
+            <span id="addProductMsg" style="color:var(--muted); font-weight:800;"></span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Bulk import (admin only) -->
+      <div class="card" id="bulkImportCard">
+        <div class="card-header">
+          <div>
+            <h2><i class="fas fa-file-arrow-up"></i> Bulk upload (CSV)</h2>
+            <p class="subtle">Columns: name, category, price, stock_level, image_url, description, unit, price_per_kg, sku, variants, low_stock_threshold</p>
+          </div>
+        </div>
+        <div class="control-row">
+          <input type="file" id="bulkCsvFile" accept=".csv" />
+          <button type="button" class="btn btn-dark" id="bulkCsvBtn"><i class="fas fa-upload"></i> Import CSV</button>
+          <button type="button" class="btn btn-gray" id="sampleCsvBtn"><i class="fas fa-download"></i> Sample CSV</button>
+          <span id="bulkCsvMsg" style="color:var(--muted); font-weight:800;"></span>
+        </div>
+      </div>
+
+      <!-- Inventory table -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2><i class="fas fa-boxes"></i> Inventory</h2>
+            <p class="subtle">Search, filter low stock, update price/stock fast.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-dark" id="exportProductsBtn"><i class="fas fa-file-csv"></i> Export products CSV</button>
+            <button type="button" class="btn btn-gray" id="refreshProductsBtn"><i class="fas fa-rotate"></i> Refresh</button>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <input class="input" type="text" id="productSearch" placeholder="Search inventory by name or SKU…" />
+          <select class="select" id="productCategoryFilter">
+            <option value="">All categories</option>
+            <option value="fruits">Fruits & Vegetables</option>
+            <option value="bakery">Bakery & Pastry</option>
+            <option value="meat">Butcher / Meat</option>
+            <option value="eggs">Eggs & Dairy</option>
+            <option value="drinks">Drinks</option>
+            <option value="promotions">Promotions</option>
+            <option value="cans_jars">Cans and jars</option>
+            <option value="pasta_rice_cereals">Pasta, rice & cereals</option>
+            <option value="sauces_condiments">Sauces and condiments</option>
+            <option value="herbs_spices">Herbs and spices</option>
+            <option value="frozen_foods">Frozen foods</option>
+            <option value="snacks">Snacks</option>
+            <option value="household_cleaning">Household and cleaning</option>
+            <option value="personal_care">Personal care</option>
+          </select>
+
+          <label class="chip" style="cursor:pointer;">
+            <input type="checkbox" id="lowStockOnly" style="margin:0;" />
+            <small>Low stock only</small>
+          </label>
+
+          <button type="button" class="btn btn-gray" id="bulkSaveVisibleBtn" title="Save all visible rows">
+            <i class="fas fa-floppy-disk"></i> Save visible
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="min-width:240px;">Item</th>
+                <th>SKU</th>
+                <th>Price (€)</th>
+                <th>Stock</th>
+                <th style="min-width:220px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTbody"></tbody>
+          </table>
+        </div>
+
+        <p class="muted-note">
+          Tip: “Remove” is a soft-disable (is_active=false) if your DB has that column. If it doesn’t, it will fall back to delete.
+        </p>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="reportsSection" class="content-section">
+      <div class="card" style="text-align:center; padding:28px;">
+        <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-bottom:18px;">
+          <div>
+            <small style="color:var(--muted); font-weight:900; text-transform:uppercase;">Total Revenue</small>
+            <h2 id="totalRevenue" style="font-size:2.3rem; margin:10px 0; color:var(--green);">€0.00</h2>
+          </div>
+          <div>
+            <small style="color:var(--muted); font-weight:900; text-transform:uppercase;">Total Orders</small>
+            <h2 id="totalOrdersCount" style="font-size:2.3rem; margin:10px 0; color:var(--slate);">0</h2>
+          </div>
+        </div>
+
+        <hr style="border:0; border-top:1px solid var(--border); margin:18px auto; max-width:720px;" />
+
+        <i class="fas fa-file-csv" style="font-size:3rem; color:var(--green); margin-bottom:10px;"></i>
+        <h2 style="margin:8px 0 4px;">Financial Export</h2>
+        <p style="color:var(--muted); margin:0 0 18px;">Download your sales history for bookkeeping.</p>
+
+        <button id="exportReportBtn" class="btn btn-dark"><i class="fas fa-download"></i> Download CSV Report</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="modal" id="orderModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Order details">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="orderModalTitle">Order</h3>
+        <button type="button" class="btn btn-icon" id="orderModalClose" aria-label="Close">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="orderModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal (full edit) -->
+  <div class="modal" id="editProductModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Edit product">
+    <div class="modal-card" style="max-width:760px;">
+      <div class="modal-head">
+        <h3 style="margin:0;">Edit product</h3>
+        <button type="button" class="btn btn-icon" id="editModalClose" aria-label="Close">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="editProductForm">
+          <input type="hidden" id="editProductId" />
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <label style="font-weight:900;">Name
+              <input class="input" style="width:100%;" type="text" id="editName" required />
+            </label>
+
+            <label style="font-weight:900;">Category
+              <select class="select" style="width:100%;" id="editCategory">
+                <option value="fruits">Fruits & Vegetables</option>
+                <option value="bakery">Bakery & Pastry</option>
+                <option value="meat">Butcher / Meat</option>
+                <option value="eggs">Eggs & Dairy</option>
+                <option value="drinks">Drinks</option>
+                <option value="promotions">Promotions</option>
+                <option value="cans_jars">Cans and jars</option>
+                <option value="pasta_rice_cereals">Pasta, rice & cereals</option>
+                <option value="sauces_condiments">Sauces and condiments</option>
+                <option value="herbs_spices">Herbs and spices</option>
+                <option value="frozen_foods">Frozen foods</option>
+                <option value="snacks">Snacks</option>
+                <option value="household_cleaning">Household and cleaning</option>
+                <option value="personal_care">Personal care</option>
+              </select>
+            </label>
+
+            <label style="font-weight:900;">Price (€)
+              <input class="input" style="width:100%;" type="number" id="editPrice" min="0" step="0.01" required />
+            </label>
+
+            <label style="font-weight:900;">Stock
+              <input class="input" style="width:100%;" type="number" id="editStock" min="0" />
+            </label>
+
+            <div id="editUnitWrap" style="display:none; grid-column:1/-1; grid-template-columns:1fr 1fr; gap:12px;">
+              <label style="font-weight:900;">Unit
+                <select class="select" style="width:100%;" id="editUnit">
+                  <option value="unit">Per item</option>
+                  <option value="kg">Per kg</option>
                 </select>
+              </label>
+              <label style="font-weight:900;">Price per kg (€)
+                <input class="input" style="width:100%;" type="number" id="editPricePerKg" min="0" step="0.01" />
+              </label>
             </div>
-            <small style="color:#777;">Os dados são guardados apenas neste navegador (localStorage).</small>
-        </div>
 
-        <div id="ordersContainer">
-            <p class="no-orders" id="noOrdersMsg" style="display:none;">Ainda não existem encomendas.</p>
-            <table class="orders-table" id="ordersTable" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Data</th>
-                        <th>Cliente</th>
-                        <th>Total</th>
-                        <th>Pagamento</th>
-                        <th>Estado</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="ordersTbody"></tbody>
-            </table>
-        </div>
+            <label style="grid-column:1/-1; font-weight:900;">Image URL
+              <input class="input" style="width:100%;" type="url" id="editImageUrl" />
+            </label>
 
-        <div class="order-details" id="orderDetails" style="display:none;">
-            <h2>Detalhes da Encomenda</h2>
-            <div class="details-grid" id="detailsGrid"></div>
-            <div>
-                <strong>Artigos:</strong>
-                <ul class="items-list" id="itemsList"></ul>
-            </div>
-        </div>
+            <label style="grid-column:1/-1; font-weight:900;">Description
+              <input class="input" style="width:100%;" type="text" id="editDescription" />
+            </label>
 
-        <div class="admin-products" id="adminProducts">
-            <div class="admin-products-header">
-                <h2>Produtos</h2>
-                <div style="display:flex;gap:10px;align-items:center;">
-                    <a href="index.html" target="_blank" style="font-size:13px;color:#2d7a32;font-weight:600;text-decoration:none;">Ver na página inicial</a>
-                    <button type="button" class="btn-primary" id="resetProductFormBtn">Novo produto</button>
-                </div>
-            </div>
-            <form id="productForm" class="product-form">
-                <input type="hidden" id="productId">
-                <div>
-                    <label for="productName">Nome</label>
-                    <input type="text" id="productName" required>
-                </div>
-                <div>
-                    <label for="productCategory">Categoria</label>
-                    <select id="productCategory" required>
-                        <option value="fruits">Frutas e Vegetais</option>
-                        <option value="bakery">Padaria e Pastelaria</option>
-                        <option value="meat">Talho</option>
-                        <option value="eggs">Ovos e Lacticínios</option>
-                        <option value="drinks">Bebidas</option>
-                        <option value="promotions">Promoções</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="productPrice">Preço (€)</label>
-                    <input type="number" step="0.01" min="0" id="productPrice" required>
-                </div>
-                <div>
-                    <label for="productStock">Stock</label>
-                    <input type="number" min="0" id="productStock" required>
-                </div>
-                <div class="full-width">
-                    <label for="productDescription">Descrição</label>
-                    <textarea id="productDescription" rows="3" placeholder="Descrição do produto" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;font-size:13px;resize:vertical;"></textarea>
-                </div>
-                <div id="productPerKgFields" class="full-width" style="display:none;grid-column:1/-1;">
-                    <div>
-                        <label for="productUnit">Unidade</label>
-                        <select id="productUnit">
-                            <option value="unit">Unidade (por item)</option>
-                            <option value="kg">Kg (por peso)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="productPricePerKg">Preço por kg (€)</label>
-                        <input type="number" step="0.01" min="0" id="productPricePerKg" placeholder="Ex: 2.99">
-                    </div>
-                </div>
-                <div class="full-width">
-                    <label for="productImage">URL da imagem</label>
-                    <input type="text" id="productImage" placeholder="https://...">
-                </div>
-                <div>
-                    <label for="productOnSale">Em promoção?</label>
-                    <select id="productOnSale">
-                        <option value="false">Não</option>
-                        <option value="true">Sim</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="productOldPrice">Preço antigo (€)</label>
-                    <input type="number" step="0.01" min="0" id="productOldPrice">
-                </div>
-                <div class="full-width">
-                    <button type="submit" class="btn-primary" id="productSubmitBtn">Guardar produto</button>
-                </div>
-            </form>
+            <label style="font-weight:900;">SKU
+              <input class="input" style="width:100%;" type="text" id="editSku" />
+            </label>
 
-            <table class="products-table" id="productsTable">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Categoria</th>
-                        <th>Preço</th>
-                        <th>Stock</th>
-                        <th>Promoção</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTbody"></tbody>
-            </table>
-        </div>
+            <label style="font-weight:900;">Low stock alert
+              <input class="input" style="width:100%;" type="number" id="editLowStock" min="0" />
+            </label>
+
+            <label style="grid-column:1/-1; font-weight:900;">Variants
+              <input class="input" style="width:100%;" type="text" id="editVariants" placeholder="e.g. Size: S, M, L" />
+            </label>
+
+            <label style="grid-column:1/-1; font-weight:900;">Active (if supported)
+              <select class="select" style="width:100%;" id="editIsActive">
+                <option value="auto">Keep as-is</option>
+                <option value="true">Active</option>
+                <option value="false">Disabled</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-green"><i class="fas fa-floppy-disk"></i> Save changes</button>
+            <button type="button" class="btn btn-gray" id="editCancelBtn"><i class="fas fa-ban"></i> Cancel</button>
+          </div>
+        </form>
+
+        <p class="muted-note">
+          Note: if your DB doesn’t have some fields (like is_active, price_per_kg), this form still works — those fields will just be ignored.
+        </p>
+      </div>
     </div>
+  </div>
 
-    <script type="module">
-        import { supabase } from './supabaseConfig.js';
+  <script type="module">
+    import { supabase, ADMIN_EMAILS, ADMIN_PIN } from './supabaseConfig.js';
 
-        let orders = [];
-        let products = [];
-        let currentFilter = 'all';
-        let selectedOrderId = null;
-        let supabaseAvailable = false;
+    // =========================
+    // Small helpers
+    // =========================
+    const PIN_STORAGE_KEY = 'adminPinOk';
+    const CACHE_ORDERS_KEY = 'bb_admin_cache_orders_v1';
+    const CACHE_PRODUCTS_KEY = 'bb_admin_cache_products_v1';
+    const NEW_ORDER_HOURS = 48;
+    const PER_KG_CATEGORIES = ['fruits', 'meat'];
 
-        async function loadOrders() {
-            // First try to load from Supabase
-            try {
-                const { data, error } = await supabase
-                    .from('orders')
-                    .select(`
-                        id,
-                        client_order_id,
-                        created_at,
-                        full_name,
-                        email,
-                        phone,
-                        address,
-                        postal,
-                        city,
-                        location,
-                        country,
-                        payment,
-                        instructions,
-                        total,
-                        status
-                    `)
-                    .order('created_at', { ascending: false });
+    let currentUser = null;
+    let currentRole = 'employee'; // 'admin' | 'employee'
+    let allOrders = [];
+    let allProducts = [];
 
-                if (error) {
-                    throw error;
-                }
+    const $ = (id) => document.getElementById(id);
 
-                supabaseAvailable = true;
+    function nowIso() { return new Date().toISOString(); }
 
-                // Map Supabase rows into the same structure used in the rest of the page
-                orders = (data || []).map(row => ({
-                    id: row.client_order_id || row.id,
-                    supabaseId: row.id,
-                    createdAt: row.created_at,
-                    customer: {
-                        fullName: row.full_name,
-                        email: row.email,
-                        phone: row.phone,
-                        address: row.address,
-                        postal: row.postal,
-                        city: row.city,
-                        location: row.location,
-                        country: row.country
-                    },
-                    payment: row.payment,
-                    instructions: row.instructions,
-                    items: [], // Will be loaded separately if needed
-                    total: row.total,
-                    status: row.status || 'pending'
-                }));
+    function safeLower(x){ return (x || '').toString().toLowerCase(); }
 
-                // Load items for all orders in one go
-                if (orders.length) {
-                    const { data: itemsData, error: itemsError } = await supabase
-                        .from('order_items')
-                        .select('order_id, name, price, qty');
-                    if (!itemsError && itemsData) {
-                        orders.forEach(order => {
-                            order.items = itemsData
-                                .filter(it => it.order_id === order.supabaseId)
-                                .map(it => ({
-                                    name: it.name,
-                                    price: it.price,
-                                    qty: it.qty
-                                }));
-                        });
-                    }
-                }
-                return;
-            } catch (err) {
-                console.warn('Falha ao carregar encomendas do Supabase, a usar localStorage como fallback.', err);
-            }
+    function setOnlineChip(isOnline){
+      const chip = $('netChip');
+      const text = $('netText');
+      if (!chip || !text) return;
+      chip.classList.toggle('online', !!isOnline);
+      chip.classList.toggle('offline', !isOnline);
+      text.textContent = isOnline ? 'Online' : 'Offline';
+    }
 
-            // Fallback: use localStorage if Supabase is not available
-            supabaseAvailable = false;
-            const raw = localStorage.getItem('bragaBazaarOrders');
-            if (!raw) {
-                orders = [];
-                return;
-            }
-            try {
-                orders = JSON.parse(raw) || [];
-            } catch {
-                orders = [];
-            }
-            // Ensure each order has a status
-            orders.forEach(o => {
-                if (!o.status) {
-                    o.status = 'pending';
-                }
-            });
+    function formatMoney(v){
+      const n = Number(v || 0);
+      return '€' + n.toFixed(2);
+    }
+
+    function isNewOrder(createdAt){
+      if (!createdAt) return false;
+      const then = new Date(createdAt).getTime();
+      return (Date.now() - then) < NEW_ORDER_HOURS * 60 * 60 * 1000;
+    }
+
+    function cacheWrite(key, payload){
+      try { localStorage.setItem(key, JSON.stringify({ at: Date.now(), payload })); } catch {}
+    }
+
+    function cacheRead(key){
+      try{
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed?.payload ?? null;
+      }catch{ return null; }
+    }
+
+    function showToast(msg){
+      // minimal toast for admin actions
+      let t = document.getElementById('bbToast');
+      if (!t){
+        t = document.createElement('div');
+        t.id = 'bbToast';
+        t.style.cssText =
+          'position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(80px);' +
+          'background:#1e293b; color:#fff; padding:12px 16px; border-radius:14px; font-weight:800; z-index:10000;' +
+          'box-shadow:0 12px 30px rgba(0,0,0,0.35); opacity:0; transition:0.25s ease; max-width:92vw;';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(80px)';
+      }, 1800);
+    }
+
+    // =========================
+    // Auth + PIN gate
+    // =========================
+    async function determineRoleFromEmail(session){
+      const email = safeLower(session?.user?.email || '');
+      const allowedAdmins =
+        Array.isArray(ADMIN_EMAILS) &&
+        ADMIN_EMAILS.length &&
+        ADMIN_EMAILS.some(e => safeLower(e) === email);
+
+      // If you later add profiles.role, you can override here:
+      // const { data } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+      // if (data?.role) return data.role;
+
+      return allowedAdmins ? 'admin' : 'employee';
+    }
+
+    async function adminGate(){
+      const pinScreen = $('adminPinScreen');
+      const panel = $('adminPanelContent');
+
+      // 1) if logged in, check role
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session){
+        currentUser = session.user;
+        currentRole = await determineRoleFromEmail(session);
+        pinScreen.style.display = 'none';
+        panel.style.display = 'block';
+        applyRoleUI();
+        boot();
+        return;
+      }
+
+      // 2) PIN fallback (employee kiosk mode)
+      if (sessionStorage.getItem(PIN_STORAGE_KEY) === 'true'){
+        currentUser = null;
+        currentRole = 'employee';
+        pinScreen.style.display = 'none';
+        panel.style.display = 'block';
+        applyRoleUI();
+        boot();
+        return;
+      }
+
+      // 3) show PIN screen
+      pinScreen.style.display = 'flex';
+      panel.style.display = 'none';
+
+      $('adminPinForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = $('adminPinInput');
+        const errEl = $('adminPinError');
+        const pin = (input.value || '').trim();
+
+        if (pin === String(ADMIN_PIN)){
+          sessionStorage.setItem(PIN_STORAGE_KEY, 'true');
+          pinScreen.style.display = 'none';
+          panel.style.display = 'block';
+          currentUser = null;
+          currentRole = 'employee';
+          applyRoleUI();
+          boot();
+        } else {
+          errEl.textContent = 'Incorrect PIN. Try again.';
+          errEl.style.display = 'block';
+          input.value = '';
+          input.focus();
         }
+      });
+    }
 
-        function saveOrders() {
-            localStorage.setItem('bragaBazaarOrders', JSON.stringify(orders));
-        }
+    function applyRoleUI(){
+      $('roleText').textContent = 'Role: ' + (currentRole || 'employee');
 
-        function formatDate(iso) {
-            if (!iso) return '';
-            const d = new Date(iso);
-            if (Number.isNaN(d.getTime())) return iso;
-            return d.toLocaleString('pt-PT', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
+      // Admin-only sections
+      const adminOnlyEls = [ $('addProductCard'), $('bulkImportCard') ];
+      adminOnlyEls.forEach(el => {
+        if (!el) return;
+        el.classList.toggle('hidden', currentRole !== 'admin');
+      });
 
-        function formatCurrency(value) {
-            return '€' + (Number(value) || 0).toFixed(2);
-        }
+      // Export products is okay for both; delete actions will be hidden for employees in render
+    }
 
-        async function loadProducts() {
-            try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('id, name, price, stock_level, category, image_url, on_sale, old_price, description, unit, price_per_kg')
-                    .order('name', { ascending: true });
-                if (error) throw error;
-                products = data || [];
-            } catch (err) {
-                console.error('Erro ao carregar produtos do Supabase:', err);
-                products = [];
-            }
-        }
+    // =========================
+    // Tabs
+    // =========================
+    function bindTabs(){
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
 
-        function renderProducts() {
-            const tbody = document.getElementById('productsTbody');
-            tbody.innerHTML = '';
-            products.forEach(p => {
-                const tr = document.createElement('tr');
-                const inStock = (p.stock_level || 0) > 0;
-                const isPerKg = p.category === 'fruits' && p.unit === 'kg';
-                const priceDisplay = (isPerKg && (p.price_per_kg != null)) ? formatCurrency(p.price_per_kg) + '/kg' : formatCurrency(p.price);
-                tr.innerHTML = `
-                    <td>${p.name}</td>
-                    <td>${p.category || ''}</td>
-                    <td>${priceDisplay}</td>
-                    <td><span class="${inStock ? 'stock-ok' : 'stock-out'}">${p.stock_level || 0}</span></td>
-                    <td>${p.on_sale ? (p.old_price ? 'Sim (' + formatCurrency(p.old_price) + ')' : 'Sim') : 'Não'}</td>
-                    <td>
-                        <button type="button" class="btn-small btn-details" data-product-action="edit" data-id="${p.id}">Editar</button>
-                        <button type="button" class="btn-small btn-remove" data-product-action="remove" data-id="${p.id}" data-name="${(p.name || '').replace(/"/g, '&quot;')}">Remover</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function resetProductForm() {
-            document.getElementById('productId').value = '';
-            document.getElementById('productName').value = '';
-            document.getElementById('productCategory').value = 'fruits';
-            document.getElementById('productPrice').value = '';
-            document.getElementById('productStock').value = '';
-            document.getElementById('productDescription').value = '';
-            document.getElementById('productUnit').value = 'unit';
-            document.getElementById('productPricePerKg').value = '';
-            document.getElementById('productImage').value = '';
-            document.getElementById('productOnSale').value = 'false';
-            document.getElementById('productOldPrice').value = '';
-            document.getElementById('productSubmitBtn').innerText = 'Guardar produto';
-            if (typeof togglePerKgFields === 'function') togglePerKgFields();
-        }
-
-        function fillProductForm(productId) {
-            const idStr = String(productId).trim();
-            const p = products.find(x => String(x.id).trim() === idStr);
-            if (!p) return;
-            document.getElementById('productId').value = p.id;
-            document.getElementById('productName').value = p.name || '';
-            document.getElementById('productCategory').value = p.category || '';
-            document.getElementById('productPrice').value = p.price ?? '';
-            document.getElementById('productStock').value = p.stock_level ?? '';
-            document.getElementById('productDescription').value = p.description || '';
-            document.getElementById('productUnit').value = p.unit || 'unit';
-            document.getElementById('productPricePerKg').value = p.price_per_kg != null ? p.price_per_kg : '';
-            document.getElementById('productImage').value = p.image_url || '';
-            if (typeof togglePerKgFields === 'function') togglePerKgFields();
-            document.getElementById('productOnSale').value = p.on_sale ? 'true' : 'false';
-            document.getElementById('productOldPrice').value = p.old_price ?? '';
-            document.getElementById('productSubmitBtn').innerText = 'Atualizar produto';
-            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function renderOrders() {
-            const tbody = document.getElementById('ordersTbody');
-            const table = document.getElementById('ordersTable');
-            const noOrdersMsg = document.getElementById('noOrdersMsg');
-            tbody.innerHTML = '';
-
-            const filtered = orders.filter(o => {
-                if (currentFilter === 'all') return true;
-                return (o.status || 'pending') === currentFilter;
-            });
-
-            if (!filtered.length) {
-                table.style.display = 'none';
-                noOrdersMsg.style.display = 'block';
-                document.getElementById('orderDetails').style.display = 'none';
-                return;
-            }
-
-            table.style.display = 'table';
-            noOrdersMsg.style.display = 'none';
-
-            filtered
-                .slice()
-                .sort((a, b) => b.id - a.id)
-                .forEach(order => {
-                    const tr = document.createElement('tr');
-                    const status = order.status || 'pending';
-                    tr.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${formatDate(order.createdAt)}</td>
-                        <td>${order.customer && order.customer.fullName ? order.customer.fullName : ''}</td>
-                        <td>${formatCurrency(order.total)}</td>
-                        <td>${order.payment || '-'}</td>
-                        <td>
-                            <span class="badge ${status === 'completed' ? 'badge-completed' : 'badge-pending'}">
-                                ${status === 'completed' ? 'Concluída' : 'Por preparar'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn-small btn-complete" data-action="complete" data-id="${order.id}" ${status === 'completed' ? 'disabled' : ''}>
-                                Marcar como concluída
-                            </button>
-                            <button class="btn-small btn-details" data-action="details" data-id="${order.id}">
-                                Ver detalhes
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-        }
-
-        function renderOrderDetails(orderId) {
-            const order = orders.find(o => String(o.id) === String(orderId));
-            const detailsSection = document.getElementById('orderDetails');
-            const grid = document.getElementById('detailsGrid');
-            const itemsList = document.getElementById('itemsList');
-
-            if (!order) {
-                detailsSection.style.display = 'none';
-                return;
-            }
-
-            selectedOrderId = orderId;
-            detailsSection.style.display = 'block';
-
-            const c = order.customer || {};
-            grid.innerHTML = `
-                <div>
-                    <div class="details-label">Nome</div>
-                    <div class="details-value">${c.fullName || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">Email</div>
-                    <div class="details-value">${c.email || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">Telefone</div>
-                    <div class="details-value">${c.phone || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">Morada</div>
-                    <div class="details-value">${c.address || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">Código Postal</div>
-                    <div class="details-value">${c.postal || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">Cidade</div>
-                    <div class="details-value">${c.city || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">Freguesia / Localização</div>
-                    <div class="details-value">${c.location || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">País</div>
-                    <div class="details-value">${c.country || ''}</div>
-                </div>
-                <div>
-                    <div class="details-label">Pagamento</div>
-                    <div class="details-value">${order.payment || '-'}</div>
-                </div>
-                <div>
-                    <div class="details-label">Notas de Entrega</div>
-                    <div class="details-value">${order.instructions || '-'}</div>
-                </div>
-                <div>
-                    <div class="details-label">Total</div>
-                    <div class="details-value">${formatCurrency(order.total)}</div>
-                </div>
-            `;
-
-            itemsList.innerHTML = '';
-            (order.items || []).forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = `${item.name} x${item.qty} - ${formatCurrency(item.price * item.qty)}`;
-                itemsList.appendChild(li);
-            });
-        }
-
-        async function handleTableClick(e) {
-            const btn = e.target.closest('button[data-action]');
-            if (!btn) return;
-            const action = btn.getAttribute('data-action');
-            const id = btn.getAttribute('data-id');
-            if (!id) return;
-
-            if (action === 'complete') {
-                const order = orders.find(o => String(o.id) === String(id));
-                if (order) {
-                    order.status = 'completed';
-
-                    // Update Supabase if available
-                    if (supabaseAvailable && order.supabaseId) {
-                        try {
-                            const { error } = await supabase
-                                .from('orders')
-                                .update({ status: 'completed' })
-                                .eq('id', order.supabaseId);
-                            if (error) {
-                                console.error('Erro ao atualizar estado da encomenda no Supabase:', error);
-                            }
-                        } catch (err) {
-                            console.error('Erro inesperado ao atualizar encomenda no Supabase:', err);
-                        }
-                    } else {
-                        // Fallback: persist new status in localStorage
-                        saveOrders();
-                    }
-
-                    renderOrders();
-                    if (selectedOrderId === id) {
-                        renderOrderDetails(id);
-                    }
-                }
-            } else if (action === 'details') {
-                renderOrderDetails(id);
-            }
-        }
-
-        async function handleProductsTableClick(e) {
-            const btn = e.target.closest('button[data-product-action]');
-            if (!btn) return;
-            const action = btn.getAttribute('data-product-action');
-            const id = btn.getAttribute('data-id');
-            if (!id) return;
-            if (action === 'remove') {
-                const name = btn.getAttribute('data-name') || id;
-                if (!confirm('Remover o produto "' + name + '"? Esta ação não pode ser desfeita.')) return;
-                try {
-                    const { error } = await supabase.from('products').delete().eq('id', id);
-                    if (error) throw error;
-                    await loadProducts();
-                    renderProducts();
-                    if (document.getElementById('productId').value === id) resetProductForm();
-                } catch (err) {
-                    console.error('Erro ao remover produto:', err);
-                    alert('Não foi possível remover o produto.\n\n' + (err && err.message ? err.message : String(err)));
-                }
-                return;
-            }
-            fillProductForm(id);
-        }
-
-        async function handleProductFormSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('productId').value || null;
-            const name = document.getElementById('productName').value.trim();
-            const category = document.getElementById('productCategory').value.trim();
-            const price = parseFloat(document.getElementById('productPrice').value || '0');
-            const stock = parseInt(document.getElementById('productStock').value || '0', 10);
-            const description = document.getElementById('productDescription').value.trim() || null;
-            const unit = document.getElementById('productUnit').value || 'unit';
-            const pricePerKgRaw = document.getElementById('productPricePerKg').value;
-            const pricePerKg = pricePerKgRaw ? parseFloat(pricePerKgRaw) : null;
-            const image = document.getElementById('productImage').value.trim() || null;
-            const onSale = document.getElementById('productOnSale').value === 'true';
-            const oldPriceRaw = document.getElementById('productOldPrice').value;
-            const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
-
-            const isFruits = category === 'fruits';
-            const payload = {
-                name,
-                category,
-                price: isFruits && unit === 'kg' && pricePerKg != null ? pricePerKg : price,
-                stock_level: stock,
-                image_url: image,
-                on_sale: onSale,
-                old_price: oldPrice,
-                nutritional_info: {},
-                description,
-                unit: isFruits ? unit : 'unit',
-                price_per_kg: isFruits ? pricePerKg : null
-            };
-
-            try {
-                if (id) {
-                    const { error } = await supabase
-                        .from('products')
-                        .update(payload)
-                        .eq('id', id);
-                    if (error) throw error;
-                } else {
-                    payload.id = crypto.randomUUID();
-                    const { error } = await supabase
-                        .from('products')
-                        .insert(payload);
-                    if (error) throw error;
-                }
-                await loadProducts();
-                renderProducts();
-                resetProductForm();
-                alert('Produto guardado. Já aparece na página inicial.\n\nClique em OK e abra a página inicial para ver o produto.');
-                window.productJustSaved = true;
-            } catch (err) {
-                console.error('Erro ao guardar produto no Supabase:', err);
-                const msg = (err && err.message) ? err.message : String(err);
-                alert('Não foi possível guardar o produto.\n\n' + msg + '\n\n1. Abra o Supabase Dashboard → SQL Editor.\n2. Execute o ficheiro supabase/products_setup.sql (copia todo o conteúdo e cola no Editor, depois Run).\n3. Confirme que está logged in na área de admin e tente de novo.');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Require a Supabase-authenticated user to view admin area
-            try {
-                const { data, error } = await supabase.auth.getSession();
-                const session = data && data.session;
-                if (error || !session) {
-                    // Not logged in: send to login page, then back to admin after login
-                    window.location.href = 'login.html?redirect=admin.html';
-                    return;
-                }
-
-                // If you want to restrict to a specific email/domain, uncomment and adjust:
-                // const email = session.user.email || '';
-                // if (!email.endsWith('@bragabazaar.com')) {
-                //     alert('Sem acesso à área de administração.');
-                //     window.location.href = 'index.html';
-                //     return;
-                // }
-
-                // Show admin UI once authenticated
-                const loadingEl = document.getElementById('adminLoading');
-                const wrapper = document.getElementById('adminWrapper');
-                if (loadingEl) loadingEl.style.display = 'none';
-                if (wrapper) wrapper.style.display = 'block';
-            } catch (err) {
-                console.error('Erro ao verificar sessão do Supabase:', err);
-                const loadingEl = document.getElementById('adminLoading');
-                if (loadingEl) {
-                    loadingEl.innerHTML = '<p style="color:#c00;">Não foi possível verificar o acesso.</p><p style="margin-top:12px;"><a href="login.html">Entrar</a> | <a href="index.html">Voltar à loja</a></p>';
-                } else {
-                    window.location.href = 'login.html';
-                }
-                return;
-            }
-
-            await loadOrders();
-            renderOrders();
-            await loadProducts();
-            renderProducts();
-
-            document.getElementById('ordersTbody').addEventListener('click', handleTableClick);
-            document.getElementById('statusFilter').addEventListener('change', (e) => {
-                currentFilter = e.target.value;
-                renderOrders();
-                if (selectedOrderId) {
-                    renderOrderDetails(selectedOrderId);
-                }
-            });
-
-            document.getElementById('productsTbody').addEventListener('click', handleProductsTableClick);
-            document.getElementById('productForm').addEventListener('submit', handleProductFormSubmit);
-            document.getElementById('resetProductFormBtn').addEventListener('click', resetProductForm);
-
-            // Show Unidade / Preço por kg only for Frutas e Vegetais
-            function togglePerKgFields() {
-                const cat = document.getElementById('productCategory').value;
-                const block = document.getElementById('productPerKgFields');
-                if (block) block.style.display = cat === 'fruits' ? '' : 'none';
-                if (cat !== 'fruits') {
-                    document.getElementById('productUnit').value = 'unit';
-                    document.getElementById('productPricePerKg').value = '';
-                }
-            }
-            document.getElementById('productCategory').addEventListener('change', togglePerKgFields);
-            togglePerKgFields();
+          const tab = btn.getAttribute('data-tab');
+          document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+          if (tab === 'orders') $('ordersSection').classList.add('active');
+          if (tab === 'inventory') $('inventorySection').classList.add('active');
+          if (tab === 'reports') $('reportsSection').classList.add('active');
         });
-    </script>
+      });
+    }
+
+    // =========================
+    // Network indicator
+    // =========================
+    function bindOnlineState(){
+      function update(){ setOnlineChip(navigator.onLine); }
+      window.addEventListener('online', update);
+      window.addEventListener('offline', update);
+      update();
+    }
+
+    // =========================
+    // Load data + cache
+    // =========================
+    async function loadOrders({ silent=false } = {}){
+      // show cached instantly
+      const cached = cacheRead(CACHE_ORDERS_KEY);
+      if (cached && !allOrders.length){
+        allOrders = cached;
+        renderOrders(getFilteredOrders());
+        updateReportStats();
+      }
+
+      const res = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+      if (res.error){
+        if (!silent) showToast('Could not load orders (offline?). Showing cached if available.');
+        console.error(res.error);
+        return;
+      }
+      allOrders = res.data || [];
+      cacheWrite(CACHE_ORDERS_KEY, allOrders);
+      renderOrders(getFilteredOrders());
+      updateReportStats();
+    }
+
+    async function loadProducts({ silent=false } = {}){
+      const cached = cacheRead(CACHE_PRODUCTS_KEY);
+      if (cached && !allProducts.length){
+        allProducts = cached;
+        renderInventory(getFilteredProducts());
+      }
+
+      // If your products table has is_active, we still fetch all so admin can see disabled items
+      const res = await supabase.from('products').select('*').order('name', { ascending: true });
+      if (res.error){
+        if (!silent) showToast('Could not load products (offline?). Showing cached if available.');
+        console.error(res.error);
+        return;
+      }
+      allProducts = res.data || [];
+      cacheWrite(CACHE_PRODUCTS_KEY, allProducts);
+      renderInventory(getFilteredProducts());
+    }
+
+    async function loadAll(){
+      await Promise.all([ loadOrders({ silent:true }), loadProducts({ silent:true }) ]);
+      // initial render is inside loaders
+    }
+
+    // =========================
+    // Reports
+    // =========================
+    function updateReportStats(){
+      const total = allOrders.reduce((sum, o) => sum + Number(o.total ?? o.total_price ?? 0), 0);
+      $('totalRevenue').textContent = formatMoney(total);
+      $('totalOrdersCount').textContent = String(allOrders.length || 0);
+    }
+
+    // =========================
+    // Orders: filter + render
+    // =========================
+    function getFilteredOrders(){
+      const term = safeLower($('orderSearch')?.value || '').trim();
+      const status = safeLower($('orderStatusFilter')?.value || '').trim();
+      const from = $('orderDateFrom')?.value || '';
+      const to = $('orderDateTo')?.value || '';
+
+      return allOrders.filter(o => {
+        const idStr = safeLower(o.id ?? '');
+        const name = safeLower(o.full_name ?? '');
+        const phone = (o.phone ?? '').toString();
+        const email = safeLower(o.email ?? '');
+
+        if (term){
+          const match = name.includes(term) || phone.includes(term) || email.includes(term) || idStr.includes(term);
+          if (!match) return false;
+        }
+
+        const s = safeLower(o.status ?? 'pending');
+        if (status && s !== status) return false;
+
+        const created = o.created_at ? new Date(o.created_at) : null;
+        if (from && created && created < new Date(from + 'T00:00:00')) return false;
+        if (to && created && created > new Date(to + 'T23:59:59')) return false;
+
+        return true;
+      });
+    }
+
+    function statusBadge(status){
+      const s = safeLower(status || 'pending');
+      const cls = s === 'delivered' ? 'status-delivered' : s === 'shipped' ? 'status-shipped' : 'status-pending';
+      return `<span class="badge ${cls}">${s}</span>`;
+    }
+
+    function safeHtml(str){
+      return (str ?? '').toString()
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+
+    function renderOrders(orders){
+      const tbody = $('ordersTbody');
+      if (!tbody) return;
+
+      if (!orders || orders.length === 0){
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--muted); font-weight:800;">
+          No orders found.
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = orders.map(o => {
+        const idStrFull = (o.id != null ? String(o.id) : '');
+        const idShort = idStrFull.slice(0, 8);
+        const totalVal = o.total ?? o.total_price ?? 0;
+        const shipping = [o.address, o.city, o.postal].filter(Boolean).join(', ') || '—';
+        const payment = o.payment_method || o.payment || '—';
+        const newBadge = isNewOrder(o.created_at) ? `<span class="badge badge-new">New</span>` : '';
+
+        const status = safeLower(o.status || 'pending');
+        const canShip = status !== 'shipped' && status !== 'delivered';
+        const canDeliver = status !== 'delivered';
+
+        return `
+          <tr>
+            <td>
+              <code class="tag">#${safeHtml(idShort)}</code>
+              ${newBadge}
+              <div style="margin-top:6px;">
+                <button class="btn btn-icon" data-action="view-order" data-id="${safeHtml(idStrFull)}" title="View details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-icon" data-action="print-order" data-id="${safeHtml(idStrFull)}" title="Print invoice">
+                  <i class="fas fa-print"></i>
+                </button>
+              </div>
+            </td>
+
+            <td>
+              <div style="font-weight:900;">${safeHtml((o.full_name || '').trim() || '—')}</div>
+              <div style="color:var(--muted); font-weight:800; margin-top:4px;">
+                <i class="fab fa-whatsapp"></i> ${safeHtml(o.phone || '—')}
+              </div>
+              <div style="color:var(--muted); font-weight:800;">
+                ${safeHtml(o.email || '')}
+              </div>
+            </td>
+
+            <td style="max-width:220px;">
+              <div style="color:var(--muted); font-weight:800;">${safeHtml(shipping)}</div>
+            </td>
+
+            <td style="font-weight:900;">${formatMoney(totalVal)}</td>
+
+            <td><div style="color:var(--muted); font-weight:900;">${safeHtml(payment)}</div></td>
+
+            <td>${statusBadge(o.status)}</td>
+
+            <td>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                ${canShip ? `
+                  <button type="button" class="btn btn-green" data-action="status" data-id="${safeHtml(idStrFull)}" data-status="shipped" title="Mark shipped">
+                    <i class="fas fa-truck"></i> Shipped
+                  </button>` : ''}
+
+                ${canDeliver ? `
+                  <button type="button" class="btn btn-dark" data-action="status" data-id="${safeHtml(idStrFull)}" data-status="delivered" title="Mark delivered">
+                    <i class="fas fa-circle-check"></i> Delivered
+                  </button>` : ''}
+
+                <button type="button" class="btn btn-gray" data-action="copy-id" data-id="${safeHtml(idStrFull)}" title="Copy order ID">
+                  <i class="fas fa-copy"></i> Copy ID
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function bindOrderFilters(){
+      ['orderSearch','orderStatusFilter','orderDateFrom','orderDateTo'].forEach(id => {
+        const el = $(id);
+        if (!el) return;
+        el.addEventListener(id === 'orderSearch' ? 'input' : 'change', () => renderOrders(getFilteredOrders()));
+      });
+    }
+
+    // =========================
+    // Order actions
+    // =========================
+    async function setOrderStatus(orderId, status){
+      // Optional audit fields if your table supports them
+      const payload = { status, updated_at: nowIso() };
+      if (currentUser?.id) payload.updated_by = currentUser.id;
+
+      const { error } = await supabase.from('orders').update(payload).eq('id', orderId);
+      if (error){
+        alert('Update failed: ' + (error.message || error));
+        return;
+      }
+      const o = allOrders.find(x => String(x.id) === String(orderId));
+      if (o) o.status = status;
+      showToast('Order updated to ' + status);
+      renderOrders(getFilteredOrders());
+      updateReportStats();
+    }
+
+    function tryParseItems(order){
+      // supports common shapes: items array, cart_items, order_items, items_json
+      const candidates = [order.items, order.order_items, order.cart_items, order.items_json];
+      for (const c of candidates){
+        if (!c) continue;
+        if (Array.isArray(c)) return c;
+        if (typeof c === 'string'){
+          try{
+            const j = JSON.parse(c);
+            if (Array.isArray(j)) return j;
+          }catch{}
+        }
+        if (typeof c === 'object'){
+          // sometimes stored as object with array inside
+          if (Array.isArray(c.items)) return c.items;
+        }
+      }
+      return [];
+    }
+
+    function openOrderModal(orderId){
+      const o = allOrders.find(x => String(x.id) === String(orderId));
+      if (!o) return;
+
+      const idShort = String(o.id || '').slice(0, 8);
+      $('orderModalTitle').textContent = 'Order #' + idShort;
+
+      const shipping = [o.address, o.city, o.postal].filter(Boolean).join(', ') || '—';
+      const payment = o.payment_method || o.payment || '—';
+      const totalVal = o.total ?? o.total_price ?? 0;
+      const created = o.created_at ? new Date(o.created_at) : null;
+
+      const items = tryParseItems(o);
+      const itemsHtml = items.length ? items.map(it => {
+        const name = it.name || it.product_name || it.title || 'Item';
+        const qty = Number(it.qty ?? it.quantity ?? 1);
+        const price = Number(it.price ?? it.unit_price ?? 0);
+        const line = price * qty;
+        return `<div class="row">
+          <div>${safeHtml(name)} <span>× ${qty}</span></div>
+          <div>${formatMoney(line || price)}</div>
+        </div>`;
+      }).join('') : `<div class="row"><div style="color:var(--muted); font-weight:900;">No line items stored on this order.</div><div></div></div>`;
+
+      const body = `
+        <div class="kvs">
+          <div class="kv"><small>Customer</small><div>${safeHtml(o.full_name || '—')}</div></div>
+          <div class="kv"><small>Phone</small><div>${safeHtml(o.phone || '—')}</div></div>
+          <div class="kv"><small>Email</small><div>${safeHtml(o.email || '—')}</div></div>
+          <div class="kv"><small>Status</small><div>${safeHtml(o.status || 'pending')}</div></div>
+          <div class="kv"><small>Payment</small><div>${safeHtml(payment)}</div></div>
+          <div class="kv"><small>Created</small><div>${created ? created.toLocaleString() : '—'}</div></div>
+          <div class="kv" style="grid-column:1/-1;"><small>Shipping</small><div>${safeHtml(shipping)}</div></div>
+          <div class="kv" style="grid-column:1/-1;"><small>Total</small><div>${formatMoney(totalVal)}</div></div>
+        </div>
+
+        <div class="items">
+          <header>Items</header>
+          ${itemsHtml}
+        </div>
+
+        <div class="modal-actions">
+          ${safeLower(o.status) !== 'shipped' && safeLower(o.status) !== 'delivered' ? `
+            <button type="button" class="btn btn-green" data-action="modal-status" data-id="${safeHtml(o.id)}" data-status="shipped">
+              <i class="fas fa-truck"></i> Mark shipped
+            </button>` : ''}
+
+          ${safeLower(o.status) !== 'delivered' ? `
+            <button type="button" class="btn btn-dark" data-action="modal-status" data-id="${safeHtml(o.id)}" data-status="delivered">
+              <i class="fas fa-circle-check"></i> Mark delivered
+            </button>` : ''}
+
+          <button type="button" class="btn btn-gray" data-action="modal-print" data-id="${safeHtml(o.id)}">
+            <i class="fas fa-print"></i> Print
+          </button>
+
+          <button type="button" class="btn btn-gray" data-action="modal-copy" data-id="${safeHtml(o.id)}">
+            <i class="fas fa-copy"></i> Copy ID
+          </button>
+        </div>
+
+        <p class="muted-note">
+          If you want line-items here, store an <code>items</code> array on each order (name, qty, price).
+        </p>
+      `;
+
+      $('orderModalBody').innerHTML = body;
+
+      const modal = $('orderModal');
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeOrderModal(){
+      const modal = $('orderModal');
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function printInvoice(orderId){
+      const o = allOrders.find(x => String(x.id) === String(orderId));
+      if (!o) return;
+
+      const idShort = String(o.id || '').slice(0, 8);
+      const totalVal = o.total ?? o.total_price ?? 0;
+      const shipping = [o.address, o.city, o.postal].filter(Boolean).join(', ') || '—';
+      const items = tryParseItems(o);
+
+      const itemsHtml = items.length ? `
+        <h3 style="margin:18px 0 8px;">Items</h3>
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th style="text-align:left; border-bottom:1px solid #e2e8f0; padding:8px;">Item</th>
+              <th style="text-align:right; border-bottom:1px solid #e2e8f0; padding:8px;">Qty</th>
+              <th style="text-align:right; border-bottom:1px solid #e2e8f0; padding:8px;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(it => {
+              const name = it.name || it.product_name || it.title || 'Item';
+              const qty = Number(it.qty ?? it.quantity ?? 1);
+              const price = Number(it.price ?? it.unit_price ?? 0);
+              return `
+                <tr>
+                  <td style="padding:8px; border-bottom:1px solid #f1f5f9;">${safeHtml(name)}</td>
+                  <td style="padding:8px; text-align:right; border-bottom:1px solid #f1f5f9;">${qty}</td>
+                  <td style="padding:8px; text-align:right; border-bottom:1px solid #f1f5f9;">${formatMoney(price)}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      ` : '';
+
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Order #${safeHtml(idShort)}</title>
+            <meta charset="utf-8"/>
+          </head>
+          <body style="font-family:Inter,system-ui,-apple-system,sans-serif; padding:24px; color:#0f172a;">
+            <h1 style="margin:0 0 10px; color:#2d7a32;">Braga Bazaar</h1>
+            <h2 style="margin:0 0 14px;">Order #${safeHtml(idShort)}</h2>
+            <p><strong>Customer:</strong> ${safeHtml(o.full_name || '—')}</p>
+            <p><strong>Phone:</strong> ${safeHtml(o.phone || '—')}</p>
+            <p><strong>Email:</strong> ${safeHtml(o.email || '—')}</p>
+            <p><strong>Shipping:</strong> ${safeHtml(shipping)}</p>
+            <p><strong>Status:</strong> ${safeHtml(o.status || 'pending')}</p>
+            <p><strong>Payment:</strong> ${safeHtml(o.payment_method || o.payment || '—')}</p>
+            <p><strong>Total:</strong> ${formatMoney(totalVal)}</p>
+            ${itemsHtml}
+            <p style="margin-top:20px; color:#64748b;"><em>Print this page for your records.</em></p>
+          </body>
+        </html>
+      `);
+      win.document.close();
+      win.print();
+      win.close();
+    }
+
+    async function copyText(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('Copied!');
+      }catch{
+        const tmp = document.createElement('textarea');
+        tmp.value = text;
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        showToast('Copied!');
+      }
+    }
+
+    // =========================
+    // Inventory: filter + render
+    // =========================
+    function getFilteredProducts(){
+      const term = safeLower($('productSearch')?.value || '').trim();
+      const cat = safeLower($('productCategoryFilter')?.value || '').trim();
+      const lowOnly = !!$('lowStockOnly')?.checked;
+
+      return allProducts.filter(p => {
+        const name = safeLower(p.name || '');
+        const sku = safeLower(p.sku || '');
+        const pcat = safeLower(p.category || '');
+
+        if (term && !(name.includes(term) || sku.includes(term))) return false;
+        if (cat && pcat !== cat) return false;
+
+        if (lowOnly){
+          const low = (p.low_stock_threshold != null) ? Number(p.low_stock_threshold) : 5;
+          const stock = Number(p.stock_level || 0);
+          if (!(stock < low)) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function renderInventory(products){
+      const tbody = $('inventoryTbody');
+      if (!tbody) return;
+
+      if (!products || products.length === 0){
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:24px; color:var(--muted); font-weight:800;">
+          No products match your filter.
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = products.map(p => {
+        const low = (p.low_stock_threshold != null) ? Number(p.low_stock_threshold) : 5;
+        const stock = Number(p.stock_level || 0);
+        const isLow = stock < low;
+
+        const isActive = (p.is_active == null) ? null : !!p.is_active;
+        const activeHint = (isActive == null) ? '' : (isActive ? ' • Active' : ' • Disabled');
+
+        // employees can’t remove products
+        const canRemove = currentRole === 'admin';
+
+        return `
+          <tr data-row-id="${safeHtml(p.id)}">
+            <td>
+              <div style="font-weight:900;">${safeHtml(p.name || '—')}</div>
+              <div style="color:var(--muted); font-weight:800; margin-top:4px;">
+                <i class="fas fa-layer-group"></i> ${safeHtml(p.category || '—')}${safeHtml(activeHint)}
+              </div>
+            </td>
+
+            <td><code class="tag">${safeHtml(p.sku || '—')}</code></td>
+
+            <td>
+              <input class="mini-input" type="number" step="0.01" min="0"
+                     id="p-${safeHtml(p.id)}" value="${Number(p.price ?? 0)}" />
+            </td>
+
+            <td>
+              <input class="mini-input ${isLow ? 'stock-low' : ''}" type="number" min="0"
+                     id="s-${safeHtml(p.id)}" value="${Number(p.stock_level ?? 0)}" />
+              ${isLow ? `<div style="margin-top:6px;"><span class="badge status-pending">LOW</span></div>` : ``}
+            </td>
+
+            <td>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-green" data-action="save-product" data-id="${safeHtml(p.id)}">
+                  <i class="fas fa-floppy-disk"></i> Save
+                </button>
+
+                <button type="button" class="btn btn-gray" data-action="edit-product" data-id="${safeHtml(p.id)}">
+                  <i class="fas fa-pen-to-square"></i> Edit
+                </button>
+
+                ${canRemove ? `
+                  <button type="button" class="btn btn-red" data-action="remove-product" data-id="${safeHtml(p.id)}" data-name="${safeHtml(p.name || 'product')}">
+                    <i class="fas fa-trash-can"></i> Remove
+                  </button>` : ``}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function bindInventoryFilters(){
+      ['productSearch','productCategoryFilter','lowStockOnly'].forEach(id => {
+        const el = $(id);
+        if (!el) return;
+        el.addEventListener(id === 'productSearch' ? 'input' : 'change', () => renderInventory(getFilteredProducts()));
+      });
+    }
+
+    // =========================
+    // Product CRUD (with soft delete if possible)
+    // =========================
+    async function updateProductQuick(id){
+      const priceEl = document.getElementById(`p-${id}`);
+      const stockEl = document.getElementById(`s-${id}`);
+      const price = priceEl ? parseFloat(priceEl.value) : 0;
+      const stock = stockEl ? parseInt(stockEl.value, 10) : 0;
+
+      const payload = { price: Number.isFinite(price) ? price : 0, stock_level: Number.isFinite(stock) ? stock : 0, updated_at: nowIso() };
+      if (currentUser?.id) payload.updated_by = currentUser.id;
+
+      const { error } = await supabase.from('products').update(payload).eq('id', id);
+      if (error){
+        alert('Update failed: ' + (error.message || error));
+        return;
+      }
+      showToast('Saved');
+      await loadProducts({ silent:true });
+    }
+
+    async function removeProduct(id, name){
+      if (currentRole !== 'admin'){
+        alert('Only admins can remove products.');
+        return;
+      }
+
+      const safeName = (name || 'this product').toString().slice(0, 80);
+      if (!confirm(`Remove "${safeName}"?\n\nRecommended: this will disable (soft remove) if supported.`)) return;
+
+      // Try soft delete first (is_active=false). If the column doesn't exist, fallback to delete.
+      let softOk = true;
+      const softRes = await supabase.from('products').update({ is_active: false, updated_at: nowIso() }).eq('id', id);
+      if (softRes.error){
+        softOk = false;
+      }
+
+      if (!softOk){
+        const hardRes = await supabase.from('products').delete().eq('id', id);
+        if (hardRes.error){
+          alert('Could not remove product: ' + (hardRes.error.message || hardRes.error));
+          return;
+        }
+      }
+
+      showToast('Removed');
+      await loadProducts({ silent:true });
+    }
+
+    function toggleUnitWrap(category, wrapEl, unitEl, pricePerKgEl){
+      const show = PER_KG_CATEGORIES.includes(String(category || '').toLowerCase());
+      if (!wrapEl) return;
+      wrapEl.style.display = show ? 'grid' : 'none';
+      if (!show){
+        if (unitEl) unitEl.value = 'unit';
+        if (pricePerKgEl) pricePerKgEl.value = '';
+      }
+    }
+
+    function openEditProductModal(id){
+      const p = allProducts.find(x => String(x.id) === String(id));
+      if (!p) return;
+
+      $('editProductId').value = p.id;
+      $('editName').value = p.name || '';
+      $('editCategory').value = p.category || 'fruits';
+      $('editPrice').value = p.price ?? 0;
+      $('editStock').value = p.stock_level ?? 0;
+
+      $('editUnit').value = p.unit || 'unit';
+      $('editPricePerKg').value = p.price_per_kg ?? '';
+      $('editImageUrl').value = p.image_url || '';
+      $('editDescription').value = p.description || '';
+      $('editSku').value = p.sku || '';
+      $('editVariants').value = p.variants || '';
+      $('editLowStock').value = p.low_stock_threshold ?? '';
+
+      // if supported
+      if (p.is_active == null) $('editIsActive').value = 'auto';
+      else $('editIsActive').value = String(!!p.is_active);
+
+      toggleUnitWrap(p.category, $('editUnitWrap'), $('editUnit'), $('editPricePerKg'));
+
+      const modal = $('editProductModal');
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeEditProductModal(){
+      const modal = $('editProductModal');
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    async function saveEditProductForm(e){
+      e.preventDefault();
+
+      const id = $('editProductId').value;
+      const category = $('editCategory').value;
+
+      const allowPerKg = PER_KG_CATEGORIES.includes(String(category || '').toLowerCase());
+      const unit = allowPerKg ? $('editUnit').value : 'unit';
+
+      const payload = {
+        name: $('editName').value.trim(),
+        category,
+        price: parseFloat($('editPrice').value) || 0,
+        stock_level: parseInt($('editStock').value, 10) || 0,
+        unit: unit || 'unit',
+        image_url: ($('editImageUrl').value || '').trim() || null,
+        description: ($('editDescription').value || '').trim() || null,
+        sku: ($('editSku').value || '').trim() || null,
+        variants: ($('editVariants').value || '').trim() || null,
+        low_stock_threshold: ($('editLowStock').value || '').trim() !== '' ? parseInt($('editLowStock').value, 10) : null,
+        updated_at: nowIso()
+      };
+
+      if (unit === 'kg'){
+        const v = ($('editPricePerKg').value || '').trim();
+        payload.price_per_kg = v !== '' ? parseFloat(v) : null;
+      }
+
+      const isActiveChoice = $('editIsActive').value;
+      if (isActiveChoice === 'true') payload.is_active = true;
+      if (isActiveChoice === 'false') payload.is_active = false;
+
+      if (currentUser?.id) payload.updated_by = currentUser.id;
+
+      const { error } = await supabase.from('products').update(payload).eq('id', id);
+      if (error){
+        alert('Update failed: ' + (error.message || error));
+        return;
+      }
+
+      showToast('Saved');
+      closeEditProductModal();
+      await loadProducts({ silent:true });
+    }
+
+    // =========================
+    // Add product (admin only)
+    // =========================
+    async function addProduct(e){
+      e.preventDefault();
+      if (currentRole !== 'admin'){
+        alert('Only admins can add products.');
+        return;
+      }
+
+      const msgEl = $('addProductMsg');
+      msgEl.textContent = 'Adding…';
+
+      const name = $('newName').value.trim();
+      const category = $('newCategory').value;
+      const price = parseFloat($('newPrice').value) || 0;
+      const stock = parseInt($('newStock').value, 10) || 0;
+
+      const allowPerKg = PER_KG_CATEGORIES.includes(String(category || '').toLowerCase());
+      const unit = allowPerKg ? $('newUnit').value : 'unit';
+      const pricePerKg =
+        (allowPerKg && unit === 'kg' && ($('newPricePerKg').value || '').trim() !== '') ?
+        parseFloat($('newPricePerKg').value) : null;
+
+      const payload = {
+        id: (crypto.randomUUID ? crypto.randomUUID() : ('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random()*16|0).toString(16)))),
+        name,
+        category,
+        price,
+        stock_level: stock,
+        unit: unit || 'unit',
+        image_url: ($('newImageUrl').value || '').trim() || null,
+        description: ($('newDescription').value || '').trim() || null,
+        sku: ($('newSku').value || '').trim() || null,
+        variants: ($('newVariants').value || '').trim() || null,
+        low_stock_threshold: ($('newLowStock').value || '').trim() !== '' ? parseInt($('newLowStock').value, 10) : null,
+        nutritional_info: {},
+        created_at: nowIso(),
+        updated_at: nowIso()
+      };
+
+      if (unit === 'kg' && pricePerKg != null) payload.price_per_kg = pricePerKg;
+
+      // if supported
+      payload.is_active = true;
+
+      if (currentUser?.id) payload.created_by = currentUser.id;
+
+      const { error } = await supabase.from('products').insert(payload);
+      if (error){
+        msgEl.style.color = '#ef4444';
+        msgEl.textContent = 'Error: ' + (error.message || error);
+        return;
+      }
+
+      msgEl.style.color = 'var(--green)';
+      msgEl.textContent = 'Product added.';
+      $('addProductForm').reset();
+      $('newStock').value = 0;
+      toggleUnitWrap($('newCategory').value, $('unitPricePerKgWrap'), $('newUnit'), $('newPricePerKg'));
+
+      await loadProducts({ silent:true });
+    }
+
+    // =========================
+    // Bulk CSV import (admin only)
+    // =========================
+    function parseCSVLine(line){
+      const out = [];
+      let cur = '';
+      let inQuotes = false;
+
+      for (let i=0; i<line.length; i++){
+        const c = line[i];
+        if (c === '"'){
+          // handle escaped double quotes ""
+          if (inQuotes && line[i+1] === '"'){
+            cur += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (c === ',' && !inQuotes){
+          out.push(cur.trim());
+          cur = '';
+        } else {
+          cur += c;
+        }
+      }
+      out.push(cur.trim());
+      return out;
+    }
+
+    async function bulkImportCSV(){
+      if (currentRole !== 'admin'){
+        alert('Only admins can import CSV.');
+        return;
+      }
+
+      const fileInput = $('bulkCsvFile');
+      const msgEl = $('bulkCsvMsg');
+
+      if (!fileInput.files || fileInput.files.length === 0){
+        msgEl.style.color = '#ef4444';
+        msgEl.textContent = 'Please choose a CSV file first.';
+        return;
+      }
+
+      msgEl.style.color = 'var(--muted)';
+      msgEl.textContent = 'Importing…';
+
+      let text = '';
+      try{
+        text = await fileInput.files[0].text();
+      }catch(err){
+        msgEl.style.color = '#ef4444';
+        msgEl.textContent = 'Could not read file: ' + (err.message || err);
+        return;
+      }
+
+      const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+      if (lines.length < 2){
+        msgEl.style.color = '#ef4444';
+        msgEl.textContent = 'CSV must have a header row and at least one data row.';
+        return;
+      }
+
+      const headers = parseCSVLine(lines[0]).map(h => safeLower(h).replace(/\s+/g,'_'));
+      const rows = [];
+
+      for (let i=1; i<lines.length; i++){
+        const vals = parseCSVLine(lines[i]);
+        const r = {};
+        headers.forEach((h, j) => r[h] = vals[j] ?? '');
+        rows.push(r);
+      }
+
+      const payloads = rows.map(r => {
+        const name = (r.name || '').trim();
+        if (!name) return null;
+
+        const id = (crypto.randomUUID ? crypto.randomUUID() : ('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random()*16|0).toString(16))));
+        const category = safeLower(r.category || 'fruits').replace(/\s+/g,'_');
+        const allowPerKg = PER_KG_CATEGORIES.includes(category);
+        const unit = (allowPerKg && safeLower(r.unit) === 'kg') ? 'kg' : 'unit';
+
+        const lowStock = (r.low_stock_threshold ?? '').toString().trim();
+        const lowStockThreshold = lowStock !== '' ? parseInt(lowStock, 10) : null;
+
+        const p = {
+          id,
+          name,
+          category,
+          price: parseFloat(r.price) || 0,
+          stock_level: parseInt(r.stock_level, 10) || 0,
+          unit,
+          image_url: (r.image_url || '').trim() || null,
+          description: (r.description || '').trim() || null,
+          sku: (r.sku || '').trim() || null,
+          variants: (r.variants || '').trim() || null,
+          low_stock_threshold: (Number.isFinite(lowStockThreshold) ? lowStockThreshold : null),
+          nutritional_info: {},
+          is_active: true,
+          created_at: nowIso(),
+          updated_at: nowIso()
+        };
+
+        if (allowPerKg && unit === 'kg' && (r.price_per_kg || '').toString().trim() !== ''){
+          p.price_per_kg = parseFloat(r.price_per_kg) || null;
+        }
+
+        if (currentUser?.id) p.created_by = currentUser.id;
+
+        return p;
+      }).filter(Boolean);
+
+      // batch insert
+      const BATCH = 25;
+      let inserted = 0;
+      let failed = 0;
+
+      for (let i=0; i<payloads.length; i+=BATCH){
+        const chunk = payloads.slice(i, i+BATCH);
+        const res = await supabase.from('products').insert(chunk);
+        if (res.error){
+          failed += chunk.length;
+          console.error('Bulk insert error', res.error);
+        } else {
+          inserted += chunk.length;
+        }
+      }
+
+      msgEl.style.color = failed ? '#ef4444' : 'var(--green)';
+      msgEl.textContent = `Done. Inserted: ${inserted}${failed ? `, failed: ${failed}` : ''}.`;
+      fileInput.value = '';
+      await loadProducts({ silent:true });
+    }
+
+    function downloadSampleCSV(){
+      const headers = 'name,category,price,stock_level,image_url,description,unit,price_per_kg,sku,variants,low_stock_threshold';
+      const rows = [
+        'Organic Apples,fruits,2.99,50,https://example.com/apples.jpg,Fresh organic apples,unit,,FRUIT-001,"Size: S, M, L",5',
+        'Chicken Breast,meat,4.99,18,https://example.com/chicken.jpg,Fresh chicken breast,kg,9.99,MEAT-010,,3'
+      ];
+      const csv = headers + '\n' + rows.join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'products_sample.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================
+    // Export CSV
+    // =========================
+    function exportOrdersCSV(){
+      const rows = getFilteredOrders();
+      if (!rows.length) return alert('No orders to export.');
+
+      const headers = ['created_at','order_id','customer','phone','email','address','city','postal','total','status','payment'];
+      const lines = rows.map(o => [
+        o.created_at || '',
+        o.id || '',
+        (o.full_name || '').replace(/"/g,'""'),
+        `'${o.phone || ''}`,
+        (o.email || '').replace(/"/g,'""'),
+        (o.address || '').replace(/"/g,'""'),
+        (o.city || '').replace(/"/g,'""'),
+        (o.postal || '').replace(/"/g,'""'),
+        (o.total ?? o.total_price ?? 0),
+        (o.status || 'pending'),
+        (o.payment_method || o.payment || '')
+      ].map(v => {
+        const s = String(v ?? '');
+        return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s;
+      }).join(','));
+
+      const csv = headers.join(',') + '\n' + lines.join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Braga_Bazaar_Orders_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportProductsCSV(){
+      const rows = getFilteredProducts();
+      if (!rows.length) return alert('No products to export.');
+
+      const headers = ["name","category","price","stock_level","image_url","description","unit","price_per_kg","sku","variants","low_stock_threshold","is_active"];
+      const lines = rows.map(p => [
+        p.name || '',
+        p.category || '',
+        p.price ?? '',
+        p.stock_level ?? '',
+        p.image_url || '',
+        p.description || '',
+        p.unit || 'unit',
+        p.price_per_kg ?? '',
+        p.sku || '',
+        p.variants || '',
+        p.low_stock_threshold ?? '',
+        (p.is_active == null ? '' : (p.is_active ? 'true' : 'false'))
+      ].map(v => {
+        const s = String(v ?? '');
+        return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s;
+      }).join(','));
+
+      const csv = headers.join(',') + '\n' + lines.join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Braga_Bazaar_Products_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportReportCSV(){
+      if (!allOrders.length) return alert('No data to export.');
+      const headers = ["Date","Customer","Phone","Email","Total","Status","Payment"];
+      const rows = allOrders.map(o => [
+        (o.created_at ? new Date(o.created_at).toLocaleString() : ''),
+        o.full_name || '',
+        `'${o.phone || ''}`,
+        o.email || '',
+        (o.total ?? o.total_price ?? 0),
+        o.status || 'pending',
+        o.payment_method || o.payment || ''
+      ]);
+
+      const csv = headers.join(",") + "\n" + rows.map(r => r.map(v => {
+        const s = String(v ?? '');
+        return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s;
+      }).join(",")).join("\n");
+
+      const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Braga_Bazaar_Report_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================
+    // Bulk save visible inventory
+    // =========================
+    async function bulkSaveVisible(){
+      const visible = getFilteredProducts();
+      if (!visible.length) return;
+
+      const updates = visible.map(p => {
+        const id = p.id;
+        const priceEl = document.getElementById(`p-${id}`);
+        const stockEl = document.getElementById(`s-${id}`);
+        if (!priceEl || !stockEl) return null;
+
+        const price = parseFloat(priceEl.value);
+        const stock = parseInt(stockEl.value, 10);
+
+        return {
+          id,
+          price: Number.isFinite(price) ? price : (p.price ?? 0),
+          stock_level: Number.isFinite(stock) ? stock : (p.stock_level ?? 0),
+          updated_at: nowIso(),
+          updated_by: currentUser?.id || null
+        };
+      }).filter(Boolean);
+
+      if (!updates.length) return;
+
+      // Update sequentially to keep it simple and reliable
+      let ok = 0, fail = 0;
+      for (const u of updates){
+        const payload = { price: u.price, stock_level: u.stock_level, updated_at: u.updated_at };
+        if (u.updated_by) payload.updated_by = u.updated_by;
+
+        const res = await supabase.from('products').update(payload).eq('id', u.id);
+        if (res.error) fail++;
+        else ok++;
+      }
+
+      showToast(`Saved visible: ${ok}${fail ? ` (failed ${fail})` : ''}`);
+      await loadProducts({ silent:true });
+    }
+
+    // =========================
+    // Logout
+    // =========================
+    async function logout(){
+      try{
+        await supabase.auth.signOut();
+      }catch{}
+      sessionStorage.removeItem(PIN_STORAGE_KEY);
+      localStorage.removeItem('userIsLoggedIn');
+      window.location.href = 'login.html';
+    }
+
+    // =========================
+    // Event delegation
+    // =========================
+    function bindDelegatedClicks(){
+      document.addEventListener('click', async (e) => {
+        const el = e.target.closest('[data-action]');
+        if (!el) return;
+
+        const action = el.getAttribute('data-action');
+        const id = el.getAttribute('data-id');
+
+        if (action === 'status'){
+          const status = el.getAttribute('data-status');
+          await setOrderStatus(id, status);
+          return;
+        }
+        if (action === 'view-order'){
+          openOrderModal(id);
+          return;
+        }
+        if (action === 'print-order'){
+          printInvoice(id);
+          return;
+        }
+        if (action === 'copy-id'){
+          await copyText(String(id));
+          return;
+        }
+
+        // modal actions
+        if (action === 'modal-status'){
+          const status = el.getAttribute('data-status');
+          await setOrderStatus(id, status);
+          openOrderModal(id); // refresh modal content
+          return;
+        }
+        if (action === 'modal-print'){
+          printInvoice(id);
+          return;
+        }
+        if (action === 'modal-copy'){
+          await copyText(String(id));
+          return;
+        }
+
+        // inventory
+        if (action === 'save-product'){
+          await updateProductQuick(id);
+          return;
+        }
+        if (action === 'edit-product'){
+          openEditProductModal(id);
+          return;
+        }
+        if (action === 'remove-product'){
+          const name = el.getAttribute('data-name');
+          await removeProduct(id, name);
+          return;
+        }
+      });
+    }
+
+    // =========================
+    // Modals bind
+    // =========================
+    function bindModals(){
+      $('orderModalClose').addEventListener('click', closeOrderModal);
+      $('orderModal').addEventListener('click', (e) => { if (e.target === $('orderModal')) closeOrderModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeOrderModal(); closeEditProductModal(); } });
+
+      $('editModalClose').addEventListener('click', closeEditProductModal);
+      $('editCancelBtn').addEventListener('click', closeEditProductModal);
+      $('editProductModal').addEventListener('click', (e) => { if (e.target === $('editProductModal')) closeEditProductModal(); });
+
+      $('editCategory').addEventListener('change', () => toggleUnitWrap($('editCategory').value, $('editUnitWrap'), $('editUnit'), $('editPricePerKg')));
+      $('editProductForm').addEventListener('submit', saveEditProductForm);
+    }
+
+    // =========================
+    // Bind buttons + init
+    // =========================
+    function bindButtons(){
+      $('logoutBtn').addEventListener('click', logout);
+
+      $('refreshOrdersBtn').addEventListener('click', async () => { await loadOrders(); showToast('Orders refreshed'); });
+      $('refreshProductsBtn').addEventListener('click', async () => { await loadProducts(); showToast('Products refreshed'); });
+
+      $('exportOrdersBtn').addEventListener('click', exportOrdersCSV);
+      $('exportProductsBtn').addEventListener('click', exportProductsCSV);
+      $('exportReportBtn').addEventListener('click', exportReportCSV);
+
+      $('bulkSaveVisibleBtn').addEventListener('click', bulkSaveVisible);
+
+      // Add product
+      $('addProductForm').addEventListener('submit', addProduct);
+      $('addProductResetBtn').addEventListener('click', () => { $('addProductForm').reset(); $('newStock').value = 0; $('addProductMsg').textContent=''; });
+
+      // Unit wrap toggle (add)
+      $('newCategory').addEventListener('change', () => toggleUnitWrap($('newCategory').value, $('unitPricePerKgWrap'), $('newUnit'), $('newPricePerKg')));
+      toggleUnitWrap($('newCategory').value, $('unitPricePerKgWrap'), $('newUnit'), $('newPricePerKg'));
+
+      // Bulk import
+      $('bulkCsvBtn').addEventListener('click', bulkImportCSV);
+      $('sampleCsvBtn').addEventListener('click', downloadSampleCSV);
+    }
+
+    function boot(){
+      bindOnlineState();
+      bindTabs();
+      bindOrderFilters();
+      bindInventoryFilters();
+      bindButtons();
+      bindDelegatedClicks();
+      bindModals();
+
+      // fast initial render from cache
+      const cachedOrders = cacheRead(CACHE_ORDERS_KEY);
+      if (cachedOrders){ allOrders = cachedOrders; renderOrders(getFilteredOrders()); updateReportStats(); }
+
+      const cachedProducts = cacheRead(CACHE_PRODUCTS_KEY);
+      if (cachedProducts){ allProducts = cachedProducts; renderInventory(getFilteredProducts()); }
+
+      // fetch fresh
+      loadAll();
+    }
+
+    // Start
+    adminGate();
+  </script>
 </body>
 </html>
-

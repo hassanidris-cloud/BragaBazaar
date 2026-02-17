@@ -1,120 +1,401 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2d7a32">
-    <title>Login | Braga Bazaar</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style type="text/css">.main-header .site-nav a.site-nav-icon-only,.main-header .site-nav a.site-nav-icon-only i,.main-header .site-nav a.site-nav-icon-only .site-nav-cart-total{color:#000!important}.main-header .site-nav a.site-nav-icon-only:link,.main-header .site-nav a.site-nav-icon-only:visited,.main-header .site-nav a.site-nav-icon-only:hover,.main-header .site-nav a.site-nav-icon-only:focus{color:#000!important}.main-header .site-nav a.site-nav-icon-only:hover i,.main-header .site-nav a.site-nav-icon-only:focus i{color:#000!important}</style>
-    <style>
-        body { background: #fff; font-family: 'Inter', sans-serif; }
-        .login-container { max-width: 400px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px; }
-        .login-container h2 { color: #4a6d1a; margin-bottom: 24px; }
-        .login-container label { font-weight: bold; color: #333; margin-top: 12px; display: block; }
-        .login-container input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #eee; margin-top: 6px; margin-bottom: 16px; }
-        .login-container .cta-primary { width: 100%; margin-top: 12px; }
-        .login-container .signup-link { display: block; margin-top: 18px; text-align: center; color: #4a6d1a; text-decoration: underline; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2d7a32" />
+  <title>Login | Braga Bazaar</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    :root{
+      --green:#2d7a32;
+      --green-dark:#1e5222;
+      --text:#111827;
+      --muted:#64748b;
+      --bg:#ffffff;
+      --surface:#f8fafc;
+      --border:#e2e8f0;
+      --shadow: 0 10px 30px rgba(0,0,0,0.06);
+      --radius:16px;
+    }
+
+    body { background: #fff; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: var(--text); margin:0; }
+
+    /* =========================
+       HEADER (clean + responsive)
+       ========================= */
+    .main-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .top-nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: 800;
+      text-decoration: none;
+      color: #111;
+      letter-spacing: 0.4px;
+      font-size: 1.1rem;
+      white-space: nowrap;
+    }
+    .logo span { color: var(--green); }
+
+    /* Search */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 10px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+      min-width: 220px;
+    }
+    .search-bar input[type="search"]{
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.95rem;
+      color: var(--text);
+      padding: 4px 8px;
+    }
+    .search-bar button{
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      padding: 9px 14px;
+      border-radius: 999px;
+      transition: transform .15s ease, background .15s ease;
+      white-space: nowrap;
+    }
+    .search-bar button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .search-bar button:active { transform: translateY(0); }
+
+    /* Nav Icons (better look) */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .site-nav a.site-nav-icon-only{
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #111;
+      text-decoration: none;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .site-nav a.site-nav-icon-only i{
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+    .site-nav a.site-nav-icon-only:hover{
+      background: var(--surface);
+      transform: translateY(-1px);
+      border-color: #d5dde8;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .site-nav a.site-nav-icon-only:focus-visible{
+      outline: 3px solid rgba(45,122,50,0.25);
+      outline-offset: 2px;
+    }
+
+    /* Cart badge (optional) */
+    .cart-badge{
+      position:absolute;
+      top:-6px;
+      right:-6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--green);
+      color:#fff;
+      font-size: 0.70rem;
+      font-weight: 800;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 2px solid #fff;
+      box-shadow: 0 6px 14px rgba(45,122,50,0.25);
+    }
+
+    /* Mobile header behavior */
+    @media (max-width: 768px){
+      .top-nav{
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+          "logo nav"
+          "search search";
+      }
+      .logo { grid-area: logo; }
+      .site-nav { grid-area: nav; gap: 8px; }
+      .search-bar { grid-area: search; width: 100%; }
+      .site-nav a.site-nav-icon-only { width: 40px; height: 40px; border-radius: 12px; }
+    }
+
+    /* =========================
+       LOGIN CARD
+       ========================= */
+    .login-container {
+      max-width: 420px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 32px;
+      border: 1px solid var(--border);
+    }
+    .login-container h2 {
+      color: var(--green);
+      margin: 0 0 18px 0;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+    .login-container label {
+      font-weight: 700;
+      color: #334155;
+      margin-top: 12px;
+      display: block;
+      font-size: 0.9rem;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-top: 8px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .login-container input:focus{
+      border-color: rgba(45,122,50,0.55);
+      box-shadow: 0 0 0 4px rgba(45,122,50,0.12);
+    }
+
+    .cta-primary {
+      width: 100%;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 800;
+      margin-top: 10px;
+      border: none;
+      cursor: pointer;
+      background: var(--green);
+      color: #fff;
+      transition: transform .15s ease, background .15s ease;
+    }
+    .cta-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .cta-primary:active { transform: translateY(0); }
+    .cta-primary:disabled { opacity: 0.65; cursor: not-allowed; transform:none; }
+
+    #loginMessage{
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      display:none;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+
+    .signup-link {
+      display: block;
+      margin-top: 18px;
+      text-align: center;
+      color: var(--green);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .signup-link:hover { text-decoration: underline; }
+  </style>
 </head>
+
 <body>
-    <header class="main-header shared-header">
-        <div class="top-nav">
-            <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
-            <form class="search-bar" action="index.html" method="get" role="search">
-                <input type="search" name="q" placeholder="Search products..." aria-label="Search products">
-                <button type="submit">Search</button>
-            </form>
-            <nav class="site-nav" aria-label="Main navigation">
-                <a href="index.html" class="site-nav-icon-only" title="Shop" aria-label="Shop"><i class="fas fa-store"></i></a>
-                <a href="contact.html" class="site-nav-icon-only" title="Contact" aria-label="Contact"><i class="fas fa-envelope"></i></a>
-                <a href="account.html" class="site-nav-icon-only" title="My account" aria-label="My account"><i class="fas fa-user"></i></a>
-                <a href="checkout.html" class="site-nav-icon-only" title="Cart" aria-label="Cart"><i class="fas fa-shopping-cart"></i></a>
-            </nav>
-        </div>
-    </header>
-    <div class="login-container">
-        <h2>Entrar</h2>
-        <form id="loginForm">
-            <label for="email">Email</label>
-            <input type="email" id="email" required>
-            <label for="password">Password</label>
-            <input type="password" id="password" required>
-            <button type="submit" id="loginBtn" class="cta-primary" style="width:100%;border-radius:20px;padding:12px 32px;font-weight:bold;margin-top:12px;border:none;cursor:pointer;">Log in</button>
-        </form>
-        <div id="loginMessage" style="margin-top:16px;padding:12px;border-radius:8px;display:none;"></div>
-        <a href="signup.html" class="signup-link">Ainda não tem conta? Registe-se</a>
+  <header class="main-header shared-header">
+    <div class="top-nav">
+      <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
+
+      <form class="search-bar" action="index.html" method="get" role="search">
+        <input type="search" name="q" placeholder="Search products..." aria-label="Search products">
+        <button type="submit">Search</button>
+      </form>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="site-nav-icon-only" title="Shop" aria-label="Shop">
+          <i class="fas fa-store"></i>
+        </a>
+        <a href="contact.html" class="site-nav-icon-only" title="Contact" aria-label="Contact">
+          <i class="fas fa-envelope"></i>
+        </a>
+        <a href="account.html" class="site-nav-icon-only" title="My account" aria-label="My account">
+          <i class="fas fa-user"></i>
+        </a>
+        <a href="checkout.html" class="site-nav-icon-only" title="Cart" aria-label="Cart">
+          <i class="fas fa-shopping-cart"></i>
+          <!-- Optional badge: set the number with JS if you want -->
+          <!-- <span class="cart-badge" id="cartBadge">2</span> -->
+        </a>
+      </nav>
     </div>
-    <script type="module">
-        import { supabase, ADMIN_EMAILS } from './supabaseConfig.js';
+  </header>
 
-        const form = document.getElementById('loginForm');
-        const btn = document.getElementById('loginBtn');
-        const msgEl = document.getElementById('loginMessage');
+  <div class="login-container">
+    <h2>Entrar</h2>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" required>
 
-        function showMessage(text, isError) {
-            if (!msgEl) return;
-            msgEl.style.display = 'block';
-            msgEl.style.background = isError ? '#fee' : '#e8f5e9';
-            msgEl.style.color = isError ? '#c00' : '#2d7a32';
-            msgEl.textContent = text;
+      <label for="password">Password</label>
+      <input type="password" id="password" required>
+
+      <button type="submit" id="loginBtn" class="cta-primary">Log in</button>
+    </form>
+
+    <div id="loginMessage"></div>
+    <a href="signup.html" class="signup-link">Ainda não tem conta? Registe-se</a>
+  </div>
+
+  <script type="module">
+    import { supabase, ADMIN_EMAILS } from './supabaseConfig.js';
+
+    const form = document.getElementById('loginForm');
+    const btn = document.getElementById('loginBtn');
+    const msgEl = document.getElementById('loginMessage');
+
+    function showMessage(text, isError) {
+      if (!msgEl) return;
+      msgEl.style.display = 'block';
+      msgEl.style.background = isError ? '#fff1f2' : '#ecfdf5';
+      msgEl.style.color = isError ? '#b91c1c' : '#166534';
+      msgEl.style.borderColor = isError ? '#fecdd3' : '#bbf7d0';
+      msgEl.textContent = text;
+    }
+
+    form.onsubmit = async function (e) {
+      e.preventDefault();
+      if (btn) { btn.disabled = true; btn.textContent = 'A entrar...'; }
+      if (msgEl) msgEl.style.display = 'none';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          showMessage('Erro ao entrar: ' + error.message, true);
+          if (btn) { btn.disabled = false; btn.textContent = 'Log in'; }
+          return;
         }
 
-        form.onsubmit = async function (e) {
-            e.preventDefault();
-            if (btn) { btn.disabled = true; btn.textContent = 'A entrar...'; }
-            if (msgEl) msgEl.style.display = 'none';
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
-                });
-                if (error) {
-                    showMessage('Erro ao entrar: ' + error.message, true);
-                    if (btn) { btn.disabled = false; btn.textContent = 'Log in'; }
-                    return;
-                }
-
-                localStorage.setItem('userIsLoggedIn', 'true');
-                const meta = data.user?.user_metadata || {};
-                const savedUser = {
-                    email: data.user?.email || '',
-                    fullName: meta.fullName || meta.full_name || '',
-                    phone: meta.phone || '',
-                    address: meta.address || '',
-                    postal: meta.postal || '',
-                    city: meta.city || '',
-                    location: meta.location || '',
-                    country: meta.country || 'Portugal'
-                };
-                localStorage.setItem('bragaBazaarUser', JSON.stringify(savedUser));
-
-                // Admin: either user_metadata.role === 'admin' in Supabase, or email in ADMIN_EMAILS (supabaseConfig.js)
-                const role = data.user?.user_metadata?.role;
-                const emailLower = (data.user?.email || '').toLowerCase();
-                const isAdminByEmail = Array.isArray(ADMIN_EMAILS) && ADMIN_EMAILS.some(e => (e || '').toLowerCase() === emailLower);
-                if (role === 'admin' || isAdminByEmail) {
-                    window.location.href = 'admin.html';
-                    return;
-                }
-
-                const params = new URLSearchParams(window.location.search);
-                const redirect = params.get('redirect');
-                const wantedAdmin = redirect && redirect.startsWith('admin');
-                const next = wantedAdmin ? 'checkout.html' : (redirect || 'checkout.html');
-                window.location.href = next;
-            } catch (err) {
-                console.error(err);
-                showMessage('Erro inesperado. Verifique a ligação. ' + (err?.message || ''), true);
-                if (btn) { btn.disabled = false; btn.textContent = 'Log in'; }
-            }
+        localStorage.setItem('userIsLoggedIn', 'true');
+        const meta = data.user?.user_metadata || {};
+        const savedUser = {
+          email: data.user?.email || '',
+          fullName: meta.fullName || meta.full_name || '',
+          phone: meta.phone || '',
+          address: meta.address || '',
+          postal: meta.postal || '',
+          city: meta.city || '',
+          location: meta.location || '',
+          country: meta.country || 'Portugal'
         };
-    </script>
+        localStorage.setItem('bragaBazaarUser', JSON.stringify(savedUser));
+
+        const role = data.user?.user_metadata?.role;
+        const emailLower = (data.user?.email || '').toLowerCase();
+        const isAdminByEmail = Array.isArray(ADMIN_EMAILS) && ADMIN_EMAILS.some(e => (e || '').toLowerCase() === emailLower);
+
+        if (role === 'admin' || isAdminByEmail) {
+          window.location.href = 'admin.html';
+          return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect');
+        const wantedAdmin = redirect && redirect.startsWith('admin');
+        let next = wantedAdmin ? 'checkout.html' : redirect;
+        if (!next) {
+          const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
+          next = (cart && cart.length > 0) ? 'checkout.html' : 'index.html';
+        }
+        window.location.href = next;
+
+      } catch (err) {
+        console.error(err);
+        showMessage('Erro inesperado. Verifique a ligação. ' + (err?.message || ''), true);
+        if (btn) { btn.disabled = false; btn.textContent = 'Log in'; }
+      }
+    };
+  </script>
+
+  <script type="module">
+    import { supabase } from "./supabaseConfig.js";
+
+    const banner = document.createElement("div");
+    banner.style.cssText = `
+      max-width:520px;
+      margin:16px auto;
+      padding:14px 16px;
+      border-radius:14px;
+      font-weight:700;
+      text-align:center;
+    `;
+
+    // Supabase processes confirmation automatically
+    const { data, error } = await supabase.auth.getSession();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get("type");
+
+    if (type === "signup" || window.location.hash.includes("access_token")) {
+      if (error) {
+        banner.style.background = "#fee2e2";
+        banner.style.color = "#991b1b";
+        banner.textContent = "There was a problem confirming your email. Please try logging in.";
+      } else {
+        banner.style.background = "#e8f5e9";
+        banner.style.color = "#166534";
+        banner.textContent = "Email confirmed ✅ Please log in to continue.";
+      }
+
+      document.body.prepend(banner);
+    }
+
+    // If already logged in, go to account
+    if (data?.session) {
+      window.location.href = "account.html";
+    }
+  </script>
 </body>
 </html>

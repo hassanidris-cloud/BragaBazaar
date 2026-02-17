@@ -1,4 +1,4 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./App.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
@@ -34,18 +34,3 @@ module.exports = {
   },
   plugins: []
 }
-document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const originalContent = this.innerHTML;
-        
-        // Change button look on click
-        this.style.backgroundColor = "#000"; // Turns black briefly
-        this.innerHTML = "✓ Adicionado";
-        
-        // Return to normal after 1 second
-        setTimeout(() => {
-            this.style.backgroundColor = "";
-            this.innerHTML = originalContent;
-        }, 1200);
-    });
-});

@@ -1,40 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2d7a32">
-    <title>Phone Test | Braga Bazaar</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, sans-serif; background: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; }
-        .phone-frame {
-            width: 375px;
-            height: 667px;
-            border: 12px solid #333;
-            border-radius: 36px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            background: #fff;
-        }
-        .phone-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .hint {
-            margin-top: 20px;
-            color: #888;
-            font-size: 14px;
-            text-align: center;
-        }
-        .hint a { color: #2d7a32; }
-    </style>
-</head>
-<body>
-    <div class="phone-frame">
-        <iframe src="index.html" title="Braga Bazaar - Phone view"></iframe>
-    </div>
-    <p class="hint">Phone viewport test (375×667). <a href="index.html">Open full page</a> | Chrome: F12 → Toggle device toolbar (Ctrl+Shift+M)</p>
-</body>
-</html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2d7a32">
+  <title>Braga Bazaar | Fresh Local Grocery</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <style>
+    :root { --primary: #2d7a32; --dark: #1a1a1a; --light: #f4f4f4; }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--light); transition: margin-left 0.3s ease; }
+    
+    /* Sidebar Improvements */
+    .sidebar-menu { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; background: #fff; border-right: 1px solid #eee; z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar-menu:not(.active) { transform: translateX(-100%); }
+    
+    /* Main Content Shift */
+    #main-content { padding: 20px; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 769px) {
+        .sidebar-menu { transform: translateX(0); }
+        #main-content { margin-left: 260px; }
+        .menu-reopen-btn { display: none !important; }
+    }
+
+    /* Product Cards */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 20px; }
+    .product-card { background: #fff; padding: 16px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); text-align: center; transition: transform 0.2s; border: 1px solid transparent; }
+    .product-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+    .product-card img { width: 100px; height: 100px; object-fit

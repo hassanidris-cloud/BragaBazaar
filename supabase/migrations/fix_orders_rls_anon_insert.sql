@@ -1,26 +1,35 @@
 -- Fix: "new row violates row-level security policy for table orders"
--- Run this in Supabase Dashboard → SQL Editor. This ensures anon can INSERT into orders.
+-- Run this in Supabase Dashboard → SQL Editor.
+-- Allows both anon (guest) and authenticated (logged-in) users to insert orders.
 
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies that might conflict (either naming style)
+-- Orders: drop old policies
 DROP POLICY IF EXISTS "anon_insert_orders" ON orders;
 DROP POLICY IF EXISTS "Allow anon insert orders" ON orders;
-
--- Allow anonymous (checkout) to insert orders
-CREATE POLICY "anon_insert_orders" ON orders FOR INSERT TO anon WITH CHECK (true);
-
--- Also ensure anon can select (for order history)
 DROP POLICY IF EXISTS "anon_select_orders" ON orders;
 DROP POLICY IF EXISTS "Allow anon select orders" ON orders;
+DROP POLICY IF EXISTS "authenticated_insert_orders" ON orders;
+DROP POLICY IF EXISTS "authenticated_select_orders" ON orders;
+
+-- Orders: anon (guest checkout)
+CREATE POLICY "anon_insert_orders" ON orders FOR INSERT TO anon WITH CHECK (true);
 CREATE POLICY "anon_select_orders" ON orders FOR SELECT TO anon USING (true);
 
--- order_items: anon must be able to insert (checkout inserts line items)
+-- Orders: authenticated (logged-in checkout – Supabase sends JWT so role is authenticated)
+CREATE POLICY "authenticated_insert_orders" ON orders FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "authenticated_select_orders" ON orders FOR SELECT TO authenticated USING (true);
+
+-- order_items
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "anon_insert_order_items" ON order_items;
 DROP POLICY IF EXISTS "Allow anon insert order_items" ON order_items;
-CREATE POLICY "anon_insert_order_items" ON order_items FOR INSERT TO anon WITH CHECK (true);
-
 DROP POLICY IF EXISTS "anon_select_order_items" ON order_items;
 DROP POLICY IF EXISTS "Allow anon select order_items" ON order_items;
+DROP POLICY IF EXISTS "authenticated_insert_order_items" ON order_items;
+DROP POLICY IF EXISTS "authenticated_select_order_items" ON order_items;
+
+CREATE POLICY "anon_insert_order_items" ON order_items FOR INSERT TO anon WITH CHECK (true);
 CREATE POLICY "anon_select_order_items" ON order_items FOR SELECT TO anon USING (true);
+CREATE POLICY "authenticated_insert_order_items" ON order_items FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "authenticated_select_order_items" ON order_items FOR SELECT TO authenticated USING (true);

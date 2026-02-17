@@ -638,6 +638,8 @@
   </div>
 
   <script type="module">
+    // Admin panel is disabled: no user access allowed.
+    window.location.replace('index.html');
     import { supabase, ADMIN_EMAILS, ADMIN_PIN } from './supabaseConfig.js';
 
     // =========================

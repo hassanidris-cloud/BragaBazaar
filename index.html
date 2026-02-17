@@ -136,6 +136,12 @@
     #checkout.cart-drawer[style*="flex"] .cart-drawer-panel {
       transform: translateX(0);
     }
+    #checkout.cart-drawer.cart-drawer-closing .cart-drawer-panel {
+      transform: translateX(100%);
+    }
+    #checkout.cart-drawer.cart-drawer-closing .cart-drawer-backdrop {
+      opacity: 0;
+    }
     .cart-drawer-header {
       display: flex;
       align-items: center;
@@ -624,7 +630,6 @@
         <p style="margin-top:8px;font-size:12px;opacity:0.9;">
           <span data-en="Secure checkout • Your data protected (HTTPS)" data-pt="Checkout seguro • Os seus dados protegidos (HTTPS)">Checkout seguro • Os seus dados protegidos (HTTPS)</span>
         </p>
-        <p style="margin-top:12px;font-size:11px;opacity:0.6;"><a href="admin.html" style="color:inherit;text-decoration:none;">Admin</a></p>
       </div>
     </footer>
 
@@ -877,13 +882,26 @@
     function showCheckout() {
       const checkoutSection = document.getElementById('checkout');
       if (!checkoutSection) return;
+      checkoutSection.classList.remove('cart-drawer-closing');
       rebuildCheckoutList();
       checkoutSection.style.display = 'flex';
     }
 
     function hideCheckout() {
       const checkoutSection = document.getElementById('checkout');
-      if (checkoutSection) checkoutSection.style.display = 'none';
+      if (!checkoutSection) return;
+      const panel = checkoutSection.querySelector('.cart-drawer-panel');
+      if (!panel) {
+        checkoutSection.style.display = 'none';
+        return;
+      }
+      checkoutSection.classList.add('cart-drawer-closing');
+      function finishClose() {
+        checkoutSection.style.display = 'none';
+        checkoutSection.classList.remove('cart-drawer-closing');
+        panel.removeEventListener('transitionend', finishClose);
+      }
+      panel.addEventListener('transitionend', finishClose, { once: true });
     }
 
     function addToCart(product) {

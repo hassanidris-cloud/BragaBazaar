@@ -232,35 +232,40 @@
 
             // Try to persist to Supabase (orders + order_items)
             try {
-                const { data: createdOrders, error: orderError } = await supabase
-                    .from('orders')
-                    .insert({
-                        client_order_id: order.id,
-                        full_name: fullName,
-                        phone,
-                        email,
-                        address,
-                        postal,
-                        city,
-                        location,
-                        country,
-                        payment,
-                        payment_method: payment,
-                        instructions,
-                        total: total,
-                        total_price: total,
-                        status: 'pending',
-                        fulfillment: fulfillment
-                    })
-                    .select()
-                    .limit(1);
+                const orderPayload = {
+                    client_order_id: order.id,
+                    full_name: fullName,
+                    phone,
+                    email,
+                    address,
+                    postal,
+                    city,
+                    location,
+                    country,
+                    payment,
+                    payment_method: payment,
+                    instructions,
+                    total: total,
+                    total_price: total,
+                    status: 'pending',
+                    fulfillment: fulfillment
+                };
 
-                if (orderError) {
-                    console.error('Supabase orders error:', orderError);
-                    const msg = (orderError.message || String(orderError)) + (orderError.details ? ' | ' + orderError.details : '') + (orderError.hint ? ' | ' + orderError.hint : '');
-                    alert('Encomenda guardada no dispositivo, mas não foi possível guardar no servidor.\n\nErro: ' + msg + '\n\nVerifique a consola (F12) para mais detalhes. Pode ver a encomenda em "As minhas encomendas".');
-                } else if (createdOrders && createdOrders.length) {
-                    const supabaseOrderId = createdOrders[0].id;
+                const { data, error } = await supabase
+                    .from('orders')
+                    .insert([orderPayload])
+                    .select()
+                    .single();
+
+                console.log('ORDER INSERT RESULT:', { data, error, orderPayload });
+
+                if (error) {
+                    alert('Order failed: ' + error.message);
+                    throw error; // so you don't silently fall back
+                }
+
+                if (data) {
+                    const supabaseOrderId = data.id;
                     const itemsPayload = cart.map(item => ({
                         order_id: supabaseOrderId,
                         name: item.name,

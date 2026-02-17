@@ -1,5 +1,6 @@
 // Supabase client setup for authentication, database, and storage
 // This version is safe to use directly in the browser via ESM.
+// IMPORTANT: This URL must match NEXT_PUBLIC_SUPABASE_URL on Vercel (same project).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 

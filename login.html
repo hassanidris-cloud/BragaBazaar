@@ -287,7 +287,7 @@
   </div>
 
   <script type="module">
-    import { supabase, ADMIN_EMAILS } from './supabaseConfig.js';
+    import { supabase } from './supabaseConfig.js';
 
     const form = document.getElementById('loginForm');
     const btn = document.getElementById('loginBtn');
@@ -331,15 +331,6 @@
           country: meta.country || 'Portugal'
         };
         localStorage.setItem('bragaBazaarUser', JSON.stringify(savedUser));
-
-        const role = data.user?.user_metadata?.role;
-        const emailLower = (data.user?.email || '').toLowerCase();
-        const isAdminByEmail = Array.isArray(ADMIN_EMAILS) && ADMIN_EMAILS.some(e => (e || '').toLowerCase() === emailLower);
-
-        if (role === 'admin' || isAdminByEmail) {
-          window.location.href = 'admin.html';
-          return;
-        }
 
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get('redirect');

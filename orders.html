@@ -120,6 +120,7 @@
     /* Status badges */
     .badge { padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing:.04em; }
     .status-pending { background: #fef3c7; color: #92400e; }
+    .status-preparing { background: #e0e7ff; color: #3730a3; }
     .status-substitution_pending { background: #e0e7ff; color: #3730a3; }
     .status-substitution_rejected { background: #fee2e2; color: #991b1b; }
     .status-shipped { background: #dbeafe; color: #1e40af; }
@@ -288,8 +289,11 @@
 
     const statusLabelsPT = {
       pending: "Em preparação",
+      preparing: "A preparar",
       shipped: "A caminho",
       delivered: "Entregue",
+      out_for_delivery: "A caminho",
+      completed: "Entregue",
       substitution_pending: "Substituições a confirmar",
       substitution_rejected: "Substituições rejeitadas"
     };
@@ -445,7 +449,9 @@
       });
 
       function renderOrderCard(o, options) {
-        const statusNorm = normalizeStatus(o.status);
+        let statusNorm = normalizeStatus(o.status);
+        if (statusNorm === "out_for_delivery") statusNorm = "shipped";
+        if (statusNorm === "completed") statusNorm = "delivered";
         const statusText = statusLabelPT(o.status);
         const idShort = shortId(o);
 
@@ -461,12 +467,14 @@
         const payment = o.payment || o.payment_method;
 
         const liveNote = (options && options.isLive)
-          ? `<div class="order-meta-row"><i class="fas fa-clock"></i> Ainda não foi entregue — em preparação ou a caminho.</div>`
+          ? (statusNorm === "shipped"
+              ? `<div class="order-meta-row"><i class="fas fa-truck"></i> <strong>A sua encomenda foi enviada.</strong> A caminho.</div>`
+              : `<div class="order-meta-row"><i class="fas fa-clock"></i> Ainda não foi entregue — em preparação ou a caminho.</div>`)
           : "";
 
         const deliveredNote = (options && options.isDelivered)
           ? `<div class="order-meta-row">
-                <i class="fas fa-check-circle"></i> Entregue${slotText !== "—" ? " · " + escHtml(slotText) : ""}
+                <i class="fas fa-home"></i> <strong>A sua encomenda foi entregue.</strong>${slotText !== "—" ? " · " + escHtml(slotText) : ""}
                 <span class="payment-badge">Pagamento: ${escHtml(paymentLabel(payment))}</span>
               </div>`
           : "";

@@ -1022,11 +1022,7 @@
     // Order actions
     // =========================
     async function setOrderStatus(orderId, status){
-      // Optional audit fields if your table supports them
-      const payload = { status, updated_at: nowIso() };
-      if (currentUser?.id) payload.updated_by = currentUser.id;
-
-      const { error } = await supabase.from('orders').update(payload).eq('id', orderId);
+      const { error } = await supabase.from('orders').update({ status }).eq('id', orderId);
       if (error){
         alert('Update failed: ' + (error.message || error));
         return;

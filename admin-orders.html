@@ -66,11 +66,13 @@
         const statusOptions = [
           { value: 'pending', label: 'Pending' },
           { value: 'preparing', label: 'Preparing' },
-          { value: 'out_for_delivery', label: 'Out for Delivery' },
-          { value: 'completed', label: 'Completed' },
+          { value: 'shipped', label: 'Shipped' },
+          { value: 'delivered', label: 'Delivered' },
         ];
         listEl.innerHTML = orders.map(o => {
-          const currentStatus = (o.status || 'pending').toLowerCase().replace(/\s+/g, '_');
+          let currentStatus = (o.status || 'pending').toLowerCase().replace(/\s+/g, '_');
+          if (currentStatus === 'out_for_delivery') currentStatus = 'shipped';
+          if (currentStatus === 'completed') currentStatus = 'delivered';
           const options = statusOptions.map(s => `<option value="${s.value}" ${currentStatus === s.value ? 'selected' : ''}>${s.label}</option>`).join('');
           return `
           <div class="order-card" data-order-id="${o.id}" style="border:1px solid #ddd; padding:12px; border-radius:10px; margin:10px 0;">

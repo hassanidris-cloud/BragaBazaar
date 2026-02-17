@@ -120,7 +120,8 @@
                     <label><input type="radio" name="payment" value="card"> Cartão de Crédito</label>
                     <label><input type="radio" name="payment" value="cash"> Pagamento na Entrega</label>
                 </div>
-                <button type="submit" class="cta-primary" style="border:none;cursor:pointer;width:100%;background:#2d7a32;color:#fff;font-weight:600;">Place order</button>
+                <div id="checkoutError" style="display:none; margin:10px 0; padding:10px; border:1px solid #ffb3b3; background:#fff0f0; color:#7a0000; border-radius:8px;"></div>
+                <button id="placeOrderBtn" type="submit" class="cta-primary" style="border:none;cursor:pointer;width:100%;background:#2d7a32;color:#fff;font-weight:600;">Fazer encomenda</button>
             </form>
         </div>
         <div class="order-summary">
@@ -140,6 +141,24 @@
 
     <script type="module">
         import { supabase } from './supabaseConfig.js';
+
+        function showCheckoutError(msg) {
+            const el = document.getElementById('checkoutError');
+            if (el) {
+                el.textContent = msg;
+                el.style.display = 'block';
+            } else {
+                alert(msg);
+            }
+        }
+
+        function setSubmitLoading(isLoading) {
+            const btn = document.getElementById('placeOrderBtn');
+            if (!btn) return;
+            btn.disabled = isLoading;
+            btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+            btn.textContent = isLoading ? 'A enviar...' : btn.dataset.originalText;
+        }
 
         // Load cart from localStorage
         const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
@@ -176,140 +195,133 @@
             } catch {}
         }
 
+        let isSubmitting = false;
         const form = document.getElementById('deliveryForm');
 
-        form.onsubmit = async function (e) {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            document.querySelectorAll('.field-error').forEach(function (el) { el.style.display = 'none'; el.textContent = ''; });
-            var isPickup = document.querySelector('input[name="fulfillment"]:checked').value === 'pickup';
-            var requiredIds = ['fullName','phone','email','country'];
-            if (!isPickup) requiredIds = requiredIds.concat(['address','postal','city','location']);
-            var valid = true;
-            requiredIds.forEach(function (id) {
-                var el = document.getElementById(id);
-                var err = document.getElementById('err-' + id);
-                if (!el) return;
-                var v = (el.value || '').trim();
-                if (el.type === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-                    valid = false;
-                    if (err) { err.textContent = 'Email inválido'; err.style.display = 'block'; }
-                } else if (!v) {
-                    valid = false;
-                    if (err) { err.textContent = 'Obrigatório'; err.style.display = 'block'; }
-                }
-            });
-            if (!valid) return;
+            if (isSubmitting) return;
 
-            const fullName = document.getElementById('fullName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const postal = document.getElementById('postal').value.trim();
-            const city = document.getElementById('city').value.trim();
-            const location = document.getElementById('location').value.trim();
-            const country = document.getElementById('country').value.trim();
-            const instructions = document.getElementById('instructions').value.trim();
-            const paymentInput = document.querySelector('input[name="payment"]:checked');
-            const payment = paymentInput ? paymentInput.value : null;
-            const fulfillmentInput = document.querySelector('input[name="fulfillment"]:checked');
-            const fulfillment = fulfillmentInput ? fulfillmentInput.value : 'delivery';
-            const order = {
-                id: Date.now(),
-                createdAt: new Date().toISOString(),
-                customer: { fullName, phone, email, address, postal, city, location, country },
-                payment,
-                instructions,
-                fulfillment,
-                items: cart,
-                total
-            };
+            const errEl = document.getElementById('checkoutError');
+            if (errEl) errEl.style.display = 'none';
+            document.querySelectorAll('.field-error').forEach(el => { el.style.display = 'none'; el.textContent = ''; });
 
-            // Always keep a local backup of orders
-            const existingOrdersRaw = localStorage.getItem('bragaBazaarOrders');
-            const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
-            existingOrders.push(order);
-            localStorage.setItem('bragaBazaarOrders', JSON.stringify(existingOrders));
+            isSubmitting = true;
+            setSubmitLoading(true);
 
-            // Try to persist to Supabase (orders + order_items)
             try {
-                const orderPayload = {
-                    client_order_id: order.id,
-                    full_name: fullName,
-                    phone,
-                    email,
-                    address,
-                    postal,
-                    city,
-                    location,
-                    country,
-                    payment,
-                    payment_method: payment,
-                    instructions,
-                    total: total,
-                    total_price: total,
-                    status: 'pending',
-                    fulfillment: fulfillment
-                };
+                const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
+                if (!cart.length) {
+                    throw new Error('O carrinho está vazio.');
+                }
 
-                const { data, error } = await supabase
+                const full_name = document.getElementById('fullName')?.value?.trim();
+                const phone = document.getElementById('phone')?.value?.trim();
+                const email = document.getElementById('email')?.value?.trim();
+                const address = document.getElementById('address')?.value?.trim();
+                const postal = document.getElementById('postal')?.value?.trim();
+                const city = document.getElementById('city')?.value?.trim();
+                const location = document.getElementById('location')?.value?.trim();
+                const country = document.getElementById('country')?.value?.trim() || 'Portugal';
+                const payment = document.querySelector('input[name="payment"]:checked')?.value || 'cash';
+                const fulfillment = document.querySelector('input[name="fulfillment"]:checked')?.value || 'delivery';
+                const instructions = document.getElementById('instructions')?.value?.trim() || '';
+
+                if (!full_name) throw new Error('Por favor, introduza o seu nome.');
+                if (!phone) throw new Error('Por favor, introduza o seu telefone.');
+                if (!email) throw new Error('Por favor, introduza o seu email.');
+                if (fulfillment === 'delivery' && !address) throw new Error('Por favor, introduza a sua morada para entrega.');
+
+                const total = cart.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty || 1)), 0);
+                const client_order_id = Date.now();
+
+                const { data: orderRow, error: orderErr } = await supabase
                     .from('orders')
-                    .insert([orderPayload])
-                    .select()
+                    .insert([{
+                        client_order_id,
+                        full_name,
+                        phone,
+                        email,
+                        address,
+                        postal,
+                        city,
+                        location,
+                        country,
+                        payment,
+                        payment_method: payment,
+                        instructions,
+                        fulfillment,
+                        total,
+                        total_price: total,
+                        status: 'pending',
+                    }])
+                    .select('id')
                     .single();
 
-                console.log('ORDER INSERT RESULT:', { data, error, orderPayload });
-
-                if (error) {
-                    alert('Order failed: ' + error.message);
-                    throw error; // so you don't silently fall back
+                if (orderErr) {
+                    throw new Error(orderErr.message || 'Falha ao criar encomenda.');
                 }
 
-                if (data) {
-                    const supabaseOrderId = data.id;
-                    const itemsPayload = cart.map(item => ({
-                        order_id: supabaseOrderId,
-                        name: item.name,
-                        price: item.price,
-                        qty: item.qty,
-                        quantity: item.qty
-                    }));
-                    const { error: itemsError } = await supabase
-                        .from('order_items')
-                        .insert(itemsPayload);
-                    if (itemsError) {
-                        console.error('Supabase order_items error:', itemsError);
-                        console.error('Items payload was:', itemsPayload);
-                    }
-                    for (const item of cart) {
-                        if (!item.productId) continue;
-                        try {
-                            const { data: prod, error: prodErr } = await supabase
-                                .from('products')
-                                .select('stock_level')
-                                .eq('id', item.productId)
-                                .maybeSingle();
-                            if (!prodErr && prod) {
-                                const current = prod.stock_level || 0;
-                                const newStock = Math.max(current - item.qty, 0);
-                                await supabase.from('products').update({ stock_level: newStock }).eq('id', item.productId);
-                            }
-                        } catch (stockErr) { console.error(stockErr); }
-                    }
+                const order_id = orderRow.id;
+                const itemsPayload = cart.map(it => ({
+                    order_id,
+                    name: it.name,
+                    price: Number(it.price),
+                    qty: Number(it.qty || 1),
+                    quantity: Number(it.qty || 1),
+                }));
+
+                const { error: itemsErr } = await supabase.from('order_items').insert(itemsPayload);
+                if (itemsErr) {
+                    throw new Error(itemsErr.message || 'Encomenda criada, mas falha ao guardar itens.');
+                }
+
+                for (const item of cart) {
+                    if (!item.productId) continue;
+                    try {
+                        const { data: prod, error: prodErr } = await supabase
+                            .from('products')
+                            .select('stock_level')
+                            .eq('id', item.productId)
+                            .maybeSingle();
+                        if (!prodErr && prod) {
+                            const current = prod.stock_level || 0;
+                            const newStock = Math.max(current - (item.qty || 1), 0);
+                            await supabase.from('products').update({ stock_level: newStock }).eq('id', item.productId);
+                        }
+                    } catch (stockErr) { console.error(stockErr); }
+                }
+
+                const existingOrdersRaw = localStorage.getItem('bragaBazaarOrders');
+                const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
+                existingOrders.push({
+                    id: client_order_id,
+                    createdAt: new Date().toISOString(),
+                    customer: { fullName: full_name, phone, email, address, postal, city, location, country },
+                    payment,
+                    instructions,
+                    fulfillment,
+                    items: cart,
+                    total,
+                });
+                localStorage.setItem('bragaBazaarOrders', JSON.stringify(existingOrders));
+
+                localStorage.setItem('bragaBazaarCart', '[]');
+                document.querySelector('.checkout-container').style.display = 'none';
+                const confEl = document.getElementById('orderConfirmation');
+                const msgEl = document.getElementById('confirmationMessage');
+                if (confEl) confEl.style.display = 'block';
+                if (msgEl) {
+                    msgEl.innerHTML = 'Encomenda <strong>#' + client_order_id + '</strong>. ' + (fulfillment === 'pickup' ? 'Levantamento na loja' : 'Entrega') + '. Total <strong>€' + total.toFixed(2) + '</strong>. Pode ver as suas encomendas em "As minhas encomendas".';
                 }
             } catch (err) {
-                console.error('Erro inesperado ao comunicar com o Supabase:', err);
+                console.error(err);
+                showCheckoutError(err.message || 'Ocorreu um erro. Tente novamente.');
+            } finally {
+                isSubmitting = false;
+                setSubmitLoading(false);
             }
-
-            // Clear cart and show confirmation (no redirect so user sees confirmation screen)
-            localStorage.setItem('bragaBazaarCart', '[]');
-            document.querySelector('.checkout-container').style.display = 'none';
-            const confEl = document.getElementById('orderConfirmation');
-            const msgEl = document.getElementById('confirmationMessage');
-            if (confEl) confEl.style.display = 'block';
-            if (msgEl) {
-                msgEl.innerHTML = 'Encomenda <strong>#' + order.id + '</strong>. ' + (order.fulfillment === 'pickup' ? 'Levantamento na loja' : 'Entrega') + '. Total <strong>€' + total.toFixed(2) + '</strong>. Um email de confirmação foi enviado para ' + (order.customer && order.customer.email ? order.customer.email : 'o seu email') + '.';
-            }
-        };
+        });
     </script>
 </body>
 </html>

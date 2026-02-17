@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2d7a32">
+  <title>Encomendas (Admin) | Braga Bazaar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #f8fafc; padding: 20px; }
+    .page-wrap { max-width: 900px; margin: 0 auto; }
+    h1 { color: #2d7a32; margin-bottom: 20px; }
+    a.back { color: #2d7a32; font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <a href="admin.html" class="back">&larr; Voltar ao painel</a>
+    <h1>Encomendas</h1>
+    <div id="adminError" style="display:none; margin:10px 0; padding:10px; border:1px solid #ffb3b3; background:#fff0f0; color:#7a0000; border-radius:8px;"></div>
+    <div id="ordersList"></div>
+  </div>
+
+  <div id="adminToast" aria-live="polite" style="display:none; position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); padding:12px 20px; border-radius:12px; font-weight:600; box-shadow:0 4px 20px rgba(0,0,0,0.15); z-index:9999; opacity:0; transition:opacity 0.3s ease, transform 0.3s ease;"></div>
+
+  <script type="module">
+    import { supabase } from './supabaseConfig.js';
+
+    function showToast(message, isError = false) {
+      const el = document.getElementById('adminToast');
+      if (!el) return;
+      el.textContent = message;
+      el.style.background = isError ? '#fee2e2' : '#2d7a32';
+      el.style.color = isError ? '#991b1b' : '#fff';
+      el.style.display = 'block';
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(-50%) translateY(20px)';
+      requestAnimationFrame(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateX(-50%) translateY(0)';
+      });
+      clearTimeout(window._adminToastTimer);
+      window._adminToastTimer = setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => { el.style.display = 'none'; }, 300);
+      }, 2500);
+    }
+
+    async function loadOrdersAdmin() {
+      const errorEl = document.getElementById('adminError');
+      const listEl = document.getElementById('ordersList');
+
+      try {
+        if (errorEl) errorEl.style.display = 'none';
+
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw new Error(error.message);
+
+        const statusOptions = [
+          { value: 'pending', label: 'Pending' },
+          { value: 'preparing', label: 'Preparing' },
+          { value: 'out_for_delivery', label: 'Out for Delivery' },
+          { value: 'completed', label: 'Completed' },
+        ];
+        listEl.innerHTML = orders.map(o => {
+          const currentStatus = (o.status || 'pending').toLowerCase().replace(/\s+/g, '_');
+          const options = statusOptions.map(s => `<option value="${s.value}" ${currentStatus === s.value ? 'selected' : ''}>${s.label}</option>`).join('');
+          return `
+          <div class="order-card" data-order-id="${o.id}" style="border:1px solid #ddd; padding:12px; border-radius:10px; margin:10px 0;">
+            <div><strong>${o.full_name || '—'}</strong> — ${o.phone || '—'}</div>
+            <div style="margin:8px 0;">
+              <label for="status-${o.id}" style="margin-right:6px;">Status:</label>
+              <select id="status-${o.id}" class="order-status-select" data-order-id="${o.id}" style="padding:6px 10px; border-radius:8px; border:1px solid #ccc;">
+                ${options}
+              </select>
+              <span style="margin-left:10px;">Total: €${Number(o.total || 0).toFixed(2)}</span>
+              <span style="opacity:.8; margin-left:8px;">${new Date(o.created_at).toLocaleString()}</span>
+            </div>
+            <div>Morada: ${o.address || '—'} ${o.postal || ''} ${o.city || ''}</div>
+            <div style="opacity:.8; font-size:0.9rem;">Order ID: ${o.id}</div>
+          </div>
+        `;
+        }).join('');
+
+        listEl.querySelectorAll('.order-status-select').forEach(select => {
+          select.addEventListener('change', async (e) => {
+            const orderId = e.target.dataset.orderId;
+            const newStatus = e.target.value;
+            try {
+              const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+              if (error) throw error;
+              showToast('Status atualizado.');
+            } catch (err) {
+              console.error(err);
+              showToast('Erro ao atualizar: ' + (err.message || err), true);
+            }
+          });
+        });
+      } catch (err) {
+        console.error(err);
+        if (errorEl) {
+          errorEl.textContent = err.message || 'Erro ao carregar encomendas.';
+          errorEl.style.display = 'block';
+        } else {
+          alert(err.message || 'Erro ao carregar encomendas.');
+        }
+      }
+    }
+
+    loadOrdersAdmin();
+  </script>
+</body>
+</html>

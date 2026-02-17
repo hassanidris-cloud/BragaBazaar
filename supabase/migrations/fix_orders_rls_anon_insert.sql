@@ -16,9 +16,11 @@ DROP POLICY IF EXISTS "authenticated_select_orders" ON orders;
 CREATE POLICY "anon_insert_orders" ON orders FOR INSERT TO anon WITH CHECK (true);
 CREATE POLICY "anon_select_orders" ON orders FOR SELECT TO anon USING (true);
 
--- Orders: authenticated (logged-in checkout – Supabase sends JWT so role is authenticated)
+-- Orders: authenticated (logged-in checkout + admin status updates)
 CREATE POLICY "authenticated_insert_orders" ON orders FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "authenticated_select_orders" ON orders FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "authenticated_update_orders" ON orders;
+CREATE POLICY "authenticated_update_orders" ON orders FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 
 -- order_items
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;

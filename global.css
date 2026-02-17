@@ -944,3 +944,58 @@ body.sidebar-expanded .sidebar-backdrop {
   justify-content: center;
   background: rgba(0,0,0,0.45);
 }
+
+/* =========================================
+   Toast (floating, fade in/out)
+   ========================================= */
+.toast-float {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(20px);
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: 90vw;
+}
+.toast-float.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* =========================================
+   Mobile optimization
+   ========================================= */
+@media (max-width: 480px) {
+  .cta-primary,
+  .add-to-cart-btn,
+  button[type="submit"]:not(.search-submit-btn) {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1rem;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="search"],
+  select,
+  textarea {
+    min-height: 48px;
+    font-size: 16px; /* avoids iOS zoom on focus */
+  }
+  .cart-drawer-panel {
+    max-width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .cart-drawer-panel {
+    max-width: 100%;
+  }
+}

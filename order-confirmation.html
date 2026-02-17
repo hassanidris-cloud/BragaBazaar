@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d7a32">
+    <title>Encomenda confirmada | Braga Bazaar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { background: #f8fafc; font-family: 'Inter', sans-serif; }
+        .confirmation-block { max-width: 560px; margin: 60px auto; padding: 32px; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
+        .confirmation-block h2 { color: #2d7a32; margin-bottom: 20px; }
+        .confirmation-block p { color: #475569; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <header class="main-header shared-header">
+        <div class="top-nav">
+            <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
+            <nav class="site-nav" aria-label="Main navigation">
+                <a href="index.html" class="site-nav-icon-only" title="Shop"><i class="fas fa-store"></i></a>
+                <a href="orders.html" class="site-nav-icon-only" title="My orders"><i class="fas fa-clipboard-list"></i><span class="site-nav-label">As minhas encomendas</span></a>
+                <a href="account.html" class="site-nav-icon-only" title="My account"><i class="fas fa-user"></i></a>
+                <a href="checkout.html" class="site-nav-icon-only" title="Cart"><i class="fas fa-shopping-cart"></i></a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="confirmation-block">
+        <h2><i class="fas fa-check-circle"></i> Encomenda confirmada</h2>
+        <p>A sua encomenda foi registada com sucesso.</p>
+        <p><strong>ID da encomenda:</strong> <span id="orderIdText"></span></p>
+        <p style="margin-top:24px;"><a href="orders.html" style="color:#2d7a32;font-weight:600;">Ver as minhas encomendas</a></p>
+        <a href="index.html" class="cta-primary" style="display:inline-block;margin-top:16px;padding:12px 24px;border-radius:12px;text-decoration:none;color:#fff;font-weight:600;background:#2d7a32;">Continuar a comprar</a>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById("orderIdText").textContent = params.get("order_id") || "—";
+    </script>
+</body>
+</html>

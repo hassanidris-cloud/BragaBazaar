@@ -22,6 +22,7 @@ Current URL in this repo: `https://mfebgreczlxoqkiabsln.supabase.co`
 | Status | Likely cause |
 |--------|----------------|
 | **401 / 403** | RLS or policy: anon key not allowed to insert, or policy missing. |
+| **"new row violates row-level security policy"** | RLS is on but no policy allows anon to INSERT. Run `supabase/migrations/fix_orders_rls_anon_insert.sql` in Supabase → SQL Editor. |
 | **400** | Schema/type mismatch. Very common: `client_order_id` type (e.g. table expects integer, app sends number from `Date.now()`). Check column types in Supabase → Table Editor → `orders`. |
 | **201** | Insert succeeded. |
 

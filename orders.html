@@ -285,7 +285,7 @@
   <script type="module">
     import { supabase } from "./supabaseConfig.js";
 
-    const SUPPORT_WHATSAPP = "351912345678";
+    const SUPPORT_WHATSAPP = "351927614647";
 
     const statusLabelsPT = {
       pending: "Em preparação",
@@ -617,16 +617,34 @@
         return;
       }
 
-      // Supabase orders (with order_items)
-      let query = supabase
-        .from("orders")
-        .select("*, order_items(*)")
-        .order("created_at", { ascending: false });
+      // Supabase orders (with order_items) – match by phone and/or email so status updates are visible
+      const phone = (userData.phone || "").trim();
+      const email = (userData.email || "").trim().toLowerCase();
+      let supabaseOrders = [];
+      let error = null;
 
-      if (userData.phone) query = query.eq("phone", userData.phone);
-      else query = query.eq("email", userData.email);
-
-      const { data: supabaseOrders, error } = await query;
+      if (phone || email) {
+        const base = () => supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
+        if (phone && email) {
+          const [r1, r2] = await Promise.all([
+            base().eq("phone", phone),
+            base().ilike("email", email),
+          ]);
+          const byId = new Map();
+          (r1.data || []).forEach((o) => byId.set(o.id, o));
+          (r2.data || []).forEach((o) => byId.set(o.id, o));
+          supabaseOrders = Array.from(byId.values()).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+          error = r1.error || r2.error;
+        } else if (phone) {
+          const res = await base().eq("phone", phone);
+          supabaseOrders = res.data || [];
+          error = res.error;
+        } else {
+          const res = await base().ilike("email", email);
+          supabaseOrders = res.data || [];
+          error = res.error;
+        }
+      }
 
       // Merge local orders (if you keep offline/local cache)
       const seenClientIds = new Set((supabaseOrders || []).map(o => o.client_order_id).filter(Boolean));

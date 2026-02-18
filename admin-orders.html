@@ -19,6 +19,7 @@
   <div class="page-wrap">
     <a href="admin.html" class="back">&larr; Voltar ao painel</a>
     <h1>Encomendas</h1>
+    <p class="hint" style="margin:-8px 0 12px; color:#64748b; font-size:0.9rem;">Todas as encomendas de todos os clientes.</p>
     <div id="adminError" style="display:none; margin:10px 0; padding:10px; border:1px solid #ffb3b3; background:#fff0f0; color:#7a0000; border-radius:8px;"></div>
     <div id="ordersList"></div>
   </div>
@@ -27,6 +28,15 @@
 
   <script type="module">
     import { supabase } from './supabaseConfig.js';
+
+    async function ensureAdminSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.href = 'login.html?redirect=' + encodeURIComponent('admin-orders.html');
+        return false;
+      }
+      return true;
+    }
 
     function showToast(message, isError = false) {
       const el = document.getElementById('adminToast');
@@ -96,12 +106,18 @@
             const orderId = e.target.dataset.orderId;
             const newStatus = e.target.value;
             try {
-              const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+              const { data, error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId).select('id').maybeSingle();
               if (error) throw error;
               showToast('Status atualizado.');
+              loadOrdersAdmin();
             } catch (err) {
-              console.error(err);
-              showToast('Erro ao atualizar: ' + (err.message || err), true);
+              console.error('Order status update failed:', err);
+              const msg = err.message || String(err);
+              showToast(msg.length > 60 ? 'Erro ao atualizar. Consulte a consola (F12).' : msg, true);
+              if (errorEl) {
+                errorEl.textContent = msg;
+                errorEl.style.display = 'block';
+              }
             }
           });
         });
@@ -116,7 +132,10 @@
       }
     }
 
-    loadOrdersAdmin();
+    (async () => {
+      if (!(await ensureAdminSession())) return;
+      loadOrdersAdmin();
+    })();
   </script>
 </body>
 </html>

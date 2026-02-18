@@ -571,16 +571,7 @@ body.sidebar-expanded .menu-reopen-btn i {
     display: none;
   }
 
-  /* Product grid tighter */
-  .product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    padding: 12px;
-  }
-
-  .product-card img {
-    height: 150px;
-  }
+  /* Product grid - handled in MOBILE PRODUCTS section below */
 
   /* Make tap targets comfortable */
   button, a, input {
@@ -809,61 +800,66 @@ body.sidebar-expanded .menu-reopen-btn i {
   }
 }
 /* =========================
-   MOBILE PRODUCTS: vertical list
-   Works for both .product-grid and category blocks
+   RESPONSIVE PRODUCT GRID: use all available space
+   product-grid contains category-blocks; category-block-grid contains product cards
    ========================= */
+  .product-grid.products-by-category{
+    grid-template-columns: 1fr;
+  }
+  .products-by-category .category-block-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 18px;
+  }
    @media (max-width: 768px){
-    /* 1 column */
     .product-grid{
       grid-template-columns: 1fr !important;
       padding: 12px !important;
     }
-  
-    /* If you render by category, inner grids should be 1 column too */
+    .product-grid.products-by-category{
+      grid-template-columns: 1fr !important;
+    }
     .products-by-category .category-block-grid{
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
     }
   
     .product-card{
-      flex-direction: row;
-      align-items: center;
-      text-align: left;
-      gap: 12px;
-      padding: 12px;
+      flex-direction: column;
+      text-align: center;
+      padding: 8px;
     }
   
     .product-card img{
-      width: 108px;
-      height: 92px;
+      width: 100%;
+      height: 90px;
       min-height: auto !important;
-      border-radius: 14px;
+      border-radius: 10px;
       object-fit: cover;
-      margin: 0;
-      flex: 0 0 auto;
     }
   
     .product-card .product-info{
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      padding: 8px 4px 4px;
     }
   
     .product-card .card-footer{
-      margin-top: 8px;
+      margin-top: 4px;
+      padding: 0 4px 4px;
     }
   
     .product-card h3{
-      margin: 0;
-      font-size: 1rem;
+      margin: 0 0 4px;
+      font-size: 0.85rem;
       line-height: 1.2;
     }
   
     .product-card .price{
-      margin: 0;
+      font-size: 0.9rem;
       font-weight: 800;
+    }
+    .add-to-cart-btn{
+      padding: 8px 10px;
+      font-size: 0.85rem;
     }
   }
   /* =========================

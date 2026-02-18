@@ -294,7 +294,7 @@
         <div class="card-header">
           <div>
             <h2><i class="fas fa-receipt"></i> Orders</h2>
-            <p class="subtle">Search, filter, view details, and update status.</p>
+            <p class="subtle">All orders from all customers. Search, filter, view details, and update status.</p>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button type="button" class="btn btn-gray" id="refreshOrdersBtn" title="Reload orders">
@@ -361,6 +361,7 @@
               <option value="meat">Butcher / Meat</option>
               <option value="eggs">Eggs & Dairy</option>
               <option value="drinks">Drinks</option>
+              <option value="coffee_tea_chocolate">Coffee, tea & chocolate</option>
               <option value="promotions">Promotions</option>
               <option value="cans_jars">Cans and jars</option>
               <option value="pasta_rice_cereals">Pasta, rice & cereals</option>
@@ -372,6 +373,14 @@
               <option value="personal_care">Personal care</option>
             </select>
           </label>
+
+          <div id="newSubcategoryWrap" style="display:none;">
+            <label style="font-weight:800;">Subcategory
+              <select class="select" style="width:100%;" id="newSubcategory">
+                <option value="">—</option>
+              </select>
+            </label>
+          </div>
 
           <label style="font-weight:800;">Price (€)
             <input class="input" style="width:100%;" type="number" id="newPrice" required min="0" step="0.01" placeholder="2.99" />
@@ -426,7 +435,7 @@
         <div class="card-header">
           <div>
             <h2><i class="fas fa-file-arrow-up"></i> Bulk upload (CSV)</h2>
-            <p class="subtle">Columns: name, category, price, stock_level, image_url, description, unit, price_per_kg, sku, variants, low_stock_threshold</p>
+            <p class="subtle">Columns: name, category, subcategory (drinks: waters, juices_softdrinks; coffee_tea_chocolate: coffee_capsules, ground_coffee_grain, soluble_decaf, tea_infusions, cereal_drinks, chocolate_milk), price, stock_level, image_url, description, unit, price_per_kg, sku, variants, low_stock_threshold</p>
           </div>
         </div>
         <div class="control-row">
@@ -563,6 +572,7 @@
                 <option value="meat">Butcher / Meat</option>
                 <option value="eggs">Eggs & Dairy</option>
                 <option value="drinks">Drinks</option>
+                <option value="coffee_tea_chocolate">Coffee, tea & chocolate</option>
                 <option value="promotions">Promotions</option>
                 <option value="cans_jars">Cans and jars</option>
                 <option value="pasta_rice_cereals">Pasta, rice & cereals</option>
@@ -574,6 +584,14 @@
                 <option value="personal_care">Personal care</option>
               </select>
             </label>
+
+            <div id="editSubcategoryWrap" style="display:none;">
+              <label style="font-weight:900;">Subcategory
+                <select class="select" style="width:100%;" id="editSubcategory">
+                  <option value="">—</option>
+                </select>
+              </label>
+            </div>
 
             <label style="font-weight:900;">Price (€)
               <input class="input" style="width:100%;" type="number" id="editPrice" min="0" step="0.01" required />
@@ -648,6 +666,34 @@
     const CACHE_PRODUCTS_KEY = 'bb_admin_cache_products_v1';
     const NEW_ORDER_HOURS = 48;
     const PER_KG_CATEGORIES = ['fruits', 'meat'];
+    const ADMIN_SUB_OPTS = {
+      drinks: [{ v: 'waters', l: 'Waters' }, { v: 'juices_softdrinks', l: 'Juices & Soft Drinks' }],
+      coffee_tea_chocolate: [
+        { v: 'coffee_capsules', l: 'Coffee Capsules' },
+        { v: 'ground_coffee_grain', l: 'Ground Coffee and Grain' },
+        { v: 'soluble_decaf', l: 'Soluble and Decaffeinated Coffee' },
+        { v: 'tea_infusions', l: 'Tea and Infusions' },
+        { v: 'cereal_drinks', l: 'Cereal Drinks' },
+        { v: 'chocolate_milk', l: 'Chocolate milk' }
+      ]
+    };
+    function fillSubcategorySelect(selectEl, category) {
+      if (!selectEl) return;
+      const cat = (category || '').toLowerCase();
+      const opts = ADMIN_SUB_OPTS[cat];
+      const current = selectEl.value;
+      selectEl.innerHTML = '<option value="">—</option>';
+      if (opts && opts.length) {
+        opts.forEach(function(o) {
+          const opt = document.createElement('option');
+          opt.value = o.v;
+          opt.textContent = o.l;
+          selectEl.appendChild(opt);
+        });
+        if (current && opts.some(function(o) { return o.v === current; })) selectEl.value = current;
+        else selectEl.value = '';
+      }
+    }
 
     let currentUser = null;
     let currentRole = 'employee'; // 'admin' | 'employee'
@@ -716,6 +762,35 @@
     }
 
     // =========================
+    // Require admin (redirect if not logged in / not admin)
+    // =========================
+    async function requireAdmin(){
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = 'admin-login.html';
+        return false;
+      }
+
+      const email = safeLower(user.email || '');
+      const isAdmin = Array.isArray(ADMIN_EMAILS) && ADMIN_EMAILS.length && ADMIN_EMAILS.some(e => safeLower(e) === email);
+      if (!isAdmin) {
+        await supabase.auth.signOut();
+        window.location.href = 'admin-login.html';
+        return false;
+      }
+
+      const { error } = await supabase.from('orders').select('id').limit(1);
+      if (error) {
+        await supabase.auth.signOut();
+        window.location.href = 'admin-login.html';
+        return false;
+      }
+
+      return true;
+    }
+
+    // =========================
     // Auth + PIN gate
     // =========================
     async function determineRoleFromEmail(session){
@@ -736,7 +811,9 @@
       const pinScreen = $('adminPinScreen');
       const panel = $('adminPanelContent');
 
-      // 1) if logged in, check role
+      const ok = await requireAdmin();
+      if (!ok) return;
+
       const { data: { session } } = await supabase.auth.getSession();
       if (session){
         currentUser = session.user;
@@ -748,42 +825,7 @@
         return;
       }
 
-      // 2) PIN fallback (employee kiosk mode)
-      if (sessionStorage.getItem(PIN_STORAGE_KEY) === 'true'){
-        currentUser = null;
-        currentRole = 'employee';
-        pinScreen.style.display = 'none';
-        panel.style.display = 'block';
-        applyRoleUI();
-        boot();
-        return;
-      }
-
-      // 3) show PIN screen
-      pinScreen.style.display = 'flex';
-      panel.style.display = 'none';
-
-      $('adminPinForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const input = $('adminPinInput');
-        const errEl = $('adminPinError');
-        const pin = (input.value || '').trim();
-
-        if (pin === String(ADMIN_PIN)){
-          sessionStorage.setItem(PIN_STORAGE_KEY, 'true');
-          pinScreen.style.display = 'none';
-          panel.style.display = 'block';
-          currentUser = null;
-          currentRole = 'employee';
-          applyRoleUI();
-          boot();
-        } else {
-          errEl.textContent = 'Incorrect PIN. Try again.';
-          errEl.style.display = 'block';
-          input.value = '';
-          input.focus();
-        }
-      });
+      window.location.href = 'admin-login.html';
     }
 
     function applyRoleUI(){
@@ -1260,12 +1302,18 @@
         // employees can’t remove products
         const canRemove = currentRole === 'admin';
 
+        const catOptions = ['fruits','bakery','meat','eggs','drinks','coffee_tea_chocolate','promotions','cans_jars','pasta_rice_cereals','sauces_condiments','herbs_spices','frozen_foods','snacks','household_cleaning','personal_care'];
+        const catLabels = { fruits:'Fruits & Vegetables', bakery:'Bakery & Pastry', meat:'Butcher / Meat', eggs:'Eggs & Dairy', drinks:'Drinks', coffee_tea_chocolate:'Coffee, tea & chocolate', promotions:'Promotions', cans_jars:'Cans and jars', pasta_rice_cereals:'Pasta, rice & cereals', sauces_condiments:'Sauces and condiments', herbs_spices:'Herbs and spices', frozen_foods:'Frozen foods', snacks:'Snacks', household_cleaning:'Household and cleaning', personal_care:'Personal care' };
+        const catSelectOpts = catOptions.map(c => `<option value="${c}" ${(p.category||'').toLowerCase()===c?'selected':''}>${catLabels[c]||c}</option>`).join('');
         return `
           <tr data-row-id="${safeHtml(p.id)}">
             <td>
-              <div style="font-weight:900;">${safeHtml(p.name || '—')}</div>
-              <div style="color:var(--muted); font-weight:800; margin-top:4px;">
-                <i class="fas fa-layer-group"></i> ${safeHtml(p.category || '—')}${safeHtml(activeHint)}
+              <input class="mini-input" type="text" id="n-${safeHtml(p.id)}" value="${safeHtml(p.name || '')}" placeholder="Product name" style="font-weight:900; width:100%; min-width:140px;" />
+              <div style="margin-top:6px; display:flex; align-items:center; gap:6px;">
+                <select class="mini-input" id="c-${safeHtml(p.id)}" style="font-size:0.85rem; padding:6px 8px; min-width:120px;">
+                  ${catSelectOpts}
+                </select>
+                ${activeHint ? `<span style="color:var(--muted); font-size:0.8rem;">${activeHint}</span>` : ''}
               </div>
             </td>
 
@@ -1314,13 +1362,37 @@
     // =========================
     // Product CRUD (with soft delete if possible)
     // =========================
-    async function updateProductQuick(id){
-      const priceEl = document.getElementById(`p-${id}`);
-      const stockEl = document.getElementById(`s-${id}`);
+    async function updateProductQuick(id, row){
+      // When we have the row, read inputs from it (avoids getElementById issues with UUIDs in ids)
+      let nameEl, catEl, priceEl, stockEl;
+      if (row && row.querySelector) {
+        nameEl = row.querySelector('input[type="text"]');
+        catEl = row.querySelector('select');
+        priceEl = row.querySelector('input[type="number"][step="0.01"]');
+        const numInputs = row.querySelectorAll('input[type="number"]');
+        stockEl = Array.from(numInputs).find(function(inp){ return inp !== priceEl; }) || numInputs[0];
+      }
+      if (!nameEl) nameEl = document.getElementById('n-' + id);
+      if (!catEl) catEl = document.getElementById('c-' + id);
+      if (!priceEl) priceEl = document.getElementById('p-' + id);
+      if (!stockEl) stockEl = document.getElementById('s-' + id);
+      const name = nameEl ? (nameEl.value || '').trim() : '';
+      const category = catEl ? (catEl.value || '').trim() : '';
       const price = priceEl ? parseFloat(priceEl.value) : 0;
       const stock = stockEl ? parseInt(stockEl.value, 10) : 0;
 
-      const payload = { price: Number.isFinite(price) ? price : 0, stock_level: Number.isFinite(stock) ? stock : 0, updated_at: nowIso() };
+      if (!name) {
+        alert('Product name cannot be empty.');
+        return;
+      }
+
+      const payload = {
+        name,
+        category: category || 'fruits',
+        price: Number.isFinite(price) ? price : 0,
+        stock_level: Number.isFinite(stock) ? stock : 0,
+        updated_at: nowIso()
+      };
       if (currentUser?.id) payload.updated_by = currentUser.id;
 
       const { error } = await supabase.from('products').update(payload).eq('id', id);
@@ -1377,6 +1449,11 @@
       $('editProductId').value = p.id;
       $('editName').value = p.name || '';
       $('editCategory').value = p.category || 'fruits';
+      const editSubWrap = $('editSubcategoryWrap');
+      const showEditSub = ['drinks','coffee_tea_chocolate'].includes((p.category || '').toLowerCase());
+      if (editSubWrap) editSubWrap.style.display = showEditSub ? 'block' : 'none';
+      if (showEditSub) fillSubcategorySelect($('editSubcategory'), p.category);
+      $('editSubcategory').value = p.subcategory || '';
       $('editPrice').value = p.price ?? 0;
       $('editStock').value = p.stock_level ?? 0;
 
@@ -1414,9 +1491,11 @@
       const allowPerKg = PER_KG_CATEGORIES.includes(String(category || '').toLowerCase());
       const unit = allowPerKg ? $('editUnit').value : 'unit';
 
+      const subcategory = ($('editSubcategoryWrap')?.style?.display !== 'none') ? ($('editSubcategory').value || '').trim() || null : null;
       const payload = {
         name: $('editName').value.trim(),
         category,
+        subcategory: subcategory || null,
         price: parseFloat($('editPrice').value) || 0,
         stock_level: parseInt($('editStock').value, 10) || 0,
         unit: unit || 'unit',
@@ -1474,10 +1553,12 @@
         (allowPerKg && unit === 'kg' && ($('newPricePerKg').value || '').trim() !== '') ?
         parseFloat($('newPricePerKg').value) : null;
 
+      const subcategory = ($('newSubcategoryWrap').style.display !== 'none') ? ($('newSubcategory').value || '').trim() || null : null;
       const payload = {
         id: (crypto.randomUUID ? crypto.randomUUID() : ('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random()*16|0).toString(16)))),
         name,
         category,
+        subcategory: subcategory || null,
         price,
         stock_level: stock,
         unit: unit || 'unit',
@@ -1810,7 +1891,7 @@
       }catch{}
       sessionStorage.removeItem(PIN_STORAGE_KEY);
       localStorage.removeItem('userIsLoggedIn');
-      window.location.href = 'login.html';
+      window.location.href = 'admin-login.html';
     }
 
     // =========================
@@ -1860,7 +1941,9 @@
 
         // inventory
         if (action === 'save-product'){
-          await updateProductQuick(id);
+          const row = el.closest('tr[data-row-id]');
+          const rowId = row ? row.getAttribute('data-row-id') : id;
+          await updateProductQuick(rowId, row);
           return;
         }
         if (action === 'edit-product'){
@@ -1887,7 +1970,14 @@
       $('editCancelBtn').addEventListener('click', closeEditProductModal);
       $('editProductModal').addEventListener('click', (e) => { if (e.target === $('editProductModal')) closeEditProductModal(); });
 
-      $('editCategory').addEventListener('change', () => toggleUnitWrap($('editCategory').value, $('editUnitWrap'), $('editUnit'), $('editPricePerKg')));
+      $('editCategory').addEventListener('change', () => {
+        toggleUnitWrap($('editCategory').value, $('editUnitWrap'), $('editUnit'), $('editPricePerKg'));
+        const wrap = $('editSubcategoryWrap');
+        const cat = ($('editCategory').value || '').toLowerCase();
+        const show = ['drinks','coffee_tea_chocolate'].includes(cat);
+        if (wrap) wrap.style.display = show ? 'block' : 'none';
+        if (show) fillSubcategorySelect($('editSubcategory'), cat);
+      });
       $('editProductForm').addEventListener('submit', saveEditProductForm);
     }
 
@@ -1911,8 +2001,19 @@
       $('addProductResetBtn').addEventListener('click', () => { $('addProductForm').reset(); $('newStock').value = 0; $('addProductMsg').textContent=''; });
 
       // Unit wrap toggle (add)
-      $('newCategory').addEventListener('change', () => toggleUnitWrap($('newCategory').value, $('unitPricePerKgWrap'), $('newUnit'), $('newPricePerKg')));
+      function toggleSubcategoryWrap(){
+        const cat = ($('newCategory')?.value || '').toLowerCase();
+        const wrap = $('newSubcategoryWrap');
+        const show = (cat === 'drinks' || cat === 'coffee_tea_chocolate');
+        if (wrap) wrap.style.display = show ? 'block' : 'none';
+        if (show) fillSubcategorySelect($('newSubcategory'), cat);
+      }
+      $('newCategory').addEventListener('change', () => {
+        toggleUnitWrap($('newCategory').value, $('unitPricePerKgWrap'), $('newUnit'), $('newPricePerKg'));
+        toggleSubcategoryWrap();
+      });
       toggleUnitWrap($('newCategory').value, $('unitPricePerKgWrap'), $('newUnit'), $('newPricePerKg'));
+      toggleSubcategoryWrap();
 
       // Bulk import
       $('bulkCsvBtn').addEventListener('click', bulkImportCSV);

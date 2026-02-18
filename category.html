@@ -58,6 +58,7 @@
             <button onclick="switchCategory('meat', 'Talho')" class="nav-item" data-category="meat"><i class="fas fa-drumstick-bite"></i> <span>Talho</span></button>
             <button onclick="switchCategory('eggs', 'Ovos e Lacticínios')" class="nav-item" data-category="eggs"><i class="fas fa-egg"></i> <span>Ovos e Lacticínios</span></button>
             <button onclick="switchCategory('drinks', 'Bebidas')" class="nav-item" data-category="drinks"><i class="fas fa-wine-bottle"></i> <span>Bebidas</span></button>
+            <button onclick="switchCategory('coffee_tea_chocolate', 'Café, chá e chocolate')" class="nav-item" data-category="coffee_tea_chocolate"><i class="fas fa-mug-hot"></i> <span>Café, chá e chocolate</span></button>
             <button onclick="switchCategory('cans_jars', 'Latas e frascos')" class="nav-item" data-category="cans_jars"><i class="fas fa-box"></i> <span>Latas e frascos</span></button>
             <button onclick="switchCategory('pasta_rice_cereals', 'Massas, arroz e cereais')" class="nav-item" data-category="pasta_rice_cereals"><i class="fas fa-utensils"></i> <span>Massas, arroz e cereais</span></button>
             <button onclick="switchCategory('sauces_condiments', 'Molhos e condimentos')" class="nav-item" data-category="sauces_condiments"><i class="fas fa-flask"></i> <span>Molhos e condimentos</span></button>
@@ -86,8 +87,16 @@
             </div>
         </header>
 
-        <div class="category-header" style="display:flex;justify-content:space-between;align-items:center;padding:20px 5%;">
-            <h1 class="breadcrumb" style="font-size: 1.2rem;">Produtos / <span id="categoryName" style="color:#2d7a32;">Frutas</span></h1>
+        <div class="category-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:20px 5%;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <h1 class="breadcrumb" style="font-size: 1.2rem;margin:0;">Produtos / <span id="categoryName" style="color:#2d7a32;">Frutas</span></h1>
+                <div id="subcategoryDropdownWrap" style="display:none;">
+                    <label for="subcategorySelect" style="font-size:0.9rem;font-weight:600;color:#64748b;">Filtrar: </label>
+                    <select id="subcategorySelect" style="padding:8px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:0.95rem;margin-left:8px;">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+            </div>
             <a href="index.html" class="cta-secondary" style="text-decoration:none; padding:8px 15px; border-radius:20px;">&larr; Voltar</a>
         </div>
 
@@ -133,25 +142,45 @@
             ],
             eggs: [
                 { name: "Ovos Caseiros", price: 2.10, img: "assets/ovos.jpg" }
-            ]
+            ],
+            drinks: [
+                { name: "Água Mineral", price: 0.79, img: "assets/strawberries.jpg", subcategory: "waters" },
+                { name: "Água com Gás", price: 0.89, img: "assets/strawberries.jpg", subcategory: "waters" },
+                { name: "Sumo de Laranja", price: 1.49, img: "assets/strawberries.jpg", subcategory: "juices_softdrinks" },
+                { name: "Coca-Cola", price: 1.29, img: "assets/strawberries.jpg", subcategory: "juices_softdrinks" }
+            ],
+            coffee_tea_chocolate: []
         };
 
-        function switchCategory(type, displayName) {
-            const grid = document.getElementById('productGrid');
-            const catTitle = document.getElementById('categoryName');
-            
-            catTitle.innerText = displayName;
-            grid.innerHTML = "";
-            
-            const items = productsData[type] || [];
-            
-            if (items.length === 0) {
-                grid.innerHTML = "<p style='grid-column:1/-1; text-align:center;'>Em breve teremos produtos aqui!</p>";
-            }
+        const SUB_CATEGORIES = {
+            drinks: ['waters', 'juices_softdrinks'],
+            coffee_tea_chocolate: ['coffee_capsules', 'ground_coffee_grain', 'soluble_decaf', 'tea_infusions', 'cereal_drinks', 'chocolate_milk']
+        };
+        const SUB_CAT_LABELS = {
+            waters: 'Águas',
+            juices_softdrinks: 'Sumos e Refrigerantes',
+            coffee_capsules: 'Cápsulas de café',
+            ground_coffee_grain: 'Café em pó e em grão',
+            soluble_decaf: 'Café solúvel e descafeinado',
+            tea_infusions: 'Chá e infusões',
+            cereal_drinks: 'Bebidas de cereais',
+            chocolate_milk: 'Leite com chocolate'
+        };
 
-            items.forEach(item => {
+        function renderCategoryItems(items, subcatFilter) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = "";
+            const filtered = subcatFilter
+                ? items.filter(i => (i.subcategory || '').toLowerCase() === subcatFilter.toLowerCase())
+                : items;
+            if (filtered.length === 0) {
+                grid.innerHTML = "<p style='grid-column:1/-1; text-align:center;'>Em breve teremos produtos aqui!</p>";
+                return;
+            }
+            filtered.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                card.setAttribute('data-subcategory', (item.subcategory || '').toLowerCase());
                 card.innerHTML = `
                     <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/400x400?text=Braga+Bazaar'">
                     <h3>${item.name}</h3>
@@ -160,9 +189,40 @@
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        function switchCategory(type, displayName) {
+            const grid = document.getElementById('productGrid');
+            const catTitle = document.getElementById('categoryName');
+            const dropWrap = document.getElementById('subcategoryDropdownWrap');
+            const subSelect = document.getElementById('subcategorySelect');
+
+            catTitle.innerText = displayName;
+
+            const hasSubcats = SUB_CATEGORIES && SUB_CATEGORIES[type];
+            if (dropWrap) dropWrap.style.display = hasSubcats ? 'block' : 'none';
+            if (subSelect) {
+                subSelect.value = '';
+                subSelect.onchange = null;
+                if (hasSubcats && SUB_CATEGORIES[type]) {
+                    subSelect.innerHTML = '<option value="">Todos</option>';
+                    SUB_CATEGORIES[type].forEach(function(sc) {
+                        const opt = document.createElement('option');
+                        opt.value = sc;
+                        opt.textContent = SUB_CAT_LABELS[sc] || sc;
+                        subSelect.appendChild(opt);
+                    });
+                }
+            }
+
+            const items = productsData[type] || [];
+            renderCategoryItems(items, '');
+
+            if (hasSubcats && subSelect) {
+                subSelect.onchange = () => renderCategoryItems(items, subSelect.value || '');
+            }
 
             highlightNav(type);
-            // Auto-close sidebar on mobile after selection
             if (window.innerWidth <= 768) closeSidebarMobile();
         }
 
@@ -215,7 +275,7 @@
             updateHeader();
             const params = new URLSearchParams(window.location.search);
             const type = params.get('type') || 'fruits';
-            const labels = { fruits: 'Frutas e Vegetais', bakery: 'Padaria', eggs: 'Ovos e Lacticínios', meat: 'Talho', drinks: 'Bebidas' };
+            const labels = { fruits: 'Frutas e Vegetais', bakery: 'Padaria', eggs: 'Ovos e Lacticínios', meat: 'Talho', drinks: 'Bebidas', coffee_tea_chocolate: 'Café, chá e chocolate', cans_jars: 'Latas e frascos', pasta_rice_cereals: 'Massas, arroz e cereais', sauces_condiments: 'Molhos e condimentos', herbs_spices: 'Ervas e especiarias', frozen_foods: 'Congelados', snacks: 'Snacks', household_cleaning: 'Casa e limpeza', personal_care: 'Higiene e beleza' };
             switchCategory(type, labels[type] || 'Produtos');
         };
     </script>

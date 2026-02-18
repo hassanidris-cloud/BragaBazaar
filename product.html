@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2d7a32" />
+  <title>Produto | Braga Bazaar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="global.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    .product-detail { max-width: 900px; margin: 32px auto; padding: 0 16px; }
+    .product-main { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; margin-bottom: 48px; }
+    @media (max-width: 700px) { .product-main { grid-template-columns: 1fr; } }
+    .product-image { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 16px; background: #f1f5f9; }
+    .product-title { font-size: 1.75rem; font-weight: 800; color: #1e293b; margin: 0 0 12px; }
+    .product-price { font-size: 1.5rem; font-weight: 800; color: #2d7a32; margin-bottom: 20px; }
+    .product-price .old { text-decoration: line-through; color: #94a3b8; font-size: 1rem; margin-right: 8px; }
+    .product-price .old { text-decoration: line-through; color: #94a3b8; font-size: 1rem; margin-right: 8px; }
+    .product-desc { color: #475569; line-height: 1.6; margin-bottom: 24px; }
+    .product-section { margin-bottom: 28px; }
+    .product-section h3 { font-size: 1rem; font-weight: 700; color: #334155; margin: 0 0 12px; text-transform: uppercase; letter-spacing: .05em; }
+    .nutrition-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    .nutrition-table th, .nutrition-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    .nutrition-table th { color: #64748b; font-weight: 600; }
+    .add-to-cart-detail { padding: 14px 28px; font-size: 1rem; font-weight: 700; border-radius: 12px; border: none; background: #2d7a32; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
+    .add-to-cart-detail:hover { background: #1e5222; }
+    .add-to-cart-detail:disabled { opacity: 0.6; cursor: not-allowed; }
+    .you-may-like { margin-top: 48px; padding-top: 32px; border-top: 1px solid #e2e8f0; }
+    .you-may-like h2 { font-size: 1.25rem; font-weight: 800; color: #1e293b; margin: 0 0 20px; }
+    .similar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+    .similar-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; transition: transform 0.2s, box-shadow 0.2s; }
+    .similar-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .similar-card a { display: block; text-decoration: none; color: inherit; }
+    .similar-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+    .similar-card .info { padding: 12px; }
+    .similar-card h4 { font-size: 0.95rem; font-weight: 700; margin: 0 0 4px; color: #1e293b; }
+    .similar-card .price { font-size: 0.9rem; font-weight: 700; color: #2d7a32; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: #2d7a32; font-weight: 600; margin-bottom: 24px; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+    .product-loading, .product-error { text-align: center; padding: 60px 20px; color: #64748b; }
+    .main-header .site-nav a { color: #000 !important; }
+  </style>
+</head>
+<body>
+  <header class="main-header shared-header">
+    <div class="top-nav">
+      <a href="index.html" class="logo">BRAGA<span>BAZAAR</span></a>
+      <form class="search-bar" action="index.html" method="get">
+        <input type="search" name="q" placeholder="O que procura?" />
+        <button type="submit">Pesquisar</button>
+      </form>
+      <nav class="site-nav">
+        <a href="index.html"><i class="fas fa-store"></i></a>
+        <a href="orders.html"><i class="fas fa-clipboard-list"></i></a>
+        <a href="contact.html"><i class="fas fa-envelope"></i></a>
+        <a href="account.html"><i class="fas fa-user"></i></a>
+        <a href="checkout.html"><i class="fas fa-shopping-cart"></i> <span id="headerPrice">0.00</span>€</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="product-detail">
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar</a>
+
+    <div id="productLoading" class="product-loading">
+      <p><i class="fas fa-spinner fa-spin"></i> A carregar produto…</p>
+    </div>
+    <div id="productError" class="product-error" style="display:none;">
+      <p>Produto não encontrado.</p>
+      <a href="index.html" class="back-link">Voltar à loja</a>
+    </div>
+
+    <div id="productContent" style="display:none;">
+      <div class="product-main">
+        <div>
+          <img id="productImage" class="product-image" src="assets/strawberries.jpg" alt="" />
+        </div>
+        <div>
+          <h1 id="productTitle" class="product-title"></h1>
+          <div id="productPriceEl" class="product-price"></div>
+          <p id="productDesc" class="product-desc"></p>
+          <button id="addToCartBtn" class="add-to-cart-detail" type="button">
+            <i class="fas fa-cart-plus"></i> Adicionar ao carrinho
+          </button>
+        </div>
+      </div>
+
+      <div class="product-section" id="nutritionSection" style="display:none;">
+        <h3>Informação nutricional</h3>
+        <table class="nutrition-table" id="nutritionTable"></table>
+      </div>
+
+      <section class="you-may-like" id="youMayLike">
+        <h2>Também pode gostar</h2>
+        <div class="similar-grid" id="similarGrid"></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2d7a32;color:#fff;padding:14px 24px;border-radius:12px;font-weight:600;display:none;z-index:9999;">Adicionado ao carrinho!</div>
+
+  <script type="module">
+    import { supabase } from './supabaseConfig.js';
+
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+    let currentProduct = null;
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg || 'Adicionado ao carrinho!';
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 2500);
+    }
+
+    function updateHeader() {
+      const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
+      const total = cart.reduce((s, i) => s + (Number(i.price) * Number(i.qty || 1)), 0);
+      const el = document.getElementById('headerPrice');
+      if (el) el.textContent = total.toFixed(2);
+    }
+
+    function renderProduct(p) {
+      currentProduct = p;
+      const defaultImg = 'assets/strawberries.jpg';
+      document.getElementById('productImage').src = (p.image_url && p.image_url.trim()) ? p.image_url.trim() : defaultImg;
+      document.getElementById('productImage').alt = p.name || '';
+      document.getElementById('productTitle').textContent = p.name || '';
+
+      const isPerKg = (p.category === 'fruits' || p.category === 'meat') && p.unit === 'kg';
+      const priceVal = (isPerKg && p.price_per_kg != null) ? Number(p.price_per_kg) : Number(p.price || 0);
+      const suffix = isPerKg ? '/kg' : '';
+      let priceHtml = `€${priceVal.toFixed(2)}${suffix}`;
+      if (p.on_sale && p.old_price) {
+        priceHtml = `<span class="old">€${Number(p.old_price).toFixed(2)}${suffix}</span> ${priceHtml}`;
+      }
+      document.getElementById('productPriceEl').innerHTML = priceHtml;
+
+      const descEl = document.getElementById('productDesc');
+      descEl.textContent = p.description || 'Sem descrição.';
+      descEl.style.display = p.description ? 'block' : 'none';
+
+      const nutrition = p.nutritional_info;
+      const nutSection = document.getElementById('nutritionSection');
+      const nutTable = document.getElementById('nutritionTable');
+      if (nutrition && typeof nutrition === 'object' && Object.keys(nutrition).length) {
+        nutSection.style.display = 'block';
+        nutTable.innerHTML = '';
+        for (const [k, v] of Object.entries(nutrition)) {
+          if (v == null || v === '') continue;
+          const label = String(k).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const row = nutTable.insertRow();
+          row.innerHTML = `<th>${label}</th><td>${v}</td>`;
+        }
+      } else {
+        nutSection.style.display = 'none';
+      }
+
+      const btn = document.getElementById('addToCartBtn');
+      const inStock = (p.stock_level || 0) > 0;
+      btn.disabled = !inStock;
+      btn.textContent = inStock ? 'Adicionar ao carrinho' : 'Esgotado';
+      btn.onclick = () => {
+        if (!inStock) return;
+        const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
+        const existing = cart.find(x => x.productId === p.id || x.name === p.name);
+        if (existing) existing.qty = (existing.qty || 1) + 1;
+        else cart.push({ name: p.name, price: priceVal, qty: 1, productId: p.id, image_url: p.image_url });
+        localStorage.setItem('bragaBazaarCart', JSON.stringify(cart));
+        updateHeader();
+        showToast();
+      };
+    }
+
+    function renderSimilar(products, excludeId) {
+      const similar = products.filter(p => p.id !== excludeId).slice(0, 6);
+      const grid = document.getElementById('similarGrid');
+      grid.innerHTML = '';
+      if (!similar.length) {
+        grid.innerHTML = '<p style="color:#64748b;grid-column:1/-1;">Não há mais produtos nesta categoria.</p>';
+        return;
+      }
+      similar.forEach(p => {
+        const isPerKg = (p.category === 'fruits' || p.category === 'meat') && p.unit === 'kg';
+        const priceVal = (isPerKg && p.price_per_kg != null) ? Number(p.price_per_kg) : Number(p.price || 0);
+        const suffix = isPerKg ? '/kg' : '';
+        const card = document.createElement('div');
+        card.className = 'similar-card';
+        card.innerHTML = `
+          <a href="product.html?id=${p.id}">
+            <img src="${(p.image_url && p.image_url.trim()) ? p.image_url.trim() : 'assets/strawberries.jpg'}" alt="${p.name}" onerror="this.src='assets/strawberries.jpg'">
+            <div class="info">
+              <h4>${p.name || ''}</h4>
+              <span class="price">€${priceVal.toFixed(2)}${suffix}</span>
+            </div>
+          </a>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function loadProduct() {
+      if (!productId) {
+        document.getElementById('productLoading').style.display = 'none';
+        document.getElementById('productError').style.display = 'block';
+        return;
+      }
+
+      const { data: product, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', productId)
+        .maybeSingle();
+
+      document.getElementById('productLoading').style.display = 'none';
+
+      if (error || !product) {
+        document.getElementById('productError').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('productContent').style.display = 'block';
+      renderProduct(product);
+
+      const category = (product.category || 'fruits').toLowerCase().trim();
+      const { data: similar } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', category)
+        .order('name', { ascending: true })
+        .limit(12);
+
+      renderSimilar(similar || [], product.id);
+    }
+
+    loadProduct();
+    updateHeader();
+  </script>
+</body>
+</html>

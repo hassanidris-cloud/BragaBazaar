@@ -295,9 +295,9 @@
     "description":"Fresh local grocery in Braga. Fruits, bakery, meat, eggs, drinks and promotions. Support your local community.",
     "url":"/",
     "image":"/assets/icon.png",
-    "address":{"@type":"PostalAddress","streetAddress":"Praça da República","addressLocality":"Braga","addressCountry":"PT"},
-    "openingHours":"Mo-Sa 08:00-20:00",
-    "telephone":"+351253123456"
+    "address":{"@type":"PostalAddress","streetAddress":"R. Conselheiro Lobato 368","addressLocality":"Braga","postalCode":"4705-089","addressCountry":"PT"},
+    "openingHours":"Mo-Su 09:00-22:00",
+    "telephone":"+351927614647"
   }
   </script>
 
@@ -313,6 +313,7 @@
       function openMenu() {
         sidebar?.classList.add('active');
         document.body.classList.add('sidebar-expanded');
+        openBtn?.setAttribute('aria-expanded', 'true');
         if (window.innerWidth <= 768) {
           if (backdrop) backdrop.style.display = 'block';
           if (floatClose) floatClose.style.display = 'block';
@@ -323,6 +324,7 @@
       function closeMenu() {
         sidebar?.classList.remove('active');
         document.body.classList.remove('sidebar-expanded');
+        openBtn?.setAttribute('aria-expanded', 'false');
         if (backdrop) backdrop.style.display = 'none';
         if (floatClose) floatClose.style.display = 'none';
         if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
@@ -337,6 +339,13 @@
       backdrop?.addEventListener('click', closeMenu);
       floatClose?.addEventListener('click', closeMenu);
       closeBtn?.addEventListener('click', closeMenu);
+
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) closeMenu();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeMenu();
+      });
 
       window.closeSidebarMobile = closeMenu;
       window.openSidebarMobile = openMenu;
@@ -428,7 +437,36 @@
         <li><a href="javascript:void(0)" class="nav-item" data-filter="bakery"><i class="fas fa-bread-slice icon-box"></i><span class="menu-text" data-en="Bakery & Pastry" data-pt="Padaria e Pastelaria">Padaria e Pastelaria</span><i class="fas fa-chevron-down nav-chevron"></i></a></li>
         <li><a href="javascript:void(0)" class="nav-item" data-filter="meat"><i class="fas fa-drumstick-bite icon-box"></i><span class="menu-text" data-en="Butcher" data-pt="Talho">Talho</span><i class="fas fa-chevron-down nav-chevron"></i></a></li>
         <li><a href="javascript:void(0)" class="nav-item" data-filter="eggs"><i class="fas fa-egg icon-box"></i><span class="menu-text" data-en="Eggs & Dairy" data-pt="Ovos e Lacticínios">Ovos e Lacticínios</span><i class="fas fa-chevron-down nav-chevron"></i></a></li>
-        <li><a href="javascript:void(0)" class="nav-item" data-filter="drinks"><i class="fas fa-wine-bottle icon-box"></i><span class="menu-text" data-en="Drinks" data-pt="Bebidas">Bebidas</span><i class="fas fa-chevron-down nav-chevron"></i></a></li>
+        <li class="has-sub">
+          <details class="nav-accordion" data-filter="drinks">
+            <summary class="nav-item" data-filter="drinks">
+              <i class="fas fa-wine-bottle icon-box"></i>
+              <span class="menu-text" data-en="Drinks" data-pt="Bebidas">Bebidas</span>
+              <i class="fas fa-chevron-down nav-chevron"></i>
+            </summary>
+            <ul class="nav-submenu">
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="drinks" data-subfilter="waters" data-en="Waters" data-pt="Águas">Waters</a></li>
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="drinks" data-subfilter="juices_softdrinks" data-en="Juices & Soft Drinks" data-pt="Sumos e Refrigerantes">Juices & Soft Drinks</a></li>
+            </ul>
+          </details>
+        </li>
+        <li class="has-sub">
+          <details class="nav-accordion" data-filter="coffee_tea_chocolate">
+            <summary class="nav-item" data-filter="coffee_tea_chocolate">
+              <i class="fas fa-mug-hot icon-box"></i>
+              <span class="menu-text" data-en="Coffee, tea & chocolate" data-pt="Café, chá e chocolate">Café, chá e chocolate</span>
+              <i class="fas fa-chevron-down nav-chevron"></i>
+            </summary>
+            <ul class="nav-submenu">
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="coffee_tea_chocolate" data-subfilter="coffee_capsules">Coffee Capsules</a></li>
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="coffee_tea_chocolate" data-subfilter="ground_coffee_grain">Ground Coffee and Grain</a></li>
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="coffee_tea_chocolate" data-subfilter="soluble_decaf">Soluble and Decaffeinated Coffee</a></li>
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="coffee_tea_chocolate" data-subfilter="tea_infusions">Tea and Infusions</a></li>
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="coffee_tea_chocolate" data-subfilter="cereal_drinks">Cereal Drinks</a></li>
+              <li><a href="javascript:void(0)" class="nav-subitem" data-filter="coffee_tea_chocolate" data-subfilter="chocolate_milk">Chocolate milk</a></li>
+            </ul>
+          </details>
+        </li>
         <li><a href="javascript:void(0)" class="nav-item" data-filter="promotions"><i class="fas fa-percentage icon-box"></i><span class="menu-text" data-en="Promotions" data-pt="Promoções">Promoções</span><i class="fas fa-chevron-down nav-chevron"></i></a></li>
         <li><a href="javascript:void(0)" class="nav-item" data-filter="cans_jars"><i class="fas fa-box icon-box"></i><span class="menu-text" data-en="Cans and jars" data-pt="Latas e frascos">Latas e frascos</span><i class="fas fa-chevron-down nav-chevron"></i></a></li>
         <li><a href="javascript:void(0)" class="nav-item" data-filter="pasta_rice_cereals"><i class="fas fa-utensils icon-box"></i><span class="menu-text" data-en="Pasta, rice & cereals" data-pt="Massas, arroz e cereais">Massas, arroz e cereais</span><i class="fas fa-chevron-down nav-chevron"></i></a></li>
@@ -448,20 +486,11 @@
           style="display:none;">&times;</button>
 
   <div id="main-content" style="min-height:100vh;">
-    <div class="language-switcher">
-      <button id="btn-pt" class="lang-btn active">PT</button>
-      <span class="separator">|</span>
-      <button id="btn-en" class="lang-btn">EN</button>
-    </div>
-
     <header class="main-header">
       <div class="top-nav">
-        <button type="button" class="menu-reopen-btn" id="menuReopenBtn"
-                aria-label="Open menu"
-                style="background:none;border:none;padding:10px;cursor:pointer;align-items:center;justify-content:center;color:#333;">
-          <i class="fas fa-bars" style="font-size:1.4rem;"></i>
+        <button type="button" class="menu-reopen-btn" id="menuReopenBtn" aria-label="Open menu" aria-expanded="false">
+          <i class="fas fa-bars"></i>
         </button>
-
         <a href="index.html" class="logo top-nav-logo" aria-label="Braga Bazaar – Home">BRAGA<span>BAZAAR</span></a>
 
         <form class="search-bar" action="index.html" method="get" role="search">
@@ -472,6 +501,12 @@
           </span>
           <button type="submit" class="search-submit-btn" data-en="Search" data-pt="Pesquisar">Pesquisar</button>
         </form>
+
+        <div class="language-switcher">
+          <button type="button" id="btn-pt" class="lang-btn active">PT</button>
+          <span class="separator">|</span>
+          <button type="button" id="btn-en" class="lang-btn">EN</button>
+        </div>
 
         <nav class="site-nav" aria-label="Main navigation">
           <a href="index.html" class="site-nav-icon-only site-nav-current site-nav-shop" title="Shop" aria-label="Shop">
@@ -528,14 +563,6 @@
             Support your local community with every purchase.
           </p>
 
-          <div class="hero-actions">
-            <a class="cta-primary hero-cta" href="#products">
-              Shop deals
-            </a>
-            <a class="cta-ghost hero-cta-ghost" href="#products">
-              Browse products
-            </a>
-          </div>
         </div>
 
         <!-- RIGHT IMAGE -->
@@ -602,14 +629,13 @@
 
         <div class="banner-column">
           <h4 data-en="Contact" data-pt="Contacto">Contact</h4>
-          <p>📞 +351 253 123 456</p>
-          <p>📍 Praça da República, Braga</p>
+          <p>📞 <a href="tel:+351927614647" style="color:inherit;">927 614 647</a></p>
+          <p>📍 R. Conselheiro Lobato 368, 4705-089 Braga</p>
         </div>
 
         <div class="banner-column">
           <h4 data-en="Hours" data-pt="Horário">Hours</h4>
-          <p data-en="Mon-Sat: 08:00 - 20:00" data-pt="Seg-Sáb: 08:00 - 20:00">Mon-Sat: 08:00 - 20:00</p>
-          <p data-en="Sun: Closed" data-pt="Dom: Fechado">Sun: Closed</p>
+          <p data-en="Mon–Sun: 9am – 10pm" data-pt="Segunda a Domingo: 9h – 22h">Segunda a Domingo: 9h – 22h</p>
         </div>
 
         <div class="banner-column">
@@ -716,6 +742,7 @@
         meat: 'Butcher',
         eggs: 'Eggs & Dairy',
         drinks: 'Drinks',
+        coffee_tea_chocolate: 'Coffee, tea & chocolate',
         promotions: 'Promotions',
         cans_jars: 'Cans and jars',
         pasta_rice_cereals: 'Pasta, rice & cereals',
@@ -724,7 +751,16 @@
         frozen_foods: 'Frozen foods',
         snacks: 'Snacks',
         household_cleaning: 'Household and cleaning',
-        personal_care: 'Personal care'
+        personal_care: 'Personal care',
+        subcat_all: 'All',
+        subcat_waters: 'Waters',
+        subcat_juices_softdrinks: 'Juices & Soft Drinks',
+        subcat_coffee_capsules: 'Coffee Capsules',
+        subcat_ground_coffee_grain: 'Ground Coffee and Grain',
+        subcat_soluble_decaf: 'Soluble and Decaffeinated Coffee',
+        subcat_tea_infusions: 'Tea and Infusions',
+        subcat_cereal_drinks: 'Cereal Drinks',
+        subcat_chocolate_milk: 'Chocolate milk'
       },
       pt: {
         products: 'Produtos',
@@ -751,6 +787,7 @@
         meat: 'Talho',
         eggs: 'Ovos e Lacticínios',
         drinks: 'Bebidas',
+        coffee_tea_chocolate: 'Café, chá e chocolate',
         promotions: 'Promoções',
         cans_jars: 'Latas e frascos',
         pasta_rice_cereals: 'Massas, arroz e cereais',
@@ -759,8 +796,22 @@
         frozen_foods: 'Congelados',
         snacks: 'Snacks',
         household_cleaning: 'Casa e limpeza',
-        personal_care: 'Higiene e beleza'
+        personal_care: 'Higiene e beleza',
+        subcat_all: 'Todos',
+        subcat_waters: 'Águas',
+        subcat_juices_softdrinks: 'Sumos e Refrigerantes',
+        subcat_coffee_capsules: 'Cápsulas de café',
+        subcat_ground_coffee_grain: 'Café em pó e em grão',
+        subcat_soluble_decaf: 'Café solúvel e descafeinado',
+        subcat_tea_infusions: 'Chá e infusões',
+        subcat_cereal_drinks: 'Bebidas de cereais',
+        subcat_chocolate_milk: 'Leite com chocolate'
       }
+    };
+
+    window.SUB_CATEGORIES = {
+      drinks: ['waters', 'juices_softdrinks'],
+      coffee_tea_chocolate: ['coffee_capsules', 'ground_coffee_grain', 'soluble_decaf', 'tea_infusions', 'cereal_drinks', 'chocolate_milk']
     };
 
     window.currentLang = function() { return localStorage.getItem('preferredLang') || 'en'; };
@@ -1011,22 +1062,39 @@
         }
 
         const cards = document.querySelectorAll('.product-card');
-        cards.forEach(card => {
-          const searchable = (card.getAttribute('data-search') || card.getAttribute('data-name') || '').toLowerCase();
-          const titleEl = card.querySelector('h3');
-          const title = titleEl ? titleEl.innerText.toLowerCase() : '';
-          const match = !term || title.includes(term) || searchable.includes(term);
-          card.style.display = match ? '' : 'none';
-        });
+        if (!term) {
+          cards.forEach(card => { card.style.display = ''; });
+        } else {
+          var matchCategories = new Set();
+          cards.forEach(function(card) {
+            const searchable = (card.getAttribute('data-search') || card.getAttribute('data-name') || '').toLowerCase();
+            const titleEl = card.querySelector('h3');
+            const title = titleEl ? titleEl.innerText.toLowerCase() : '';
+            const match = title.includes(term) || searchable.includes(term);
+            if (match) {
+              var cat = (card.getAttribute('data-category') || '').toLowerCase();
+              if (cat) matchCategories.add(cat);
+            }
+          });
+          cards.forEach(function(card) {
+            const searchable = (card.getAttribute('data-search') || card.getAttribute('data-name') || '').toLowerCase();
+            const titleEl = card.querySelector('h3');
+            const title = titleEl ? titleEl.innerText.toLowerCase() : '';
+            const match = title.includes(term) || searchable.includes(term);
+            const category = (card.getAttribute('data-category') || '').toLowerCase();
+            const similar = matchCategories.size && matchCategories.has(category);
+            card.style.display = (match || similar) ? '' : 'none';
+          });
+        }
 
-        document.querySelectorAll('.category-block').forEach(block => {
-          const hasVisible = Array.from(block.querySelectorAll('.product-card')).some(c => c.style.display !== 'none');
+        document.querySelectorAll('.category-block').forEach(function(block) {
+          const hasVisible = Array.from(block.querySelectorAll('.product-card')).some(function(c) { return c.style.display !== 'none'; });
           block.style.display = hasVisible ? '' : 'none';
         });
 
-        let noResultsEl = document.getElementById('searchNoResults');
+        var noResultsEl = document.getElementById('searchNoResults');
         if (term) {
-          const visibleCount = Array.from(cards).filter(c => c.style.display !== 'none').length;
+          var visibleCount = Array.from(cards).filter(function(c) { return c.style.display !== 'none'; }).length;
           if (visibleCount === 0) {
             if (!noResultsEl) {
               noResultsEl = document.createElement('div');
@@ -1039,9 +1107,16 @@
             }
             noResultsEl.style.display = 'block';
           } else if (noResultsEl) noResultsEl.style.display = 'none';
+          if (searchInput) searchInput.value = '';
+          if (sidebarSearchInput) sidebarSearchInput.value = '';
+          try {
+            var url = new URL(window.location.href);
+            url.searchParams.delete('q');
+            window.history.replaceState({}, '', url.pathname + (url.search || '') + (url.hash || ''));
+          } catch (e) {}
         } else if (noResultsEl) noResultsEl.style.display = 'none';
 
-        if (window.innerWidth <= 768 && document.getElementById('sidebar')?.classList.contains('active')) {
+        if (window.innerWidth <= 768 && document.getElementById('sidebar') && document.getElementById('sidebar').classList.contains('active')) {
           closeSidebarMobile();
         }
       }
@@ -1145,43 +1220,105 @@
       const sidebarLinks = document.querySelectorAll('#sidebar .nav-item[data-filter]');
       const sectionTitle = document.querySelector('.section-title');
 
-      function applyFilter(filter, label) {
+      function applyFilter(filter, label, subfilter) {
+        const sub = (subfilter || '').toLowerCase().trim();
         const blocks = document.querySelectorAll('.category-block');
         if (blocks.length) {
           blocks.forEach(block => {
             const cat = block.getAttribute('data-category') || '';
-            block.style.display = (!filter || filter === 'all' || cat === filter) ? '' : 'none';
+            const showBlock = !filter || filter === 'all' || cat === filter;
+            block.style.display = showBlock ? '' : 'none';
+            if (showBlock && block.style.display !== 'none' && sub) {
+              const cards = block.querySelectorAll('.product-card');
+              cards.forEach(card => {
+                const cardSub = (card.getAttribute('data-subcategory') || '').toLowerCase().trim();
+                card.style.display = cardSub === sub ? '' : 'none';
+              });
+            } else if (showBlock) {
+              block.querySelectorAll('.product-card').forEach(card => { card.style.display = ''; });
+            }
           });
         } else {
           const cards = document.querySelectorAll('.product-card');
           cards.forEach(card => {
             const cat = card.getAttribute('data-category') || '';
-            card.style.display = (!filter || filter === 'all' || cat === filter) ? '' : 'none';
+            const cardSub = (card.getAttribute('data-subcategory') || '').toLowerCase().trim();
+            const matchCat = !filter || filter === 'all' || cat === filter;
+            const matchSub = !sub || cardSub === sub;
+            card.style.display = (matchCat && matchSub) ? '' : 'none';
           });
         }
 
         if (sectionTitle && label) {
-          sectionTitle.innerHTML = '<span class="title-accent">' + getText('products') + ' /</span> <span class="title-main">' + String(label).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
+          const displayLabel = sub ? (getText('subcat_' + sub) || label) : label;
+          sectionTitle.innerHTML = '<span class="title-accent">' + getText('products') + ' /</span> <span class="title-main">' + String(displayLabel).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
           sectionTitle.setAttribute('data-current-filter', filter || '');
+          sectionTitle.setAttribute('data-current-subfilter', sub);
         }
+
+        sidebarLinks.forEach(l => {
+          l.classList.toggle('active', (l.getAttribute('data-filter') || '') === (filter || ''));
+        });
+        document.querySelectorAll('#sidebar .nav-subitem').forEach(function(sl) {
+          sl.classList.toggle('active', (sl.getAttribute('data-subfilter') || '') === sub);
+        });
 
         document.querySelector('.container')?.scrollIntoView({ behavior: 'smooth' });
       }
 
+      window.applyCategoryFilter = applyFilter;
+
       sidebarLinks.forEach(link => {
+        if (link.closest('details.nav-accordion')) return;
         link.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-
           const filter = link.getAttribute('data-filter');
           const labelEl = link.querySelector('.menu-text') || link.querySelector('span');
           const label = labelEl ? labelEl.innerText : '';
-
-          sidebarLinks.forEach(l => l.classList.remove('active'));
-          link.classList.add('active');
-
           applyFilter(filter, label);
           if (window.innerWidth <= 768) closeSidebarMobile();
+        });
+      });
+
+      var accordions = document.querySelectorAll('#sidebar details.nav-accordion');
+      accordions.forEach(function(acc) {
+        acc.addEventListener('toggle', function() {
+          if (acc.open) {
+            accordions.forEach(function(other) { if (other !== acc) other.open = false; });
+          }
+        });
+        var summary = acc.querySelector('summary.nav-item');
+        if (summary) {
+          summary.addEventListener('click', function(e) {
+            var sidebar = document.querySelector('.sidebar-menu');
+            var isDesktopCollapsed = window.innerWidth >= 769 && sidebar && !sidebar.classList.contains('active');
+            if (isDesktopCollapsed) e.preventDefault();
+            var filter = acc.getAttribute('data-filter') || summary.getAttribute('data-filter');
+            var labelEl = summary.querySelector('.menu-text') || summary.querySelector('span');
+            var label = labelEl ? labelEl.innerText : filter;
+            if (typeof window.applyCategoryFilter === 'function') {
+              window.applyCategoryFilter(filter, label, '');
+            }
+            if (window.innerWidth <= 768) window.closeSidebarMobile?.();
+          });
+        }
+      });
+
+      document.querySelectorAll('#sidebar .nav-subitem').forEach(function(a) {
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var filter = a.getAttribute('data-filter');
+          var subf = a.getAttribute('data-subfilter') || '';
+          var label = a.getAttribute('data-en') || a.getAttribute('data-pt') || a.innerText || '';
+          if (filter) label = (window.getText && window.getText('subcat_' + subf)) || label;
+          if (typeof window.applyCategoryFilter === 'function') {
+            window.applyCategoryFilter(filter, label, subf);
+          }
+          if (window.innerWidth <= 768 && typeof window.closeSidebarMobile === 'function') {
+            window.closeSidebarMobile();
+          }
         });
       });
     }
@@ -1427,16 +1564,22 @@
       };
 
       if (blocks.length) {
+        const currentFilter = (document.querySelector('.section-title')?.getAttribute('data-current-filter') || '').trim();
+        const currentSubfilter = (document.querySelector('.section-title')?.getAttribute('data-current-subfilter') || '').trim();
         blocks.forEach(block => {
           const innerGrid = block.querySelector('.category-block-grid');
           if (!innerGrid) return;
+          const cat = block.getAttribute('data-category') || '';
+          const isSelectedCategory = !currentFilter || cat === currentFilter;
           const cards = Array.from(innerGrid.querySelectorAll('.product-card'));
           cards.forEach(card => {
             const isPromo = card.getAttribute('data-on-sale') === '1';
-            card.style.display = (promoOnly && !isPromo) ? 'none' : '';
+            const cardSub = (card.getAttribute('data-subcategory') || '').toLowerCase().trim();
+            const matchSub = !currentSubfilter || cardSub === currentSubfilter;
+            card.style.display = (promoOnly && !isPromo) ? 'none' : (matchSub ? '' : 'none');
           });
           const visibleCount = cards.filter(c => c.style.display !== 'none').length;
-          block.style.display = visibleCount > 0 ? '' : 'none';
+          block.style.display = (isSelectedCategory && visibleCount > 0) ? '' : 'none';
 
           sortCards(cards);
           cards.forEach(c => innerGrid.appendChild(c));
@@ -1460,6 +1603,14 @@
 
     // ========= Main init (ONE place) =========
     document.addEventListener('DOMContentLoaded', () => {
+      function syncHeaderOffset() {
+        const header = document.querySelector('.main-header');
+        const h = header ? Math.ceil(header.getBoundingClientRect().height) : 0;
+        document.documentElement.style.setProperty('--header-offset', h + 'px');
+      }
+      syncHeaderOffset();
+      window.addEventListener('resize', syncHeaderOffset);
+
       const savedCart = localStorage.getItem('bragaBazaarCart');
       if (savedCart) { try { cart = JSON.parse(savedCart) || []; } catch { cart = []; } }
       updateCartTotals();
@@ -1524,6 +1675,7 @@
       const searchName = (nameEn || namePt || product.name || '').trim();
 
       card.setAttribute('data-category', (product.category || '').toLowerCase());
+      card.setAttribute('data-subcategory', (product.subcategory || '').toLowerCase().trim());
       if (product.on_sale) card.setAttribute('data-on-sale', '1');
 
       card.setAttribute('data-name', (searchName || '').toLowerCase());
@@ -1622,7 +1774,7 @@
 
       card.addEventListener('click', (e) => {
         if (e.target.closest('button') || e.target.closest('.wishlist-heart')) return;
-        if (window.openProductModal) window.openProductModal(product);
+        window.location.href = 'product.html?id=' + encodeURIComponent(product.id);
       });
 
       return card;
@@ -1664,7 +1816,7 @@
         grid.classList.add('products-by-category');
 
         const categoryOrder = [
-          'fruits','bakery','meat','eggs','drinks','promotions',
+          'fruits','bakery','meat','eggs','drinks','coffee_tea_chocolate','promotions',
           'cans_jars','pasta_rice_cereals','sauces_condiments','herbs_spices',
           'frozen_foods','snacks','household_cleaning','personal_care'
         ];
@@ -1685,10 +1837,36 @@
           block.className = 'category-block';
           block.setAttribute('data-category', cat);
 
-          const title = document.createElement('h2');
-          title.className = 'category-block-title';
-          title.textContent = window.getText(cat);
-          block.appendChild(title);
+          const subcats = window.SUB_CATEGORIES && window.SUB_CATEGORIES[cat];
+          if (subcats && subcats.length) {
+            const dropWrap = document.createElement('div');
+            dropWrap.className = 'subcategory-dropdown-wrap';
+            dropWrap.style.cssText = 'margin-bottom:16px;display:flex;align-items:center;gap:12px;';
+            const label = document.createElement('span');
+            label.style.cssText = 'font-size:0.9rem;font-weight:700;color:#64748b;';
+            label.textContent = (window.currentLang() === 'pt' ? 'Filtrar: ' : 'Filter: ');
+            const select = document.createElement('select');
+            select.className = 'subcategory-select';
+            select.style.cssText = 'padding:8px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:0.95rem;font-weight:600;min-width:180px;';
+            select.innerHTML = '<option value="">' + window.getText('subcat_all') + '</option>';
+            subcats.forEach(sc => {
+              const opt = document.createElement('option');
+              opt.value = sc;
+              opt.textContent = window.getText('subcat_' + sc);
+              select.appendChild(opt);
+            });
+            select.addEventListener('change', () => {
+              const val = (select.value || '').toLowerCase();
+              innerGrid.querySelectorAll('.product-card').forEach(card => {
+                const sub = (card.getAttribute('data-subcategory') || '').toLowerCase();
+                const show = !val || sub === val;
+                card.style.display = show ? '' : 'none';
+              });
+            });
+            dropWrap.appendChild(label);
+            dropWrap.appendChild(select);
+            block.appendChild(dropWrap);
+          }
 
           const innerGrid = document.createElement('div');
           innerGrid.className = 'category-block-grid';
@@ -1710,11 +1888,6 @@
           block.className = 'category-block';
           block.setAttribute('data-category', cat);
 
-          const title = document.createElement('h2');
-          title.className = 'category-block-title';
-          title.textContent = window.getText('products') + ' / ' + cat;
-          block.appendChild(title);
-
           const innerGrid = document.createElement('div');
           innerGrid.className = 'category-block-grid';
 
@@ -1730,6 +1903,13 @@
         const q = new URLSearchParams(document.location.search).get('q');
         if (q && typeof window.applySearch === 'function') window.applySearch();
         if (typeof window.initFilterSort === 'function') window.initFilterSort();
+
+        // Show only the first category by default (users see products from selected category only)
+        const firstBlock = grid.querySelector('.category-block');
+        const firstCat = firstBlock ? (firstBlock.getAttribute('data-category') || 'fruits') : 'fruits';
+        if (typeof window.applyCategoryFilter === 'function') {
+          window.applyCategoryFilter(firstCat, window.getText(firstCat) || firstCat);
+        }
 
       } catch (err) {
         console.error('Erro ao carregar produtos do Supabase:', err);

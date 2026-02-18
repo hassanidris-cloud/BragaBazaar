@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | Braga Bazaar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --green: #2d7a32; --green-dark: #1e5222; --border: #e2e8f0; --err-bg: #fff0f0; --err-border: #ffb3b3; --err-text: #7a0000; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, Arial, sans-serif;
+      max-width: 420px;
+      margin: 50px auto;
+      padding: 16px;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    h2 {
+      margin: 0 0 24px;
+      font-weight: 800;
+      color: var(--green);
+      font-size: 1.5rem;
+    }
+    .card {
+      background: #fff;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 8px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45, 122, 50, 0.15);
+    }
+    button {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    button:hover { background: var(--green-dark); }
+    button:disabled { opacity: 0.7; cursor: not-allowed; }
+    .err {
+      display: none;
+      padding: 10px 12px;
+      border: 1px solid var(--err-border);
+      background: var(--err-bg);
+      color: var(--err-text);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 20px;
+      color: var(--green);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Admin Login</h2>
+    <div id="err" class="err" role="alert"></div>
+
+    <form id="loginForm">
+      <input id="email" type="email" placeholder="Email" required autocomplete="email" />
+      <input id="password" type="password" placeholder="Password" required autocomplete="current-password" />
+      <button type="submit" id="loginBtn">Login</button>
+    </form>
+
+    <a href="index.html" class="back">&larr; Back to shop</a>
+  </div>
+
+  <script type="module">
+    import { supabase } from './supabaseConfig.js';
+
+    const errEl = document.getElementById('err');
+    const loginBtn = document.getElementById('loginBtn');
+    const form = document.getElementById('loginForm');
+
+    function err(msg) {
+      errEl.textContent = msg || 'Login failed.';
+      errEl.style.display = 'block';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.style.display = 'none';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        err('Please enter email and password.');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in…';
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        err(error.message);
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+        return;
+      }
+
+      window.location.href = 'admin.html';
+    });
+  </script>
+</body>
+</html>

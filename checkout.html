@@ -62,7 +62,7 @@
                 <input type="email" id="email" required aria-describedby="err-email">
                 <span class="field-error" id="err-email" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
 
-                <p id="pickupNote" style="display:none;background:#f0fdf4;color:#166534;padding:10px 12px;border-radius:8px;font-size:0.9rem;margin-bottom:12px;">Para levantamento na loja, morada não é obrigatória.</p>
+                <p id="pickupNote" style="display:none;background:#f0fdf4;color:#166534;padding:10px 12px;border-radius:8px;font-size:0.9rem;margin-bottom:12px;">Para levantamento na loja, morada não é obrigatória. Loja: R. Conselheiro Lobato 368, 4705-089 Braga. Horário: 9h–22h.</p>
                 <label for="address">Morada</label>
                 <input type="text" id="address" required>
                 <span class="field-error" id="err-address" style="display:none;color:#dc2626;font-size:0.85rem;"></span>
@@ -160,6 +160,13 @@
             btn.textContent = isLoading ? 'A enviar...' : btn.dataset.originalText;
         }
 
+        // Require login to checkout
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            window.location.href = 'login.html?redirect=checkout.html';
+            throw new Error('Redirecting to login');
+        }
+
         // Load cart from localStorage
         const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
         const orderItems = document.getElementById('orderItems');
@@ -205,6 +212,13 @@
             const errEl = document.getElementById('checkoutError');
             if (errEl) errEl.style.display = 'none';
             document.querySelectorAll('.field-error').forEach(el => { el.style.display = 'none'; el.textContent = ''; });
+
+            const { data: { session: submitSession } } = await supabase.auth.getSession();
+            if (!submitSession) {
+                showCheckoutError('Tem de iniciar sessão para colocar uma encomenda. A redirecionar...');
+                setTimeout(() => { window.location.href = 'login.html?redirect=checkout.html'; }, 1500);
+                return;
+            }
 
             isSubmitting = true;
             setSubmitLoading(true);

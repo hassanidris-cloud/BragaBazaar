@@ -15,22 +15,22 @@
 
 ## 2. Email when status changes (Shipped / Delivered)
 
-The app does **not** send emails automatically when you change an order’s status. To add that, you need a small backend that runs when status is updated and sends an email.
+When admin clicks **Shipped** or **Delivered** in the admin panel, the app calls the Edge Function `send-order-status-email`, which emails the customer (if the order has an email and Resend is configured).
 
-**Options:**
+**Setup:**
 
-1. **Supabase Edge Function + Resend (or SendGrid)**  
-   - Create an Edge Function that accepts `order_id` and `new_status`.  
-   - Look up the order (and customer email) in the `orders` table.  
-   - Call Resend/SendGrid to send “Your order has been shipped” or “Your order has been delivered”.  
-   - Call this function from your admin page **after** a successful status update (e.g. from admin-orders.html after `supabase.from('orders').update(...)` succeeds).
+1. **Deploy the Edge Function**
+   ```bash
+   supabase functions deploy send-order-status-email
+   ```
 
-2. **Supabase Database Webhooks**  
-   - In Supabase Dashboard: Database → Webhooks.  
-   - Create a webhook on `orders` table, event **Update**, so it fires when a row (e.g. `status`) changes.  
-   - Point the webhook to a serverless function (e.g. Vercel serverless or another endpoint) that reads the updated order and sends the email via Resend/SendGrid.
+2. **Set secrets in Supabase Dashboard** (Project → Edge Functions → send-order-status-email → Secrets):
+   - `RESEND_API_KEY` – your [Resend](https://resend.com) API key.
+   - `FROM_EMAIL` (optional) – e.g. `Braga Bazaar <orders@yourdomain.com>`. Defaults to Resend’s onboarding address if not set.
+   - `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` are usually set automatically for Edge Functions.
 
-3. **Third-party (e.g. Zapier)**  
-   - Connect Supabase to Zapier and trigger an email when `orders` is updated.
+3. **Verify Resend**
+   - In Resend, add and verify your domain (or use their test domain for development).
+   - If `RESEND_API_KEY` is not set, the function skips sending and returns `ok: true, skipped: true` so admin still sees “Order updated”.
 
-Once one of these is in place, customers can receive an email when you set status to Shipped or Delivered; the in-app status in "As minhas encomendas" will already be correct after you run the RLS migration and refresh.
+After this, when you set an order to Shipped or Delivered, the customer receives an email and the order tracker in “As minhas encomendas” shows the green truck and green progress line.

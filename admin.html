@@ -656,7 +656,7 @@
   </div>
 
   <script type="module">
-    import { supabase, ADMIN_EMAILS, ADMIN_PIN } from './supabaseConfig.js';
+    import { supabase, SUPABASE_URL, ADMIN_EMAILS, ADMIN_PIN } from './supabaseConfig.js';
 
     // =========================
     // Small helpers
@@ -1074,6 +1074,21 @@
       showToast('Order updated to ' + status);
       renderOrders(getFilteredOrders());
       updateReportStats();
+
+      if (status === 'shipped' || status === 'delivered') {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          const token = session?.access_token ?? '';
+          const res = await fetch(SUPABASE_URL + '/functions/v1/send-order-status-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ order_id: orderId, status }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (data.ok && data.sent) showToast('Email sent to customer');
+          else if (data.skipped) { /* email not configured or no email on order */ }
+        } catch (e) { console.warn('Status email:', e); }
+      }
     }
 
     function tryParseItems(order){

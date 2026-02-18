@@ -4,10 +4,11 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+export const SUPABASE_URL = 'https://mfebgreczlxoqkiabsln.supabase.co';
 // Use only the anon (public) key here. Never put the service_role key in frontend code.
 // service_role must only be used server-side (e.g. Vercel api/* via env vars).
 export const supabase = createClient(
-  'https://mfebgreczlxoqkiabsln.supabase.co',
+  SUPABASE_URL,
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mZWJncmVjemx4b3FraWFic2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTIyMjYsImV4cCI6MjA4NjEyODIyNn0.DZLqfz1S6KxYR7bCqxL14KL8Lso8uwTxxqvwOYqiodU'
 );
 

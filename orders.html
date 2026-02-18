@@ -655,8 +655,8 @@
         }
       }
 
-      // Merge local orders (if you keep offline/local cache)
-      const seenClientIds = new Set((supabaseOrders || []).map(o => o.client_order_id).filter(Boolean));
+      // Merge local orders (if you keep offline/local cache). Dedupe by client_order_id (normalize to string: Supabase may return number or string).
+      const seenClientIds = new Set((supabaseOrders || []).map(o => String(o.client_order_id || '')).filter(Boolean));
       const localRaw = localStorage.getItem("bragaBazaarOrders");
       const localOrders = localRaw ? JSON.parse(localRaw) : [];
 
@@ -667,7 +667,7 @@
       };
 
       const localMerged = localOrders
-        .filter(o => matchesUser(o) && !seenClientIds.has(o.id))
+        .filter(o => matchesUser(o) && !seenClientIds.has(String(o.id)))
         .map(o => ({
           id: "local-" + o.id,
           client_order_id: o.id,

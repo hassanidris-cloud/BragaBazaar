@@ -29,6 +29,27 @@
           .checkout-form, .order-summary { padding: 18px !important; }
           .order-summary { border-left: none; border-top: 1px solid #eee; }
         }
+        /* Order summary: product image + name + qty + price */
+        #orderItems { list-style: none; margin: 0; padding: 0; }
+        .order-summary-item {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 12px 0;
+          border-bottom: 1px solid #eee;
+        }
+        .order-summary-item:last-child { border-bottom: none; }
+        .order-summary-item img {
+          width: 56px;
+          height: 56px;
+          object-fit: cover;
+          border-radius: 10px;
+          background: #f1f5f9;
+        }
+        .order-summary-item-info { flex: 1; min-width: 0; }
+        .order-summary-item-name { font-weight: 700; color: #1e293b; display: block; margin-bottom: 4px; }
+        .order-summary-item-meta { font-size: 0.85rem; color: #64748b; }
+        .order-summary-item-price { font-weight: 800; color: #2d7a32; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -204,7 +225,26 @@
 
         if (goLoginBtn) goLoginBtn.href = `login.html?redirect=${redirectUrl}`;
         if (goSignupBtn) goSignupBtn.href = `signup.html?redirect=${redirectUrl}`;
+        if (goSignupBtn) goSignupBtn.addEventListener('click', function () { saveCheckoutDraft(); });
+        if (goLoginBtn) goLoginBtn.addEventListener('click', function () { saveCheckoutDraft(); });
         if (continueGuestBtn) continueGuestBtn.addEventListener('click', () => { if (authGate) authGate.style.display = 'none'; });
+
+        function saveCheckoutDraft() {
+            const form = document.getElementById('deliveryForm');
+            if (!form) return;
+            const draft = {
+                fullName: document.getElementById('fullName')?.value?.trim(),
+                phone: document.getElementById('phone')?.value?.trim(),
+                email: document.getElementById('email')?.value?.trim(),
+                address: document.getElementById('address')?.value?.trim(),
+                postal: document.getElementById('postal')?.value?.trim(),
+                city: document.getElementById('city')?.value?.trim(),
+                location: document.getElementById('location')?.value?.trim(),
+                country: document.getElementById('country')?.value?.trim(),
+                instructions: document.getElementById('instructions')?.value?.trim()
+            };
+            localStorage.setItem('bragaBazaarCheckoutDraft', JSON.stringify(draft));
+        }
 
         const isLoggedIn = !!session;
 
@@ -233,43 +273,80 @@
             }
         }
 
-        // Load cart from localStorage
+        // Load cart from localStorage and render order summary with image, name, qty, price
         const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
         const orderItems = document.getElementById('orderItems');
+        const noImagePlaceholder = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect fill="#e2e8f0" width="56" height="56"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#94a3b8" font-size="12">?</text></svg>');
         let total = 0;
         cart.forEach(item => {
+            const qty = Number(item.qty) || 1;
+            const price = Number(item.price) || 0;
+            const lineTotal = price * qty;
+            total += lineTotal;
+            const imgSrc = (item.image_url && String(item.image_url).trim()) ? item.image_url.trim() : noImagePlaceholder;
+            const imgSrcAttr = imgSrc.replace(/"/g, '&quot;');
+            const name = (item.name || 'Produto').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+            const subNote = (item.substitution === 'no') ? ' <span style="font-size:0.8rem;color:#64748b;">(não substituir)</span>' : '';
             const li = document.createElement('li');
-            li.innerText = `${item.name} x${item.qty} – €${(item.price * item.qty).toFixed(2)}${(item.substitution === 'no') ? ' (não substituir)' : ''}`;
+            li.className = 'order-summary-item';
+            li.innerHTML = '<img src="' + imgSrcAttr + '" alt="" loading="lazy" onerror="this.onerror=null;if(this.dataset.fb)this.src=this.dataset.fb" data-fb="' + noImagePlaceholder.replace(/"/g, '&quot;') + '">' +
+                '<div class="order-summary-item-info">' +
+                '<span class="order-summary-item-name">' + name + subNote + '</span>' +
+                '<span class="order-summary-item-meta">' + qty + ' × €' + price.toFixed(2) + '</span>' +
+                '</div>' +
+                '<span class="order-summary-item-price">€' + lineTotal.toFixed(2) + '</span>';
             orderItems.appendChild(li);
-            total += item.price * item.qty;
         });
-        document.getElementById('orderTotal').innerText = `Total: €${total.toFixed(2)}`;
+        const orderTotalEl = document.getElementById('orderTotal');
+        if (orderTotalEl) orderTotalEl.innerHTML = cart.length ? '<strong>Total: €' + total.toFixed(2) + '</strong>' : '<span style="color:#64748b;">O seu carrinho está vazio. <a href="index.html">Adicione produtos</a>.</span>';
 
         if (window.innerWidth <= 768) {
             document.querySelector('.checkout-container')?.scrollIntoView({ behavior: 'auto', block: 'start' });
         }
 
-        // Prefill customer info from signup/login data
+        // Prefill customer info: first from signup/login (bragaBazaarUser), then overlay draft if any
         const storedUserRaw = localStorage.getItem('bragaBazaarUser');
+        const draftRaw = localStorage.getItem('bragaBazaarCheckoutDraft');
         const isLoggedIn = localStorage.getItem('userIsLoggedIn') === 'true';
+
+        function setFormValue(id, value) {
+            const el = document.getElementById(id);
+            if (el && value !== undefined && value !== null && String(value).trim() !== '') el.value = String(value).trim();
+        }
+
         if (storedUserRaw) {
             try {
                 const user = JSON.parse(storedUserRaw);
-                if (user.fullName) document.getElementById('fullName').value = user.fullName;
-                if (user.phone) document.getElementById('phone').value = user.phone;
-                if (user.email) document.getElementById('email').value = user.email;
-                if (user.address) document.getElementById('address').value = user.address;
-                if (user.postal) document.getElementById('postal').value = user.postal;
-                if (user.city) document.getElementById('city').value = user.city;
-                if (user.location) document.getElementById('location').value = user.location;
-                if (user.country) document.getElementById('country').value = user.country;
+                if (user.fullName) setFormValue('fullName', user.fullName);
+                if (user.phone) setFormValue('phone', user.phone);
+                if (user.email) setFormValue('email', user.email);
+                if (user.address) setFormValue('address', user.address);
+                if (user.postal) setFormValue('postal', user.postal);
+                if (user.city) setFormValue('city', user.city);
+                if (user.location) setFormValue('location', user.location);
+                if (user.country) setFormValue('country', user.country);
                 var notice = document.getElementById('checkoutSavedNotice');
                 if (notice && isLoggedIn && user.fullName) {
                     notice.style.display = 'block';
                     var lang = localStorage.getItem('preferredLang') || 'pt';
                     notice.textContent = lang === 'en' ? 'Your details are saved. Review and confirm below, then pay.' : 'Os seus dados estão guardados. Revise e confirme abaixo, depois pague.';
                 }
-            } catch {}
+            } catch (_) {}
+        }
+        if (draftRaw) {
+            try {
+                const draft = JSON.parse(draftRaw);
+                if (draft.fullName) setFormValue('fullName', draft.fullName);
+                if (draft.phone) setFormValue('phone', draft.phone);
+                if (draft.email) setFormValue('email', draft.email);
+                if (draft.address) setFormValue('address', draft.address);
+                if (draft.postal) setFormValue('postal', draft.postal);
+                if (draft.city) setFormValue('city', draft.city);
+                if (draft.location) setFormValue('location', draft.location);
+                if (draft.country) setFormValue('country', draft.country);
+                if (draft.instructions) setFormValue('instructions', draft.instructions);
+                localStorage.removeItem('bragaBazaarCheckoutDraft');
+            } catch (_) {}
         }
 
         let isSubmitting = false;
@@ -380,19 +457,7 @@
                     } catch (stockErr) { console.error(stockErr); }
                 }
 
-                const existingOrdersRaw = localStorage.getItem('bragaBazaarOrders');
-                const existingOrders = existingOrdersRaw ? JSON.parse(existingOrdersRaw) : [];
-                existingOrders.push({
-                    id: client_order_id,
-                    createdAt: new Date().toISOString(),
-                    customer: { fullName: full_name, phone, email, address, postal, city, location, country },
-                    payment,
-                    instructions,
-                    fulfillment,
-                    items: cart,
-                    total,
-                });
-                localStorage.setItem('bragaBazaarOrders', JSON.stringify(existingOrders));
+                // Order saved to Supabase; do not also add to localStorage so "My orders" shows it once.
 
                 localStorage.setItem('bragaBazaarCart', '[]');
                 document.querySelector('.checkout-container').style.display = 'none';

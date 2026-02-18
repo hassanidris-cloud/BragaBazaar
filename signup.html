@@ -370,8 +370,11 @@
         btn.disabled = false;
         btn.textContent = window.signupText('createAccount');
 
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect');
         const cart = JSON.parse(localStorage.getItem('bragaBazaarCart') || '[]');
-        const nextUrl = (cart && cart.length > 0) ? 'checkout.html' : 'index.html';
+        let nextUrl = redirect || ((cart && cart.length > 0) ? 'checkout.html' : 'index.html');
+        if (nextUrl.startsWith('http')) nextUrl = 'checkout.html';
         setTimeout(() => { window.location.href = nextUrl; }, 1200);
       } catch (err) {
         console.error(err);

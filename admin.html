@@ -1393,7 +1393,6 @@
         stock_level: Number.isFinite(stock) ? stock : 0,
         updated_at: nowIso()
       };
-      if (currentUser?.id) payload.updated_by = currentUser.id;
 
       const { error } = await supabase.from('products').update(payload).eq('id', id);
       if (error){
@@ -1515,8 +1514,6 @@
       const isActiveChoice = $('editIsActive').value;
       if (isActiveChoice === 'true') payload.is_active = true;
       if (isActiveChoice === 'false') payload.is_active = false;
-
-      if (currentUser?.id) payload.updated_by = currentUser.id;
 
       const { error } = await supabase.from('products').update(payload).eq('id', id);
       if (error){
@@ -1860,8 +1857,7 @@
           id,
           price: Number.isFinite(price) ? price : (p.price ?? 0),
           stock_level: Number.isFinite(stock) ? stock : (p.stock_level ?? 0),
-          updated_at: nowIso(),
-          updated_by: currentUser?.id || null
+          updated_at: nowIso()
         };
       }).filter(Boolean);
 
@@ -1871,7 +1867,6 @@
       let ok = 0, fail = 0;
       for (const u of updates){
         const payload = { price: u.price, stock_level: u.stock_level, updated_at: u.updated_at };
-        if (u.updated_by) payload.updated_by = u.updated_by;
 
         const res = await supabase.from('products').update(payload).eq('id', u.id);
         if (res.error) fail++;

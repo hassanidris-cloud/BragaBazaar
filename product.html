@@ -103,7 +103,13 @@
   <div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2d7a32;color:#fff;padding:14px 24px;border-radius:12px;font-weight:600;display:none;z-index:9999;">Adicionado ao carrinho!</div>
 
   <script type="module">
-    import { supabase } from './supabaseConfig.js';
+    import { supabase, ADMIN_ONLY_EMAILS } from './supabaseConfig.js';
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const email = (session?.user?.email || '').toLowerCase();
+    if (session && Array.isArray(ADMIN_ONLY_EMAILS) && ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
+      window.location.href = 'admin.html';
+    }
 
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');

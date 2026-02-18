@@ -20,3 +20,8 @@ export const ADMIN_PIN = '1234';
 export const ADMIN_EMAILS = [
   'bragabazaar@gmail.com'
 ];
+
+// Admin-only: these emails must NOT use customer pages (homepage, account, checkout). Redirect to admin panel only.
+export const ADMIN_ONLY_EMAILS = [
+  'bragabazaar@gmail.com'
+];

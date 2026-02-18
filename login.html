@@ -358,7 +358,7 @@
   </script>
 
   <script type="module">
-    import { supabase } from "./supabaseConfig.js";
+    import { supabase, ADMIN_ONLY_EMAILS } from "./supabaseConfig.js";
 
     const banner = document.createElement("div");
     banner.style.cssText = `
@@ -390,9 +390,14 @@
       document.body.prepend(banner);
     }
 
-    // If already logged in, go to account
+    // If already logged in, go to account or admin (admin-only emails)
     if (data?.session) {
-      window.location.href = "account.html";
+      const email = (data.session.user?.email || '').toLowerCase();
+      if (Array.isArray(ADMIN_ONLY_EMAILS) && ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = "account.html";
+      }
     }
   </script>
 </body>

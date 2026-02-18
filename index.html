@@ -1644,7 +1644,13 @@
 
   <!-- Supabase + products (module) -->
   <script type="module">
-    import { supabase } from './supabaseConfig.js';
+    import { supabase, ADMIN_ONLY_EMAILS } from './supabaseConfig.js';
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const email = (session?.user?.email || '').toLowerCase();
+    if (session && Array.isArray(ADMIN_ONLY_EMAILS) && ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
+      window.location.href = 'admin.html';
+    }
 
     window.getSupabaseSession = async function(){
       const { data } = await supabase.auth.getSession();

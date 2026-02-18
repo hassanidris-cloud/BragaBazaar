@@ -48,7 +48,14 @@
     </style>
 </head>
 <body>
-
+    <script type="module">
+      import { supabase, ADMIN_ONLY_EMAILS } from './supabaseConfig.js';
+      const { data: { session } } = await supabase.auth.getSession();
+      const email = (session?.user?.email || '').toLowerCase();
+      if (session && Array.isArray(ADMIN_ONLY_EMAILS) && ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
+        window.location.href = 'admin.html';
+      }
+    </script>
     <div id="toast">Produto adicionado!</div>
 
     <aside class="sidebar-menu" id="sidebar">

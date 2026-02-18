@@ -283,7 +283,16 @@
   <div id="toast" class="toast">Copiado!</div>
 
   <script type="module">
-    import { supabase } from "./supabaseConfig.js";
+    import { supabase, ADMIN_ONLY_EMAILS } from "./supabaseConfig.js";
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session && Array.isArray(ADMIN_ONLY_EMAILS)) {
+      const email = (session.user?.email || '').toLowerCase();
+      if (ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
+        window.location.href = 'admin.html';
+        throw new Error('Admin-only: redirecting');
+      }
+    }
 
     const SUPPORT_WHATSAPP = "351927614647";
 

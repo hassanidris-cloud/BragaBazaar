@@ -55,5 +55,15 @@
             <p><a href="mailto:bragabazaar@gmail.com">bragabazaar@gmail.com</a></p>
         </div>
     </div>
+    <script type="module">
+        import { supabase, ADMIN_ONLY_EMAILS } from './supabaseConfig.js';
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && Array.isArray(ADMIN_ONLY_EMAILS)) {
+            const email = (session.user?.email || '').toLowerCase();
+            if (ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
+                window.location.href = 'admin.html';
+            }
+        }
+    </script>
 </body>
 </html>

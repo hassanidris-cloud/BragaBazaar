@@ -267,7 +267,7 @@
     }
   }
   
-  /* Mobile: full-screen categories when hamburger open */
+  /* Mobile: full-screen category menu when hamburger open */
   @media (max-width: 768px) {
     .sidebar-menu {
       position: fixed;
@@ -755,24 +755,6 @@
   .add-to-cart-btn:hover{ filter: brightness(.95); transform: translateY(-1px); }
   .add-to-cart-btn:active{ transform: scale(.98); }
   
-  /* User choice modal (already have account?) – above cart/checkout, clickable on mobile */
-  .user-choice-modal {
-    z-index: 3000 !important;
-    display: flex !important;
-    pointer-events: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .user-choice-modal-inner {
-    position: relative;
-    z-index: 1;
-    pointer-events: auto;
-  }
-  .user-choice-modal-inner button {
-    pointer-events: auto;
-    cursor: pointer;
-    min-height: 44px;
-  }
-
   /* Checkout overlay – modal, only visible when cart icon clicked */
   #checkout.checkout-section {
     display: none !important;

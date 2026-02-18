@@ -24,7 +24,11 @@
         .checkout-form .payment-methods label { display: inline-block; margin-right: 18px; }
         .checkout-form .cta-primary { border-radius: 20px; padding: 12px 32px; width: 100%; margin-top: 12px; }
         .breadcrumb { color: #4a6d1a; margin-bottom: 18px; font-weight: bold; }
-        @media (max-width: 768px) { .checkout-container { flex-direction: column; } .order-summary { border-left: none; border-top: 1px solid #eee; } }
+        @media (max-width: 768px) {
+          .checkout-container { flex-direction: column; margin: 18px auto !important; }
+          .checkout-form, .order-summary { padding: 18px !important; }
+          .order-summary { border-left: none; border-top: 1px solid #eee; }
+        }
     </style>
 </head>
 <body>
@@ -47,6 +51,32 @@
     <div class="checkout-container">
         <div class="checkout-form">
             <div class="breadcrumb">Carrinho &gt; Conta &gt; Checkout</div>
+
+            <div id="authGate" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; padding:14px; border-radius:12px; margin: 12px 0 18px;">
+              <p style="margin:0 0 10px; font-weight:800; color:#0f172a;">
+                Já tem conta?
+              </p>
+              <p style="margin:0 0 12px; color:#475569; font-weight:600; font-size:0.95rem;">
+                Inicie sessão para finalizar a encomenda. Se ainda não tem conta, crie uma — demora 1 minuto.
+              </p>
+
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <a id="goLoginBtn" class="cta-primary" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 16px; border-radius:12px; background:#2d7a32; color:#fff; font-weight:800; text-decoration:none;">
+                  Entrar
+                </a>
+                <a id="goSignupBtn" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 16px; border-radius:12px; background:#fff; color:#2d7a32; border:2px solid #2d7a32; font-weight:800; text-decoration:none;">
+                  Criar conta
+                </a>
+                <button id="continueGuestBtn" type="button" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 16px; border-radius:12px; background:#f1f5f9; color:#0f172a; border:1px solid #e2e8f0; font-weight:800; cursor:pointer;">
+                  Continuar a ver carrinho
+                </button>
+              </div>
+
+              <p style="margin:12px 0 0; color:#64748b; font-size:0.85rem; font-weight:600;">
+                Nota: Para fazer a encomenda, precisa de estar com sessão iniciada.
+              </p>
+            </div>
+
             <p id="checkoutSavedNotice" style="display:none; background:#e8f5e9; color:#2d7a32; padding:12px; border-radius:8px; margin-bottom:16px; font-weight:600;"></p>
             <h2>Entrega</h2>
             <form id="deliveryForm">
@@ -160,16 +190,47 @@
             btn.textContent = isLoading ? 'A enviar...' : btn.dataset.originalText;
         }
 
-        // Require login to checkout
+        // --- Auth gate (Option 1): show checkout + cart, but block placing order until login ---
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-            window.location.href = 'login.html?redirect=checkout.html';
-            throw new Error('Redirecting to login');
-        }
-        const email = (session.user?.email || '').toLowerCase();
-        if (Array.isArray(ADMIN_ONLY_EMAILS) && ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
-            window.location.href = 'admin.html';
-            throw new Error('Admin-only: redirecting');
+
+        const authGate = document.getElementById('authGate');
+        const formEl = document.getElementById('deliveryForm');
+        const placeBtn = document.getElementById('placeOrderBtn');
+
+        const redirectUrl = encodeURIComponent('checkout.html');
+        const goLoginBtn = document.getElementById('goLoginBtn');
+        const goSignupBtn = document.getElementById('goSignupBtn');
+        const continueGuestBtn = document.getElementById('continueGuestBtn');
+
+        if (goLoginBtn) goLoginBtn.href = `login.html?redirect=${redirectUrl}`;
+        if (goSignupBtn) goSignupBtn.href = `signup.html?redirect=${redirectUrl}`;
+        if (continueGuestBtn) continueGuestBtn.addEventListener('click', () => { if (authGate) authGate.style.display = 'none'; });
+
+        const isLoggedIn = !!session;
+
+        if (!isLoggedIn) {
+            if (authGate) authGate.style.display = 'block';
+
+            if (placeBtn) {
+                placeBtn.disabled = true;
+                placeBtn.style.opacity = '0.65';
+                placeBtn.style.cursor = 'not-allowed';
+                placeBtn.textContent = 'Entre para finalizar';
+            }
+
+            if (formEl) {
+                formEl.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    showCheckoutError('Por favor, inicie sessão para finalizar a encomenda.');
+                    authGate?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+        } else {
+            const email = (session.user?.email || '').toLowerCase();
+            if (Array.isArray(ADMIN_ONLY_EMAILS) && ADMIN_ONLY_EMAILS.some(e => (e || '').toLowerCase() === email)) {
+                window.location.href = 'admin.html';
+                throw new Error('Admin-only: redirecting');
+            }
         }
 
         // Load cart from localStorage
@@ -183,6 +244,10 @@
             total += item.price * item.qty;
         });
         document.getElementById('orderTotal').innerText = `Total: €${total.toFixed(2)}`;
+
+        if (window.innerWidth <= 768) {
+            document.querySelector('.checkout-container')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
 
         // Prefill customer info from signup/login data
         const storedUserRaw = localStorage.getItem('bragaBazaarUser');
@@ -220,8 +285,12 @@
 
             const { data: { session: submitSession } } = await supabase.auth.getSession();
             if (!submitSession) {
-                showCheckoutError('Tem de iniciar sessão para colocar uma encomenda. A redirecionar...');
-                setTimeout(() => { window.location.href = 'login.html?redirect=checkout.html'; }, 1500);
+                showCheckoutError('Tem de iniciar sessão para colocar uma encomenda.');
+                const authGateEl = document.getElementById('authGate');
+                if (authGateEl) {
+                    authGateEl.style.display = 'block';
+                    authGateEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
                 return;
             }
 

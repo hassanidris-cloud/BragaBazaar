@@ -335,10 +335,23 @@
         else openMenu();
       }
 
-      openBtn?.addEventListener('click', toggleMenu);
+      openBtn?.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleMenu();
+      });
+      openBtn?.addEventListener('pointerup', function(e) {
+        e.preventDefault();
+        toggleMenu();
+      }, { passive: false });
+
       backdrop?.addEventListener('click', closeMenu);
+      backdrop?.addEventListener('pointerup', function(e) { e.preventDefault(); closeMenu(); }, { passive: false });
+
       floatClose?.addEventListener('click', closeMenu);
+      floatClose?.addEventListener('pointerup', function(e) { e.preventDefault(); closeMenu(); }, { passive: false });
+
       closeBtn?.addEventListener('click', closeMenu);
+      closeBtn?.addEventListener('pointerup', function(e) { e.preventDefault(); closeMenu(); }, { passive: false });
 
       window.addEventListener('resize', function() {
         if (window.innerWidth > 768) closeMenu();
@@ -396,10 +409,10 @@
     </div>
   </div>
 
-  <!-- User choice modal (Log in / Create account when checkout without session) -->
-  <div id="userChoiceModal" class="modal-animate user-choice-modal"
-       style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);justify-content:center;align-items:center;">
-    <div class="user-choice-modal-inner" style="background:#fff;padding:32px 24px;border-radius:24px;box-shadow:0 2px 16px rgba(0,0,0,0.08);text-align:center;max-width:340px;margin:auto;">
+  <!-- User choice modal -->
+  <div id="userChoiceModal" class="modal-animate"
+       style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);z-index:2100;justify-content:center;align-items:center;">
+    <div style="background:#fff;padding:32px 24px;border-radius:24px;box-shadow:0 2px 16px rgba(0,0,0,0.08);text-align:center;max-width:340px;margin:auto;">
       <h2 style="color:#4a6d1a;margin-bottom:18px;" data-en="Are you already a user?" data-pt="Já tem conta?">Já tem conta?</h2>
       <p style="margin-bottom:24px;" data-en="Log in if you already have an account, or sign up to continue." data-pt="Entre se já tem conta, ou registe-se para continuar.">
         Entre se já tem conta, ou registe-se para continuar.
@@ -937,11 +950,17 @@
       checkoutSection.classList.remove('cart-drawer-closing');
       rebuildCheckoutList();
       checkoutSection.style.display = 'flex';
+      document.body.classList.add('modal-open');
+      requestAnimationFrame(function() {
+        checkoutSection.scrollTop = 0;
+        checkoutSection.querySelector('.checkout-content')?.scrollIntoView({ behavior: 'auto', block: 'center' });
+      });
     }
 
     function hideCheckout() {
       const checkoutSection = document.getElementById('checkout');
       if (!checkoutSection) return;
+      document.body.classList.remove('modal-open');
       const panel = checkoutSection.querySelector('.cart-drawer-panel');
       if (!panel) {
         checkoutSection.style.display = 'none';
@@ -1269,18 +1288,7 @@
 
       window.applyCategoryFilter = applyFilter;
 
-      sidebarLinks.forEach(link => {
-        if (link.closest('details.nav-accordion')) return;
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const filter = link.getAttribute('data-filter');
-          const labelEl = link.querySelector('.menu-text') || link.querySelector('span');
-          const label = labelEl ? labelEl.innerText : '';
-          applyFilter(filter, label);
-          if (window.innerWidth <= 768) closeSidebarMobile();
-        });
-      });
+      /* Non-accordion links: handled by category sidebar IIFE (pointerup + click fallback) below */
 
       var accordions = document.querySelectorAll('#sidebar details.nav-accordion');
       accordions.forEach(function(acc) {
@@ -1322,6 +1330,49 @@
           }
         });
       });
+
+      // Category sidebar: single active, instant pointerup, close on mobile
+      (function () {
+        const sidebar = document.getElementById('sidebar');
+        const navItems = Array.from(document.querySelectorAll('.sidebar-nav .nav-item'));
+
+        function setActive(el) {
+          navItems.forEach(a => a.classList.remove('active'));
+          el.classList.add('active');
+        }
+
+        function onNavActivate(e) {
+          const a = e.target.closest('.nav-item');
+          if (!a) return;
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          setActive(a);
+
+          const filter = a.dataset.filter;
+          const labelEl = a.querySelector('.menu-text') || a.querySelector('span');
+          const label = labelEl ? labelEl.innerText : '';
+          if (filter && typeof window.applyCategoryFilter === 'function') {
+            window.applyCategoryFilter(filter, label, '');
+          }
+
+          if (a.matches('summary')) {
+            const details = a.closest('details');
+            if (details) details.open = !details.open;
+          }
+
+          if (window.innerWidth <= 768) {
+            sidebar?.classList.remove('active');
+            document.body.classList.remove('sidebar-expanded');
+          }
+        }
+
+        navItems.forEach(el => {
+          el.addEventListener('pointerup', onNavActivate, { passive: false });
+        });
+        document.querySelector('.sidebar-nav')?.addEventListener('click', onNavActivate);
+      })();
     }
 
     // ========= Quantity selectors (only for cards that have +/-) =========
@@ -1371,29 +1422,38 @@
 
     // ========= Cart button =========
     function initCartButton() {
-      const cartLink = document.getElementById('headerCartLink');
-
       function openCart() {
-        // close sidebar if open (prevents backdrop blocking)
         if (document.body.classList.contains('sidebar-expanded') && typeof window.closeSidebarMobile === 'function') {
           window.closeSidebarMobile();
         }
-
         if (!cart.length) {
           const overlay = document.getElementById('emptyCartOverlay');
           if (overlay) overlay.style.display = 'flex';
           return;
         }
-
         showCheckout();
       }
 
-      if (cartLink) {
-        cartLink.addEventListener('click', function (e) {
+      document.querySelectorAll('.site-nav-cart, [aria-label="Cart"]').forEach(function(btn) {
+        btn.addEventListener('pointerup', function(e) {
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            window.location.href = 'checkout.html';
+            return;
+          }
+          e.preventDefault();
+          openCart();
+        }, { passive: false });
+        btn.addEventListener('click', function(e) {
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            window.location.href = 'checkout.html';
+            return;
+          }
           e.preventDefault();
           openCart();
         });
-      }
+      });
     }
 
     function initCheckoutButtons() {

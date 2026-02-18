@@ -21,7 +21,8 @@ export const ADMIN_EMAILS = [
   'bragabazaar@gmail.com'
 ];
 
-// Admin-only: these emails must NOT use customer pages (homepage, account, checkout). Redirect to admin panel only.
+// Admin-only: these emails have NO normal user account. They can ONLY access the admin panel (admin.html).
+// If they land on any customer page (shop, account, orders, checkout, contact, etc.) they are redirected to admin.
 export const ADMIN_ONLY_EMAILS = [
   'bragabazaar@gmail.com'
 ];

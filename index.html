@@ -485,53 +485,54 @@
   <button type="button" id="sidebarCloseFloat" class="sidebar-close-float" aria-label="Close menu"
           style="display:none;">&times;</button>
 
-  <div id="main-content" style="min-height:100vh;">
-    <header class="main-header">
-      <div class="top-nav">
-        <button type="button" class="menu-reopen-btn" id="menuReopenBtn" aria-label="Open menu" aria-expanded="false">
-          <i class="fas fa-bars"></i>
-        </button>
-        <a href="index.html" class="logo top-nav-logo" aria-label="Braga Bazaar – Home">BRAGA<span>BAZAAR</span></a>
+  <!-- Top bar: full width, touches left screen -->
+  <header class="main-header">
+    <div class="top-nav">
+      <button type="button" class="menu-reopen-btn" id="menuReopenBtn" aria-label="Open menu" aria-expanded="false">
+        <i class="fas fa-bars"></i>
+      </button>
+      <a href="index.html" class="logo top-nav-logo" aria-label="Braga Bazaar – Home">BRAGA<span>BAZAAR</span></a>
 
-        <form class="search-bar" action="index.html" method="get" role="search">
-          <span class="search-bar-wrap">
-            <i class="fas fa-search search-bar-icon" aria-hidden="true"></i>
-            <input type="search" name="q" data-en="What are you looking for?" data-pt="O que procura?"
-                   placeholder="O que procura?" aria-label="Search products" />
-          </span>
-          <button type="submit" class="search-submit-btn" data-en="Search" data-pt="Pesquisar">Pesquisar</button>
-        </form>
+      <form class="search-bar" action="index.html" method="get" role="search">
+        <span class="search-bar-wrap">
+          <i class="fas fa-search search-bar-icon" aria-hidden="true"></i>
+          <input type="search" name="q" data-en="What are you looking for?" data-pt="O que procura?"
+                 placeholder="O que procura?" aria-label="Search products" />
+        </span>
+        <button type="submit" class="search-submit-btn" data-en="Search" data-pt="Pesquisar">Pesquisar</button>
+      </form>
 
-        <nav class="site-nav" aria-label="Main navigation">
-          <a href="index.html" class="site-nav-icon-only site-nav-current site-nav-shop" title="Shop" aria-label="Shop">
-            <i class="fas fa-store"></i>
-          </a>
-          <a href="orders.html" class="site-nav-icon-only site-nav-orders" title="My orders" aria-label="My orders">
-            <i class="fas fa-clipboard-list"></i>
-            <span class="site-nav-label" data-i18n-text data-en="My orders" data-pt="As minhas encomendas">As minhas encomendas</span>
-          </a>
-          <a href="contact.html" class="site-nav-icon-only site-nav-contact" title="Contact" aria-label="Contact">
-            <i class="fas fa-envelope"></i>
-          </a>
-          <a href="account.html" class="site-nav-icon-only site-nav-account" title="My account" aria-label="My account">
-            <i class="fas fa-user"></i>
-          </a>
-          <a href="checkout.html" class="site-nav-icon-only site-nav-cart" id="headerCartLink" title="Cart" aria-label="Cart">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="site-nav-cart-total">€<span id="headerPrice">0.00</span></span>
-          </a>
-        </nav>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="site-nav-icon-only site-nav-current site-nav-shop" title="Shop" aria-label="Shop">
+          <i class="fas fa-store"></i>
+        </a>
+        <a href="orders.html" class="site-nav-icon-only site-nav-orders" title="My orders" aria-label="My orders">
+          <i class="fas fa-clipboard-list"></i>
+          <span class="site-nav-label" data-i18n-text data-en="My orders" data-pt="As minhas encomendas">As minhas encomendas</span>
+        </a>
+        <a href="contact.html" class="site-nav-icon-only site-nav-contact" title="Contact" aria-label="Contact">
+          <i class="fas fa-envelope"></i>
+        </a>
+        <a href="account.html" class="site-nav-icon-only site-nav-account" title="My account" aria-label="My account">
+          <i class="fas fa-user"></i>
+        </a>
+        <a href="checkout.html" class="site-nav-icon-only site-nav-cart" id="headerCartLink" title="Cart" aria-label="Cart">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="site-nav-cart-total">€<span id="headerPrice">0.00</span></span>
+        </a>
+      </nav>
 
-        <div class="language-switcher">
-          <button type="button" id="btn-pt" class="lang-btn active">PT</button>
-          <span class="separator">|</span>
-          <button type="button" id="btn-en" class="lang-btn">EN</button>
-        </div>
+      <div class="language-switcher">
+        <button type="button" id="btn-pt" class="lang-btn active">PT</button>
+        <span class="separator">|</span>
+        <button type="button" id="btn-en" class="lang-btn">EN</button>
       </div>
+    </div>
 
-      <nav class="category-nav" aria-label="Product categories"></nav>
-    </header>
+    <nav class="category-nav" aria-label="Product categories"></nav>
+  </header>
 
+  <div id="main-content" style="min-height:100vh;">
     <div id="locationBar" style="display:none;background:#e8f5e9;padding:8px 16px;font-size:0.9rem;color:#166534;" class="location-bar">
       <span data-en="Delivery to:" data-pt="Entrega para:">Entrega para:</span> <strong id="locationBarText"></strong>
       <button type="button" data-location-change
@@ -1837,36 +1838,8 @@
           block.className = 'category-block';
           block.setAttribute('data-category', cat);
 
-          const subcats = window.SUB_CATEGORIES && window.SUB_CATEGORIES[cat];
-          if (subcats && subcats.length) {
-            const dropWrap = document.createElement('div');
-            dropWrap.className = 'subcategory-dropdown-wrap';
-            dropWrap.style.cssText = 'margin-bottom:16px;display:flex;align-items:center;gap:12px;';
-            const label = document.createElement('span');
-            label.style.cssText = 'font-size:0.9rem;font-weight:700;color:#64748b;';
-            label.textContent = (window.currentLang() === 'pt' ? 'Filtrar: ' : 'Filter: ');
-            const select = document.createElement('select');
-            select.className = 'subcategory-select';
-            select.style.cssText = 'padding:8px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:0.95rem;font-weight:600;min-width:180px;';
-            select.innerHTML = '<option value="">' + window.getText('subcat_all') + '</option>';
-            subcats.forEach(sc => {
-              const opt = document.createElement('option');
-              opt.value = sc;
-              opt.textContent = window.getText('subcat_' + sc);
-              select.appendChild(opt);
-            });
-            select.addEventListener('change', () => {
-              const val = (select.value || '').toLowerCase();
-              innerGrid.querySelectorAll('.product-card').forEach(card => {
-                const sub = (card.getAttribute('data-subcategory') || '').toLowerCase();
-                const show = !val || sub === val;
-                card.style.display = show ? '' : 'none';
-              });
-            });
-            dropWrap.appendChild(label);
-            dropWrap.appendChild(select);
-            block.appendChild(dropWrap);
-          }
+          /* Drinks & Coffee/Tea: no subcategory dropdown – sidebar handles it.
+             Click "Drinks" → show all subcategories. Click "Waters" → show only Waters. */
 
           const innerGrid = document.createElement('div');
           innerGrid.className = 'category-block-grid';

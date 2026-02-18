@@ -8,6 +8,7 @@
 :root {
   --sidebar-width: 260px;
   --sidebar-collapsed: 80px;
+  --header-offset: 72px;
   --primary-green: #2d7a32;
   --hover-green: #1e5222;
   --text-dark: #333333;
@@ -43,9 +44,9 @@ a {
    ========================================= */
 .sidebar-menu {
   width: var(--sidebar-collapsed); /* collapsed (icons only) */
-  height: 100vh;
+  height: calc(100vh - var(--header-offset));
   position: fixed;
-  top: 0;
+  top: var(--header-offset);
   left: 0;
   background: #fff;
   z-index: 2001;

@@ -312,6 +312,7 @@
     position: sticky;
     top: 0;
     z-index: 1200;
+    width: 100%;
     background: #fff;
     border-bottom: 1px solid var(--border);
   }

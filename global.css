@@ -907,6 +907,32 @@ body.sidebar-expanded .menu-reopen-btn i {
   position: sticky;
   top: 0;
   z-index: 1100;
+  /* Prevent sticky header from being clipped on high-DPI / when scrolling to products */
+  background: #fff;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Category bar: single row, horizontal scroll so header height stays predictable and doesn't cut off */
+.category-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-top: 1px solid #e2e8f0;
+}
+.category-nav::-webkit-scrollbar {
+  height: 4px;
+}
+.category-nav::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 @media (max-width: 768px) {
   body.sidebar-expanded .sidebar-menu,
@@ -1048,6 +1074,21 @@ body.sidebar-expanded .sidebar-backdrop {
     position: relative;
     z-index: 2100 !important;
     touch-action: manipulation;
+  }
+}
+
+/* High-DPI / narrow viewports: keep header from being cut off when scrolling to products */
+@media (max-width: 768px), (min-resolution: 2dppx) {
+  .main-header {
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Keep category bar visible in one scrollable row */
+  .category-nav {
+    flex-shrink: 0;
   }
 }
 

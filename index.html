@@ -303,7 +303,7 @@
 
   <script>
     // ========= Sidebar: open/close + mobile backdrop =========
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const sidebar = document.querySelector('.sidebar-menu');
       const openBtn = document.querySelector('.menu-reopen-btn');
       const backdrop = document.querySelector('.sidebar-backdrop');
@@ -314,6 +314,7 @@
         sidebar?.classList.add('active');
         document.body.classList.add('sidebar-expanded');
         openBtn?.setAttribute('aria-expanded', 'true');
+
         if (window.innerWidth <= 768) {
           if (backdrop) backdrop.style.display = 'block';
           if (floatClose) floatClose.style.display = 'block';
@@ -322,48 +323,44 @@
       }
 
       function closeMenu() {
-        sidebar?.classList.remove('active');
-        document.body.classList.remove('sidebar-expanded');
-        openBtn?.setAttribute('aria-expanded', 'false');
-        if (backdrop) backdrop.style.display = 'none';
-        if (floatClose) floatClose.style.display = 'none';
-        if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
-      }
+      sidebar?.classList.remove('active');
+      document.body.classList.remove('sidebar-expanded');
+      openBtn?.setAttribute('aria-expanded', 'false');
 
-      function toggleMenu() {
-        if (sidebar?.classList.contains('active')) closeMenu();
-        else openMenu();
-      }
+      if (backdrop) backdrop.style.display = 'none';
+      if (floatClose) floatClose.style.display = 'none';
+      if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
+    }
 
-      openBtn?.addEventListener('click', function(e) {
-        e.preventDefault();
-        toggleMenu();
-      });
-      openBtn?.addEventListener('pointerup', function(e) {
-        e.preventDefault();
-        toggleMenu();
-      }, { passive: false });
+    function toggleMenu(e) {
+      e?.preventDefault?.();
+      if (sidebar?.classList.contains('active')) closeMenu();
+      else openMenu();
+    }
 
-      backdrop?.addEventListener('click', closeMenu);
-      backdrop?.addEventListener('pointerup', function(e) { e.preventDefault(); closeMenu(); }, { passive: false });
+    // ✅ Use ONLY click (removes double-toggle bug)
+    openBtn?.addEventListener('click', toggleMenu);
 
-      floatClose?.addEventListener('click', closeMenu);
-      floatClose?.addEventListener('pointerup', function(e) { e.preventDefault(); closeMenu(); }, { passive: false });
+    // ✅ Close handlers (click only)
+    backdrop?.addEventListener('click', closeMenu);
+    floatClose?.addEventListener('click', closeMenu);
+    closeBtn?.addEventListener('click', closeMenu);
 
-      closeBtn?.addEventListener('click', closeMenu);
-      closeBtn?.addEventListener('pointerup', function(e) { e.preventDefault(); closeMenu(); }, { passive: false });
-
-      window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) closeMenu();
-      });
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeMenu();
-      });
-
-      window.closeSidebarMobile = closeMenu;
-      window.openSidebarMobile = openMenu;
-      window.toggleSidebar = toggleMenu;
+    // Optional: close when resizing back to desktop
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 768) closeMenu();
     });
+
+    // Escape closes
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // Expose helpers
+    window.closeSidebarMobile = closeMenu;
+    window.openSidebarMobile = openMenu;
+    window.toggleSidebar = toggleMenu;
+  });
   </script>
 </head>
 
@@ -409,20 +406,22 @@
     </div>
   </div>
 
-  <!-- User choice modal -->
+  <!-- User choice modal: Login / Sign up / Order as guest -->
   <div id="userChoiceModal" class="modal-animate"
        style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.95);z-index:2100;justify-content:center;align-items:center;">
     <div style="background:#fff;padding:32px 24px;border-radius:24px;box-shadow:0 2px 16px rgba(0,0,0,0.08);text-align:center;max-width:340px;margin:auto;">
-      <h2 style="color:#4a6d1a;margin-bottom:18px;" data-en="Are you already a user?" data-pt="Já tem conta?">Já tem conta?</h2>
-      <p style="margin-bottom:24px;" data-en="Log in if you already have an account, or sign up to continue." data-pt="Entre se já tem conta, ou registe-se para continuar.">
-        Entre se já tem conta, ou registe-se para continuar.
+      <h2 style="color:#4a6d1a;margin-bottom:18px;" data-en="How would you like to continue?" data-pt="Como deseja continuar?">Como deseja continuar?</h2>
+      <p style="margin-bottom:24px;" data-en="Log in, create an account, or order as a guest." data-pt="Entre com a sua conta, crie uma conta ou finalize como visitante.">
+        Entre com a sua conta, crie uma conta ou finalize como visitante.
       </p>
       <button id="userChoiceLoginBtn" class="cta-primary" data-i18n-text data-en="Log in" data-pt="Entrar"
-              style="border-radius:20px;padding:10px 30px;margin:8px;font-weight:bold;">Log in</button>
+              style="border-radius:20px;padding:10px 30px;margin:8px;font-weight:bold;">Entrar</button>
       <button id="userChoiceSignupBtn" class="cta-secondary" data-i18n-text data-en="Create account" data-pt="Criar conta"
-              style="border-radius:20px;padding:10px 30px;margin:8px;font-weight:bold;">Create account</button>
+              style="border-radius:20px;padding:10px 30px;margin:8px;font-weight:bold;">Criar conta</button>
+      <button id="userChoiceGuestBtn" class="cta-primary" data-i18n-text data-en="Order as guest" data-pt="Continuar como visitante"
+              style="border-radius:20px;padding:10px 30px;margin:8px;font-weight:bold;background:#f1f5f9;color:#0f172a;border:1px solid #e2e8f0;">Continuar como visitante</button>
       <button id="userChoiceCancelBtn" class="cta-ghost" data-i18n-text data-en="Cancel" data-pt="Cancelar"
-              style="border-radius:20px;padding:8px 24px;margin-top:18px;font-weight:bold;">Cancel</button>
+              style="border-radius:20px;padding:8px 24px;margin-top:18px;font-weight:bold;">Cancelar</button>
     </div>
   </div>
 
@@ -1051,11 +1050,14 @@
     }
 
     function bindUserChoiceModalButtons() {
+      const redirect = encodeURIComponent('checkout.html');
       const loginBtn = document.getElementById('userChoiceLoginBtn');
       const signupBtn = document.getElementById('userChoiceSignupBtn');
+      const guestBtn = document.getElementById('userChoiceGuestBtn');
       const cancelBtn = document.getElementById('userChoiceCancelBtn');
-      if (loginBtn) loginBtn.onclick = () => { window.location.href = 'login.html'; };
-      if (signupBtn) signupBtn.onclick = () => { window.location.href = 'signup.html'; };
+      if (loginBtn) loginBtn.onclick = () => { window.location.href = 'login.html?redirect=' + redirect; };
+      if (signupBtn) signupBtn.onclick = () => { window.location.href = 'signup.html?redirect=' + redirect; };
+      if (guestBtn) guestBtn.onclick = () => { closeUserChoiceModal(); window.location.href = 'checkout.html'; };
       if (cancelBtn) cancelBtn.onclick = () => { closeUserChoiceModal(); };
     }
 
@@ -1365,6 +1367,9 @@
           if (window.innerWidth <= 768) {
             sidebar?.classList.remove('active');
             document.body.classList.remove('sidebar-expanded');
+            requestAnimationFrame(function() {
+              document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
           }
         }
 
@@ -1436,21 +1441,53 @@
 
       document.querySelectorAll('.site-nav-cart, [aria-label="Cart"]').forEach(function(btn) {
         btn.addEventListener('pointerup', function(e) {
+          e.preventDefault();
           if (window.innerWidth <= 768) {
-            e.preventDefault();
-            window.location.href = 'checkout.html';
+            if (!cart.length) {
+              openCart();
+              return;
+            }
+            (async function() {
+              try {
+                const session = (typeof window.getSupabaseSession === 'function')
+                  ? await window.getSupabaseSession()
+                  : null;
+                if (session) {
+                  window.location.href = 'checkout.html';
+                } else {
+                  showUserChoiceModal();
+                }
+              } catch (err) {
+                showUserChoiceModal();
+              }
+            })();
             return;
           }
-          e.preventDefault();
           openCart();
         }, { passive: false });
         btn.addEventListener('click', function(e) {
+          e.preventDefault();
           if (window.innerWidth <= 768) {
-            e.preventDefault();
-            window.location.href = 'checkout.html';
+            if (!cart.length) {
+              openCart();
+              return;
+            }
+            (async function() {
+              try {
+                const session = (typeof window.getSupabaseSession === 'function')
+                  ? await window.getSupabaseSession()
+                  : null;
+                if (session) {
+                  window.location.href = 'checkout.html';
+                } else {
+                  showUserChoiceModal();
+                }
+              } catch (err) {
+                showUserChoiceModal();
+              }
+            })();
             return;
           }
-          e.preventDefault();
           openCart();
         });
       });

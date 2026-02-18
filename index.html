@@ -873,7 +873,7 @@
 
     function saveCart() { localStorage.setItem('bragaBazaarCart', JSON.stringify(cart)); }
 
-    const defaultCartImg = 'assets/strawberries.jpg';
+    const noImagePlaceholder = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23f1f5f9%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%2394a3b8%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2210%22%3ENo img%3C/text%3E%3C/svg%3E";
 
     function rebuildCheckoutList() {
       const cartItemsList = document.getElementById('cartItems');
@@ -898,11 +898,11 @@
       }
 
       cart.forEach((item, idx) => {
-        const imgSrc = (item.image_url && item.image_url.trim()) ? item.image_url.trim() : defaultCartImg;
+        const imgSrc = (item.image_url && item.image_url.trim()) ? item.image_url.trim() : noImagePlaceholder;
         const li = document.createElement('li');
         li.className = 'cart-drawer-item';
         li.innerHTML = `
-          <img class="cart-drawer-item-img" src="${imgSrc}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${defaultCartImg}'">
+          <img class="cart-drawer-item-img" src="${imgSrc}" alt="" loading="lazy" onerror="this.onerror=null;this.src=this.dataset.fallback||'${noImagePlaceholder}'" data-fallback="${noImagePlaceholder}">
           <div class="cart-drawer-item-info">
             <p class="cart-drawer-item-name">${(item.name || '').replace(/</g, '&lt;')}</p>
             <div class="cart-drawer-item-meta">
@@ -1478,11 +1478,11 @@
 
       if (!modal || !addBtn) return;
 
-      const defaultImg = 'assets/strawberries.jpg';
+      const noImagePlaceholder = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23f1f5f9%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%2394a3b8%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2214%22%3ENo image%3C/text%3E%3C/svg%3E";
       if (img) {
-        img.src = (product.image_url && product.image_url.trim()) ? product.image_url.trim() : defaultImg;
+        img.src = (product.image_url && product.image_url.trim()) ? product.image_url.trim() : noImagePlaceholder;
         img.alt = product.name || '';
-        img.onerror = function() { this.onerror = null; this.src = defaultImg; };
+        img.onerror = function() { this.onerror = null; this.src = noImagePlaceholder; };
       }
 
       if (nameEl) nameEl.textContent = product.name || '';
@@ -1713,15 +1713,16 @@
       card.appendChild(wishWrap);
 
       const img = document.createElement('img');
-      const defaultImg = 'assets/strawberries.jpg';
-      img.src = (product.image_url && product.image_url.trim()) ? product.image_url.trim() : defaultImg;
+      const noImagePlaceholder = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23f1f5f9%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%2394a3b8%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2214%22%3ENo image%3C/text%3E%3C/svg%3E";
+      const imgSrc = (product.image_url && product.image_url.trim()) ? product.image_url.trim() : noImagePlaceholder;
+      img.src = imgSrc;
       img.alt = searchName || '';
       img.loading = 'lazy';
       img.decoding = 'async';
       img.style.touchAction = 'manipulation';
       img.style.minHeight = '180px';
-      img.style.objectFit = 'cover';
-      img.onerror = function() { this.onerror = null; this.src = defaultImg; };
+      img.style.objectFit = imgSrc === noImagePlaceholder ? 'contain' : 'cover';
+      img.onerror = function() { this.onerror = null; this.src = noImagePlaceholder; };
       card.appendChild(img);
 
       const info = document.createElement('div');

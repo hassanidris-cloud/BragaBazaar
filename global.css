@@ -290,10 +290,10 @@ body.sidebar-expanded .menu-reopen-btn i {
    Mobile (Transform sidebar + no content push)
    ========================================= */
 @media (max-width: 768px) {
-  /* Sidebar becomes overlay drawer (JS should add/remove .active) */
+  /* Sidebar: full screen on mobile when open */
   .sidebar-menu {
-    width: 85%;
-    max-width: 320px;
+    width: 100% !important;
+    max-width: none;
   }
 
   /* Don’t push content on mobile */
@@ -868,8 +868,8 @@ body.sidebar-expanded .menu-reopen-btn i {
    ========================= */
 @media (max-width: 768px){
   .sidebar-menu{
-    width: 85% !important;
-    max-width: 320px;
+    width: 100% !important;
+    max-width: none;
     transform: translateX(-105%);
     transition: transform 0.28s ease;
   }

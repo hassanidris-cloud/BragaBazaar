@@ -331,7 +331,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-right: 8px;
+    margin-left: 12px;
   }
   .language-switcher .separator{
     color: #94a3b8;

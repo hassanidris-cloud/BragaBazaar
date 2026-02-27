@@ -7,23 +7,33 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-  <title>Braga Bazaar | Fresh Local Grocery – Braga</title>
-  <meta name="description" content="Braga Bazaar: fresh local grocery delivered. Fruits, bakery, meat, eggs, drinks and promotions. Support your local community with every purchase. Fast, secure checkout." />
-  <meta name="keywords" content="Braga, grocery, fresh food, local market, fruits, bakery, delivery, Portugal" />
-  <meta name="robots" content="index, follow" />
+  <title>Braga Bazaar | Local Grocery Delivery in Braga, Portugal</title>
+  <meta name="description" content="Braga Bazaar is your local online grocery in Braga, Portugal. Order fresh fruits, vegetables, bakery, meat, dairy and essentials with fast delivery or pickup." />
+  <meta name="keywords" content="Braga Bazaar, grocery delivery Braga, supermarket Braga, local market Braga, online grocery Portugal, fresh food Braga" />
+  <meta name="author" content="Braga Bazaar" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="geo.region" content="PT-03" />
+  <meta name="geo.placename" content="Braga" />
+  <meta name="geo.position" content="41.5454;-8.4265" />
+  <meta name="ICBM" content="41.5454, -8.4265" />
+  <link rel="canonical" href="/" />
 
   <!-- Open Graph / social -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Braga Bazaar | Fresh Local Grocery" />
-  <meta property="og:description" content="Freshness from Braga to your table. Your local fresh market – secure checkout, fast delivery." />
-  <meta property="og:image" content="/assets/icon.png" />
+  <meta property="og:site_name" content="Braga Bazaar" />
+  <meta property="og:title" content="Braga Bazaar | Local Grocery Delivery in Braga" />
+  <meta property="og:description" content="Fresh local groceries from Braga with secure checkout, fast delivery and pickup options." />
+  <meta property="og:url" content="/" />
+  <meta property="og:image" content="/assets/braga-bazaar-logo.svg" />
+  <meta property="og:image:alt" content="Braga Bazaar logo" />
   <meta property="og:locale" content="en_GB" />
   <meta property="og:locale:alternate" content="pt_PT" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Braga Bazaar | Fresh Local Grocery" />
-  <meta name="twitter:description" content="Freshness from Braga to your table. Secure checkout, mobile-friendly." />
+  <meta name="twitter:title" content="Braga Bazaar | Local Grocery Delivery in Braga" />
+  <meta name="twitter:description" content="Order fresh groceries in Braga with fast delivery, pickup and secure checkout." />
+  <meta name="twitter:image" content="/assets/braga-bazaar-logo.svg" />
 
   <!-- Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,8 +42,8 @@
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" type="image/png" href="assets/favicon.png" />
-  <link rel="apple-touch-icon" href="assets/icon.png" />
+  <link rel="icon" type="image/svg+xml" href="assets/braga-bazaar-logo.svg" />
+  <link rel="apple-touch-icon" href="assets/braga-bazaar-logo.svg" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
         integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
@@ -290,14 +300,33 @@
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"LocalBusiness",
+    "@type":"GroceryStore",
+    "@id":"/#organization",
     "name":"Braga Bazaar",
     "description":"Fresh local grocery in Braga. Fruits, bakery, meat, eggs, drinks and promotions. Support your local community.",
     "url":"/",
-    "image":"/assets/icon.png",
+    "logo":"/assets/braga-bazaar-logo.svg",
+    "image":"/assets/braga-bazaar-logo.svg",
+    "telephone":"+351927614647",
+    "priceRange":"EUR",
+    "currenciesAccepted":"EUR",
+    "areaServed":"Braga, Portugal",
     "address":{"@type":"PostalAddress","streetAddress":"R. Conselheiro Lobato 368","addressLocality":"Braga","postalCode":"4705-089","addressCountry":"PT"},
-    "openingHours":"Mo-Su 09:00-22:00",
-    "telephone":"+351927614647"
+    "geo":{"@type":"GeoCoordinates","latitude":41.5454,"longitude":-8.4265},
+    "openingHours":"Mo-Su 09:00-22:00"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"Braga Bazaar",
+    "url":"/",
+    "potentialAction":{
+      "@type":"SearchAction",
+      "target":"/index.html?q={search_term_string}",
+      "query-input":"required name=search_term_string"
+    }
   }
   </script>
 
